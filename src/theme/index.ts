@@ -84,6 +84,8 @@ export const transicionPunto = {
 /** Transparencias sobre fondos de estado (puntos gastados, base de barras). */
 export const alpha = {
   sobreColor: 'rgba(255,255,255,0.25)',
+  /** Punto a medias sobre color (paso siguiente del arranque). */
+  mitadSobreColor: 'rgba(255,255,255,0.5)',
   sobreClaro: 'rgba(20,20,20,0.18)',
   /** Tarjetas sobre fondo de estado (J8Finish). */
   tarjetaSobreColor: 'rgba(255,255,255,0.14)',

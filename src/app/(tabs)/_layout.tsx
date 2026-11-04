@@ -1,9 +1,13 @@
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 
 import { Navegacion } from '@/components/Navegacion';
+import { useSettings } from '@/state/settings';
 import { color } from '@/theme';
 
 export default function TabsLayout() {
+  // Primera vez: el alta (R1) antes de Hoy.
+  const { onboarded } = useSettings();
+  if (!onboarded) return <Redirect href="/alta" />;
   return (
     <Tabs
       tabBar={(props) => <Navegacion {...props} />}

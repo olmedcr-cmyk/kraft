@@ -8,10 +8,24 @@ import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
 import { hhmm, type Slot } from '@/agenda/model';
+import { getSettings } from '@/state/settings';
 
 const CATEGORY = 'clase';
 const BEFORE_MS = 3600_000;
 const native = Platform.OS !== 'web';
+
+/** Pide permiso de avisos (K8Permissions). En web, nada. */
+export async function requestNotifications(): Promise<boolean> {
+  if (!native) return false;
+  try {
+    const cur = await Notifications.getPermissionsAsync();
+    if (cur.granted) return true;
+    if (!cur.canAskAgain) return false;
+    return (await Notifications.requestPermissionsAsync()).granted;
+  } catch {
+    return false;
+  }
+}
 
 let ready = false;
 export async function setupReminders() {
@@ -37,7 +51,7 @@ export function reminderBody(slot: Slot) {
 }
 
 export async function scheduleClassReminder(slot: Slot) {
-  if (!native) return;
+  if (!native || !getSettings().avisos) return;
   const at = slot.start - BEFORE_MS;
   if (at <= Date.now()) return;
   try {

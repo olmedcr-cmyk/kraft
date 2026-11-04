@@ -13,12 +13,15 @@ type Props = {
   light?: boolean;
   /** Círculo: naranja (actuar) por defecto; verde con ✓ al cerrar algo hecho. */
   knob?: string;
+  /** Barra naranja (actuar sobre tinta): fondo y texto propios. */
+  bg?: string;
+  fg?: string;
   icon?: ReactNode;
   disabled?: boolean;
 };
 
 /** Barra de acción 104: frase a la izquierda, círculo naranja a la derecha. */
-export function BarraAccion({ label, onPress, light, knob: knobColor = color.naranja, icon, disabled }: Props) {
+export function BarraAccion({ label, onPress, light, knob: knobColor = color.naranja, icon, disabled, bg, fg }: Props) {
   const pad = space.s16;
   const knob = inner(touch.accion, pad * 2); // 104 − 2·16 = 72
   return (
@@ -32,7 +35,7 @@ export function BarraAccion({ label, onPress, light, knob: knobColor = color.nar
       style={{
         height: touch.accion,
         borderRadius: radius.lg,
-        backgroundColor: light ? color.tarjeta : color.tinta,
+        backgroundColor: bg ?? (light ? color.tarjeta : color.tinta),
         paddingLeft: space.s24,
         paddingRight: pad,
         flexDirection: 'row',
@@ -40,7 +43,7 @@ export function BarraAccion({ label, onPress, light, knob: knobColor = color.nar
         justifyContent: 'space-between',
       }}
     >
-      <KText size={texto.boton} tint={light ? color.tinta : color.tarjeta}>
+      <KText size={texto.boton} tint={fg ?? (light ? color.tinta : color.tarjeta)}>
         {label}
       </KText>
       <View

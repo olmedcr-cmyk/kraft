@@ -1,6 +1,7 @@
 import { AppState, type NativeEventSubscription } from 'react-native';
 
 import { setupFeedback, signal } from '@/platform/feedback';
+import { getSettings } from '@/state/settings';
 import {
   createTimer,
   cues,
@@ -87,14 +88,14 @@ export class Runner {
   };
 
   start = () => {
-    setupFeedback();
+    setupFeedback({ playInSilentMode: getSettings().silencio });
     this.startedAt = Date.now();
     this.endedAt = null;
     this.apply(start);
   };
   primary = () => {
     if (this.state.status !== 'running') {
-      setupFeedback();
+      setupFeedback({ playInSilentMode: getSettings().silencio });
       this.startedAt = Date.now();
       this.endedAt = null;
     }
@@ -107,7 +108,7 @@ export class Runner {
   interrupt = () => this.apply(interrupt);
   /** Saltar a un tramo concreto (empezar la sesión por un bloque). */
   startAt = (index: number) => {
-    setupFeedback();
+    setupFeedback({ playInSilentMode: getSettings().silencio });
     this.startedAt = Date.now();
     this.endedAt = null;
     this.apply((s, now) => ({ ...start(s, now), index: Math.max(0, Math.min(index, s.plan.length - 1)) }));

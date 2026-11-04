@@ -8,6 +8,7 @@ import { useReducedMotion } from 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { listenReminderResponses, setupReminders } from '@/platform/reminders';
+import { hydrateSettings, useHydrated } from '@/state/settings';
 import { color } from '@/theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -15,10 +16,16 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 export default function RootLayout() {
   const [loaded] = useFonts({ RobotoMono_300Light, RobotoMono_400Regular, RobotoMono_500Medium });
   const reduced = useReducedMotion();
+  const hydrated = useHydrated();
+
+  // Ajustes guardados (¿ya hizo el alta?) antes de pintar nada.
+  useEffect(() => {
+    hydrateSettings();
+  }, []);
 
   useEffect(() => {
-    if (loaded) SplashScreen.hideAsync().catch(() => {});
-  }, [loaded]);
+    if (loaded && hydrated) SplashScreen.hideAsync().catch(() => {});
+  }, [loaded, hydrated]);
 
   // Recordatorios de clase: «Mover» y «Llego» abren su pantalla.
   useEffect(() => {
@@ -26,7 +33,7 @@ export default function RootLayout() {
     return listenReminderResponses();
   }, []);
 
-  if (!loaded) return null;
+  if (!loaded || !hydrated) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

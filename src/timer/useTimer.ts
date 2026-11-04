@@ -1,6 +1,7 @@
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 
+import { useSettings } from '@/state/settings';
 import type { Plan } from './engine';
 import { Runner } from './runner';
 
@@ -36,10 +37,11 @@ function KeepAwake() {
 export function useRunner(runner: Runner) {
   const snap = useSyncExternalStore(runner.subscribe, runner.getSnapshot, runner.getSnapshot);
   const running = runner.getState().status === 'running';
+  const { pantalla } = useSettings();
   return {
     snap,
     running,
-    keepAwake: running ? KeepAwake : null,
+    keepAwake: running && pantalla ? KeepAwake : null,
     start: runner.start,
     primary: runner.primary,
     pause: runner.pause,
