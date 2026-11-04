@@ -33,7 +33,14 @@
       "expo-status-bar",
       "expo-font",
       "expo-audio",
-      "expo-splash-screen"
+      "expo-splash-screen",
+      "expo-notifications",
+      [
+        "expo-calendar",
+        {
+          "calendarPermission": "KRAFT añade tus clases reservadas a tu calendario."
+        }
+      ]
     ],
     "scheme": "kraft",
     "experiments": {

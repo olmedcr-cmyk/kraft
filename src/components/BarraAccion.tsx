@@ -5,10 +5,10 @@ import { PlayIcon } from './icons';
 import { KText } from './KText';
 import { Pulsable } from './Pulsable';
 
-type Props = { label: string; onPress: () => void };
+type Props = { label: string; onPress: () => void; /** Sobre fondo de color: barra blanca y texto en tinta. */ light?: boolean };
 
 /** Barra de acción 104: frase a la izquierda, círculo naranja a la derecha. */
-export function BarraAccion({ label, onPress }: Props) {
+export function BarraAccion({ label, onPress, light }: Props) {
   const pad = space.s16;
   const knob = inner(touch.accion, pad * 2); // 104 − 2·16 = 72
   return (
@@ -21,7 +21,7 @@ export function BarraAccion({ label, onPress }: Props) {
       style={{
         height: touch.accion,
         borderRadius: radius.lg,
-        backgroundColor: color.tinta,
+        backgroundColor: light ? color.tarjeta : color.tinta,
         paddingLeft: space.s24,
         paddingRight: pad,
         flexDirection: 'row',
@@ -29,7 +29,7 @@ export function BarraAccion({ label, onPress }: Props) {
         justifyContent: 'space-between',
       }}
     >
-      <KText size={texto.boton} tint={color.tarjeta}>
+      <KText size={texto.boton} tint={light ? color.tinta : color.tarjeta}>
         {label}
       </KText>
       <View

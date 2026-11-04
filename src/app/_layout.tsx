@@ -7,6 +7,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useReducedMotion } from 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { listenReminderResponses, setupReminders } from '@/platform/reminders';
 import { color } from '@/theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -18,6 +19,12 @@ export default function RootLayout() {
   useEffect(() => {
     if (loaded) SplashScreen.hideAsync().catch(() => {});
   }, [loaded]);
+
+  // Recordatorios de clase: «Mover» y «Llego» abren su pantalla.
+  useEffect(() => {
+    setupReminders();
+    return listenReminderResponses();
+  }, []);
 
   if (!loaded) return null;
 

@@ -1,5 +1,3 @@
-import { Vacio } from '@/components/Vacio';
+import { AgendaScreen } from '@/features/agenda/AgendaScreen';
 
-export default function Agenda() {
-  return <Vacio title="Agenda" note="Pronto podrás reservar aquí" />;
-}
+export default AgendaScreen;
