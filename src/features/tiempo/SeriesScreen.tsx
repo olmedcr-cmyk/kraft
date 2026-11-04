@@ -43,6 +43,7 @@ function background(s: Snapshot) {
       return color.fondo;
     case 'countdown':
     case 'wait':
+    case 'reps':
       return color.tinta;
     case 'work':
       return color.klein;
@@ -63,6 +64,7 @@ function texts(s: Snapshot, rounds: number) {
     case 'rest':
       return { title: 'Descanso', unit: 'Respira' };
     case 'wait':
+    case 'reps':
       return { title: 'Hecho', unit: `Toca para la serie ${s.round + 1} de ${rounds}` };
     case 'done':
       return {
@@ -78,6 +80,7 @@ const PHASE_WORD: Record<Snapshot['phase'], string> = {
   work: 'Trabajo',
   rest: 'Descanso',
   wait: 'Espera',
+  reps: 'Repeticiones',
   done: 'Hecho',
 };
 

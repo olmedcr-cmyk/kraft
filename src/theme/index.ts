@@ -56,4 +56,6 @@ export const motion = tokens.motion;
 export const alpha = {
   sobreColor: 'rgba(255,255,255,0.25)',
   sobreClaro: 'rgba(20,20,20,0.18)',
+  /** Tarjetas sobre fondo de estado (J8Finish). */
+  tarjetaSobreColor: 'rgba(255,255,255,0.14)',
 };

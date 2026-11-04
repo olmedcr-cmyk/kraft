@@ -1,0 +1,138 @@
+/** Escalera por repeticiones (J7Ladder). Sin reloj: el atleta marca cada serie con ✓. */
+import { Pressable, ScrollView, View } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
+
+import { KText } from '@/components/KText';
+import { exercise } from '@/data/exercises';
+import type { StepInfo } from '@/session/compile';
+import { compiled, setWeight, useSessionExtra } from '@/session/store';
+import { cifra, color, inner, radius, space, texto, touch } from '@/theme';
+import { BotonComo, RUN } from './piezas';
+
+const STEP_KG = 2.5;
+const kgLabel = (w: number | null) => (w == null ? 'barra' : String(w).replace('.', ','));
+
+export function Escalera({ step, refId }: { step: StepInfo; refId: number }) {
+  const extra = useSessionExtra();
+  const block = compiled.steps.map((x, i) => ({ ...x, ref: i })).filter((x) => x.block === step.block);
+  const ladder = block.filter((x) => x.ladder !== undefined);
+  const after = block.filter((x) => x.after !== undefined);
+  const inLadder = step.ladder !== undefined;
+  const ex = exercise(ladder[0]?.exercise);
+  const weightOf = (ref: number, base: number | null | undefined) => (ref in extra.weights ? extra.weights[ref] : (base ?? null));
+  const w = weightOf(refId, step.weight);
+
+  return (
+    <ScrollView contentContainerStyle={{ paddingHorizontal: space.s16, gap: space.s8, paddingBottom: space.s16 }}>
+      <View style={{ paddingHorizontal: space.s8, paddingBottom: space.s8, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <KText size={cifra.c34} title tint={color.tinta} lineHeight={cifra.c34} accessibilityRole="header" style={{ flexShrink: 1 }}>
+          {ladder[0]?.label ?? step.label}
+        </KText>
+        {ex && <BotonComo exerciseId={ex.id} size={56} label={ex.name} />}
+      </View>
+
+      <View
+        accessibilityLabel={`Escalera: ${ladder.map((l) => `${l.reps}`).join(', ')}`}
+        style={{ backgroundColor: color.tarjeta, borderRadius: radius.lg, paddingVertical: space.s24, paddingHorizontal: space.s16, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-around' }}
+      >
+        {ladder.map((l) => {
+          const done = l.ref < refId;
+          const now = l.ref === refId;
+          const d = 40 + 2 * (l.reps ?? 0);
+          return (
+            <View key={l.ref} style={{ alignItems: 'center', gap: space.s8 }}>
+              <View
+                style={{
+                  width: d,
+                  height: d,
+                  borderRadius: d / 2,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: done ? color.tinta : now ? color.naranja : 'transparent',
+                  borderWidth: done || now ? 0 : 2,
+                  borderColor: color.tinta,
+                }}
+              >
+                <KText size={d > 60 ? texto.boton : RUN} weight={300} tint={done ? color.tarjeta : color.tinta}>
+                  {String(l.reps)}
+                </KText>
+              </View>
+              <KText size={texto.etiqueta} tint={now ? color.tinta : color.texto2}>
+                {kgLabel(weightOf(l.ref, l.weight))}
+              </KText>
+            </View>
+          );
+        })}
+      </View>
+
+      {inLadder && (
+        <View style={{ backgroundColor: color.tarjeta, borderRadius: radius.lg, padding: space.s16, flexDirection: 'row', alignItems: 'center', gap: space.s8 }}>
+          <Ajuste dir="down" onPress={() => setWeight(refId, w == null ? null : Math.max(0, w - STEP_KG) || null)} />
+          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', gap: space.s4 }} accessibilityLabel={w == null ? 'Barra sola' : `${kgLabel(w)} kilos`}>
+            <KText size={cifra.c55} weight={300} tabular lineHeight={cifra.c55}>
+              {w == null ? 'barra' : kgLabel(w)}
+            </KText>
+            {w != null && (
+              <KText size={texto.texto} tint={color.texto2}>
+                kg
+              </KText>
+            )}
+          </View>
+          <Ajuste dir="up" onPress={() => setWeight(refId, (w ?? 20) + STEP_KG)} />
+        </View>
+      )}
+
+      <View accessibilityLabel="Después" style={{ backgroundColor: color.tarjeta, borderRadius: radius.lg, paddingVertical: space.s8, paddingHorizontal: space.s16 }}>
+        {after.map((a) => {
+          const done = a.ref < refId;
+          const now = a.ref === refId;
+          return (
+            <View key={a.ref} style={{ height: touch.dedo, flexDirection: 'row', alignItems: 'center', gap: space.s12 }}>
+              <View
+                style={{
+                  width: 14,
+                  height: 14,
+                  borderRadius: 7,
+                  backgroundColor: done ? color.tinta : now ? color.naranja : 'transparent',
+                  borderWidth: done || now ? 0 : 2,
+                  borderColor: color.tinta,
+                }}
+              />
+              <KText size={RUN} style={{ flex: 1 }} weight={now ? 500 : 400}>
+                {a.label}
+              </KText>
+              {a.detail && (
+                <KText size={RUN} tint={color.texto2}>
+                  {a.detail}
+                </KText>
+              )}
+            </View>
+          );
+        })}
+      </View>
+    </ScrollView>
+  );
+}
+
+function Ajuste({ dir, onPress }: { dir: 'up' | 'down'; onPress: () => void }) {
+  const pad = space.s16;
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`${dir === 'up' ? 'Más' : 'Menos'} ${kgLabel(STEP_KG)} kg`}
+      style={({ pressed }) => ({
+        width: touch.tecla + space.s16,
+        height: touch.tecla + space.s16,
+        borderRadius: inner(radius.lg, pad),
+        backgroundColor: pressed ? color.hundido : color.fondo,
+        alignItems: 'center',
+        justifyContent: 'center',
+      })}
+    >
+      <Svg width={28} height={20} viewBox="0 0 28 20">
+        <Path d={dir === 'up' ? 'M3 17L14 4l11 13z' : 'M3 3l11 13L25 3z'} fill={color.tinta} stroke={color.tinta} strokeWidth={2} strokeLinejoin="round" />
+      </Svg>
+    </Pressable>
+  );
+}

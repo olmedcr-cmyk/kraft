@@ -1,5 +1,3 @@
-import { Vacio } from '@/components/Vacio';
+import { HoyScreen } from '@/features/hoy/HoyScreen';
 
-export default function Hoy() {
-  return <Vacio title="Hoy" note="Aún no hay sesión hoy" />;
-}
+export default HoyScreen;

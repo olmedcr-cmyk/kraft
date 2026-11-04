@@ -254,3 +254,39 @@ describe('señales', () => {
     expect(cues(snapshot(s, 0), snapshot(s, 3 * S))).toEqual([]);
   });
 });
+
+describe('repeticiones', () => {
+  const plan = [
+    { kind: 'reps' as const, duration: Infinity, round: 1, ref: 10 },
+    { kind: 'reps' as const, duration: Infinity, round: 2, ref: 11 },
+  ];
+
+  it('no avanzan solas; el central es ✓ y pasa a la siguiente', () => {
+    let s = start(createTimer(plan), 0);
+    s = tick(s, 999 * S);
+    let v = snapshot(s, 999 * S);
+    expect(v.phase).toBe('reps');
+    expect(v.central).toBe('check');
+    expect(v.ref).toBe(10);
+    s = primary(s, 999 * S);
+    v = snapshot(s, 999 * S);
+    expect(v.ref).toBe(11);
+    s = primary(s, 1000 * S);
+    v = snapshot(s, 1000 * S);
+    expect(v.phase).toBe('done');
+    expect(v.roundsDone).toBe(2);
+  });
+
+  it('no se pausan (no hay reloj que parar)', () => {
+    const s = start(createTimer(plan), 0);
+    expect(pauseToggle(s, 1 * S).pausedAt).toBeNull();
+  });
+
+  it('dos toques en anterior vuelven a la serie anterior', () => {
+    let s = start(createTimer(plan), 0);
+    s = primary(s, 1 * S);
+    s = prev(s, 2 * S);
+    s = prev(s, 2 * S + 100);
+    expect(snapshot(s, 2.1 * S).ref).toBe(10);
+  });
+});

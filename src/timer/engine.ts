@@ -9,7 +9,8 @@
  * Pausa desde cualquier estado en marcha; parar solo desde pausa (y guarda lo hecho).
  */
 
-export type SegmentKind = 'countdown' | 'work' | 'rest' | 'wait';
+/** reps: lo marca el atleta con ✓ (no hay tiempo). */
+export type SegmentKind = 'countdown' | 'work' | 'rest' | 'wait' | 'reps';
 export type Phase = 'select' | SegmentKind | 'done';
 
 export interface Segment {
@@ -18,6 +19,8 @@ export interface Segment {
   duration: number;
   /** Serie o ronda a la que pertenece (empieza en 1). */
   round: number;
+  /** Referencia libre al paso de la sesión que lo generó. */
+  ref?: number;
 }
 
 export type Plan = Segment[];
@@ -56,10 +59,11 @@ export interface Snapshot {
   waited: number;
   roundsDone: number;
   stopped: boolean;
-  /** Icono del mando central. */
-  central: 'pause' | 'play';
+  /** Icono del mando central: pausa trabajando, play en espera, ✓ en repeticiones. */
+  central: 'pause' | 'play' | 'check';
   /** Tecla izquierda del mando. */
   left: 'prev' | 'stop';
+  ref?: number;
 }
 
 export const COUNTDOWN = 3;
@@ -119,9 +123,12 @@ export function start(state: TimerState, now: number): TimerState {
   return { ...createTimer(state.plan), status: 'running', segStart: now };
 }
 
+const isManual = (k: SegmentKind) => k === 'wait' || k === 'reps';
+const isTramo = (k: SegmentKind) => k === 'work' || k === 'rest' || k === 'reps';
+
 function worksBefore(plan: Plan, index: number) {
   let n = 0;
-  for (let i = 0; i < Math.min(index, plan.length); i++) if (plan[i].kind === 'work') n++;
+  for (let i = 0; i < Math.min(index, plan.length); i++) if (plan[i].kind === 'work' || plan[i].kind === 'reps') n++;
   return n;
 }
 
@@ -180,7 +187,7 @@ export function pauseToggle(state: TimerState, now: number): TimerState {
       interrupted: false,
     };
   }
-  if (s.plan[s.index].kind === 'wait') return s;
+  if (isManual(s.plan[s.index].kind)) return s;
   return { ...s, pausedAt: now };
 }
 
@@ -189,7 +196,7 @@ export function primary(state: TimerState, now: number): TimerState {
   if (state.status === 'select' || state.status === 'done') return start(state, now);
   const s = tick(state, now);
   if (s.status !== 'running') return s;
-  if (s.pausedAt === null && s.plan[s.index].kind === 'wait') return goTo(s, s.index + 1, now);
+  if (s.pausedAt === null && isManual(s.plan[s.index].kind)) return goTo(s, s.index + 1, now);
   return pauseToggle(s, now);
 }
 
@@ -207,8 +214,7 @@ export function prev(state: TimerState, now: number): TimerState {
   let index = s.index;
   if (double) {
     for (let i = s.index - 1; i >= 0; i--) {
-      const k = s.plan[i].kind;
-      if (k === 'work' || k === 'rest') {
+      if (isTramo(s.plan[i].kind)) {
         index = i;
         break;
       }
@@ -227,7 +233,7 @@ export function next(state: TimerState, now: number): TimerState {
 export function interrupt(state: TimerState, now: number): TimerState {
   const s = tick(state, now);
   if (s.status !== 'running' || s.pausedAt !== null) return s;
-  if (s.plan[s.index].kind === 'wait') return s;
+  if (isManual(s.plan[s.index].kind)) return s;
   return { ...s, pausedAt: now, interrupted: true };
 }
 
@@ -301,11 +307,27 @@ export function snapshot(state: TimerState, now: number): Snapshot {
       paused,
       central: paused ? 'play' : 'pause',
       left,
+      ref: seg.ref,
       roundsDone: worksBefore(state.plan, state.index),
     };
   }
 
   const elapsedMs = Math.max(0, t - state.segStart);
+  if (seg.kind === 'reps') {
+    return {
+      ...base,
+      phase: 'reps',
+      n: 0,
+      elapsed: Math.floor(elapsedMs / SEC),
+      duration: 0,
+      progress: 0,
+      round: seg.round,
+      central: 'check',
+      left,
+      ref: seg.ref,
+      roundsDone: worksBefore(state.plan, state.index),
+    };
+  }
   if (seg.kind === 'wait') {
     return {
       ...base,
@@ -318,6 +340,7 @@ export function snapshot(state: TimerState, now: number): Snapshot {
       waited: Math.floor(elapsedMs / SEC),
       central: 'play',
       left,
+      ref: seg.ref,
       roundsDone: worksBefore(state.plan, state.index),
     };
   }
@@ -335,6 +358,7 @@ export function snapshot(state: TimerState, now: number): Snapshot {
     paused,
     central: paused ? 'play' : 'pause',
     left,
+    ref: seg.ref,
     roundsDone: worksBefore(state.plan, state.index),
   };
 }

@@ -14,10 +14,12 @@ type Props = {
   /** Acción a la derecha (play). Si no, `aside`. */
   play?: boolean;
   aside?: ReactNode;
+  /** «?»: trae un ejercicio nuevo para ti. */
+  badge?: boolean;
 };
 
 /** Fila de bloque 88 · radio 32. Interior = exterior − padding: cuadro de radio 16. */
-export function FilaBloque({ title, tint, marks, onPress, play, aside }: Props) {
+export function FilaBloque({ title, tint, marks, onPress, play, aside, badge }: Props) {
   const pad = space.s16;
   const square = touch.fila - pad * 2; // 56
   return (
@@ -38,7 +40,19 @@ export function FilaBloque({ title, tint, marks, onPress, play, aside }: Props) 
     >
       <View style={{ width: square, height: square, borderRadius: inner(radius.xl, pad), backgroundColor: tint }} />
       <View style={{ flex: 1, gap: space.s8 }}>
-        <KText size={texto.bloque}>{title}</KText>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.s8 }}>
+          <KText size={texto.bloque}>{title}</KText>
+          {badge && (
+            <View
+              accessibilityLabel="Ejercicio nuevo"
+              style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: color.klein, alignItems: 'center', justifyContent: 'center' }}
+            >
+              <KText size={texto.texto} tint={color.tarjeta} lineHeight={texto.texto}>
+                ?
+              </KText>
+            </View>
+          )}
+        </View>
         {marks}
       </View>
       {play ? (
