@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react';
 
+import { logClass, unlogClass } from '@/diario/store';
 import { cancelClassReminder, scheduleClassReminder } from '@/platform/reminders';
 import {
   addDays,
@@ -68,6 +69,8 @@ export function cancel(slot: Slot) {
   if (r.ok) {
     set(r.state);
     cancelClassReminder(slot.id);
+    // Fuera de plazo cuenta como clase: va al diario y se cobra.
+    if (r.late) logClass(slot.start, slot.mode, slot.minutes, true);
   }
   return r;
 }
@@ -84,6 +87,10 @@ export function move(from: Slot, to: Slot) {
 
 export function arrive(slot: Slot) {
   const r = arriveM(state, slot);
-  if (r.ok) set(r.state);
+  if (r.ok) {
+    set(r.state);
+    if (r.state.bookings[slot.id]?.arrived) logClass(slot.start, slot.mode, slot.minutes);
+    else unlogClass(slot.start);
+  }
   return r;
 }

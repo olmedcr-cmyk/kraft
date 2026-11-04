@@ -8,7 +8,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CheckIcon } from '@/components/icons';
 import { KText } from '@/components/KText';
-import { SAMPLE_WEEK } from '@/data/sampleSession';
+import { weekDays } from '@/diario/model';
+import { logOwn, useDiary } from '@/diario/store';
 import { compiled, markSent, resetExtra, session, sessionRunner, setRpe, useSession, useSessionExtra } from '@/session/store';
 import { alpha, cifra, color, layout, motion, radius, space, texto, touch } from '@/theme';
 import { Pulsable } from '@/components/Pulsable';
@@ -40,12 +41,15 @@ export function HechoScreen() {
   useSession();
   const extra = useSessionExtra();
   const r = resumen();
-  const today = (new Date(session.date + 'T12:00:00').getDay() + 6) % 7;
-  const week = SAMPLE_WEEK.map((v, i) => (i === today ? Math.max(v, 5) : v));
+  const diary = useDiary();
+  const today = (new Date().getDay() + 6) % 7;
+  // Círculos de 10 min por día (como en Progreso); hoy suma lo que acabas de hacer.
+  const week = weekDays(diary, Date.now()).map((m, i) => Math.min(5, Math.ceil((i === today ? m + r.minutes : m) / 10)));
   const days = week.filter((v) => v > 0).length;
   const rpe = extra.rpe ?? 4;
 
   const close = () => {
+    logOwn(Date.now(), r.minutes, r.tabatas);
     sessionRunner.reset();
     resetExtra();
     router.replace('/');

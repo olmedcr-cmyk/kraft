@@ -73,6 +73,3 @@ export const SAMPLE_SESSION: Session = {
     },
   ],
 };
-
-/** Semana de ejemplo para el resumen (puntos = bloques hechos por día, L…D). */
-export const SAMPLE_WEEK = [5, 0, 0, 0, 0, 0, 0];

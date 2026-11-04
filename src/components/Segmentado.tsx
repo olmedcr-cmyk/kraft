@@ -15,6 +15,10 @@ type Props<T extends string> = {
   selected?: string;
   selectedText?: string;
   label: string;
+  /** Alto de cada opción (48 por defecto). Por debajo de 48, el área de toque se amplía. */
+  itemHeight?: number;
+  /** Etiquetas cortas en mayúsculas (meses). */
+  caps?: boolean;
 };
 
 /**
@@ -29,6 +33,8 @@ export function Segmentado<T extends string>({
   selected = color.tarjeta,
   selectedText = color.tinta,
   label,
+  itemHeight = touch.dedo,
+  caps,
 }: Props<T>) {
   const [w, setW] = useState(0);
   const reduced = useReducedMotion();
@@ -53,7 +59,7 @@ export function Segmentado<T extends string>({
             left: pad,
             top: pad,
             width: itemW,
-            height: touch.dedo,
+            height: itemHeight,
             borderRadius: radius.pill,
             backgroundColor: selected,
             transform: [{ translateX: i * (itemW + gap) }],
@@ -72,9 +78,10 @@ export function Segmentado<T extends string>({
             haptic={on ? undefined : 'selection'}
             accessibilityRole="tab"
             accessibilityState={{ selected: on }}
+            hitSlop={Math.max(0, (touch.dedo - itemHeight) / 2)}
             style={{
               flex: 1,
-              height: touch.dedo,
+              height: itemHeight,
               borderRadius: radius.pill,
               alignItems: 'center',
               justifyContent: 'center',
@@ -82,7 +89,7 @@ export function Segmentado<T extends string>({
               backgroundColor: itemW > 0 || !on ? 'transparent' : selected,
             }}
           >
-            <KText size={texto.texto} tint={on ? selectedText : color.tinta}>
+            <KText size={caps ? texto.etiqueta : texto.texto} caps={caps} tint={on ? selectedText : color.tinta}>
               {o.label}
             </KText>
           </Pulsable>
