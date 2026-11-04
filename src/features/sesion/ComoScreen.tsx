@@ -1,7 +1,7 @@
 /** ¿Cómo se hace? (J4How). El tiempo sigue arriba; volver con la barra naranja. */
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { Image, Pressable, View } from 'react-native';
+import { Image, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -10,6 +10,7 @@ import { ILLUSTRATION_CREDIT, exercise } from '@/data/exercises';
 import { useSession } from '@/session/store';
 import { cifra, color, radius, space, texto, touch } from '@/theme';
 import { mmss, useFase } from './piezas';
+import { Pulsable } from '@/components/Pulsable';
 
 export function ComoScreen() {
   const insets = useSafeAreaInsets();
@@ -49,7 +50,7 @@ export function ComoScreen() {
             </View>
             <View style={{ flexDirection: 'row', gap: space.s8 }}>
               {ex.phases.map((src, i) => (
-                <Pressable
+                <Pulsable
                   key={i}
                   onPress={() => setPicked(picked === i ? null : i)}
                   accessibilityRole="button"
@@ -58,7 +59,7 @@ export function ComoScreen() {
                   style={{ flex: 1, height: 80, borderRadius: radius.md, borderWidth: 2, borderColor: i === phase ? color.klein : 'transparent', alignItems: 'center', justifyContent: 'center' }}
                 >
                   <Image source={src} style={{ width: 72, height: 72 }} resizeMode="contain" />
-                </Pressable>
+                </Pulsable>
               ))}
             </View>
             <View style={{ flexDirection: 'row', gap: space.s8, flexWrap: 'wrap' }}>
@@ -81,7 +82,7 @@ export function ComoScreen() {
         )}
       </View>
 
-      <Pressable
+      <Pulsable
         onPress={back}
         accessibilityRole="button"
         accessibilityLabel="Volver"
@@ -90,7 +91,7 @@ export function ComoScreen() {
         <Svg width={32} height={32} viewBox="0 0 32 32">
           <Path d="M26 16H7M14 8l-8 8 8 8" stroke={color.tinta} strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round" fill="none" />
         </Svg>
-      </Pressable>
+      </Pulsable>
     </View>
   );
 }

@@ -1,8 +1,9 @@
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import Svg, { Line } from 'react-native-svg';
 
 import { KText } from '@/components/KText';
 import { cifra, color, texto } from '@/theme';
+import { Pulsable } from '@/components/Pulsable';
 
 /**
  * Rueda de trabajo de KR5Time. Un solo regulador por pantalla: cada toque pasa a la siguiente opción.
@@ -22,8 +23,10 @@ export function Dial({ options, index, onNext }: Props) {
   const knob = 16;
   const knobR = 73;
   return (
-    <Pressable
+    <Pulsable
       onPress={onNext}
+      haptic="selection"
+      scaleTo={0.98}
       accessibilityRole="adjustable"
       accessibilityLabel={`Trabajo: ${value} segundos. Toca para cambiar`}
       style={{ width: SIZE, height: SIZE }}
@@ -93,6 +96,6 @@ export function Dial({ options, index, onNext }: Props) {
           backgroundColor: color.naranja,
         }}
       />
-    </Pressable>
+    </Pulsable>
   );
 }

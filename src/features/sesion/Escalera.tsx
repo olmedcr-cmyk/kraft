@@ -1,13 +1,15 @@
 /** Escalera por repeticiones (J7Ladder). Sin reloj: el atleta marca cada serie con ✓. */
-import { Pressable, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import { KText } from '@/components/KText';
 import { exercise } from '@/data/exercises';
 import type { StepInfo } from '@/session/compile';
 import { compiled, setWeight, useSessionExtra } from '@/session/store';
-import { cifra, color, inner, radius, space, texto, touch } from '@/theme';
+import { cifra, color, inner, radius, space, texto, touch, transicionPunto } from '@/theme';
 import { BotonComo, RUN } from './piezas';
+import { Pulsable } from '@/components/Pulsable';
+import Animated from 'react-native-reanimated';
 
 const STEP_KG = 2.5;
 const kgLabel = (w: number | null) => (w == null ? 'barra' : String(w).replace('.', ','));
@@ -41,8 +43,9 @@ export function Escalera({ step, refId }: { step: StepInfo; refId: number }) {
           const d = 40 + 2 * (l.reps ?? 0);
           return (
             <View key={l.ref} style={{ alignItems: 'center', gap: space.s8 }}>
-              <View
+              <Animated.View
                 style={{
+                  ...transicionPunto,
                   width: d,
                   height: d,
                   borderRadius: d / 2,
@@ -56,7 +59,7 @@ export function Escalera({ step, refId }: { step: StepInfo; refId: number }) {
                 <KText size={d > 60 ? texto.boton : RUN} weight={300} tint={done ? color.tarjeta : color.tinta}>
                   {String(l.reps)}
                 </KText>
-              </View>
+              </Animated.View>
               <KText size={texto.etiqueta} tint={now ? color.tinta : color.texto2}>
                 {kgLabel(weightOf(l.ref, l.weight))}
               </KText>
@@ -88,8 +91,9 @@ export function Escalera({ step, refId }: { step: StepInfo; refId: number }) {
           const now = a.ref === refId;
           return (
             <View key={a.ref} style={{ height: touch.dedo, flexDirection: 'row', alignItems: 'center', gap: space.s12 }}>
-              <View
+              <Animated.View
                 style={{
+                  ...transicionPunto,
                   width: 14,
                   height: 14,
                   borderRadius: 7,
@@ -117,22 +121,23 @@ export function Escalera({ step, refId }: { step: StepInfo; refId: number }) {
 function Ajuste({ dir, onPress }: { dir: 'up' | 'down'; onPress: () => void }) {
   const pad = space.s16;
   return (
-    <Pressable
+    <Pulsable
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={`${dir === 'up' ? 'Más' : 'Menos'} ${kgLabel(STEP_KG)} kg`}
-      style={({ pressed }) => ({
+      haptic="selection"
+      style={{
         width: touch.tecla + space.s16,
         height: touch.tecla + space.s16,
         borderRadius: inner(radius.lg, pad),
-        backgroundColor: pressed ? color.hundido : color.fondo,
+        backgroundColor: color.fondo,
         alignItems: 'center',
         justifyContent: 'center',
-      })}
+      }}
     >
       <Svg width={28} height={20} viewBox="0 0 28 20">
         <Path d={dir === 'up' ? 'M3 17L14 4l11 13z' : 'M3 3l11 13L25 3z'} fill={color.tinta} stroke={color.tinta} strokeWidth={2} strokeLinejoin="round" />
       </Svg>
-    </Pressable>
+    </Pulsable>
   );
 }

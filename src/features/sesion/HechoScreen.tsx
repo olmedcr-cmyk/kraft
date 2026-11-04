@@ -1,7 +1,8 @@
 /** Hecho (J8Finish): resumen, semana, esfuerzo y enviar al entrenador. */
 import { router } from 'expo-router';
 import type { ReactNode } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -9,7 +10,8 @@ import { CheckIcon } from '@/components/icons';
 import { KText } from '@/components/KText';
 import { SAMPLE_WEEK } from '@/data/sampleSession';
 import { compiled, markSent, resetExtra, session, sessionRunner, setRpe, useSession, useSessionExtra } from '@/session/store';
-import { alpha, cifra, color, layout, radius, space, texto, touch } from '@/theme';
+import { alpha, cifra, color, layout, motion, radius, space, texto, touch } from '@/theme';
+import { Pulsable } from '@/components/Pulsable';
 
 const DAYS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 const WEEK_GOAL = 4;
@@ -55,20 +57,20 @@ export function HechoScreen() {
         <KText size={cifra.c34} weight={300} title tint={color.tarjeta} accessibilityRole="header">
           Hecho
         </KText>
-        <Pressable
+        <Pulsable
           onPress={close}
           accessibilityRole="button"
           accessibilityLabel="Cerrar y volver a hoy"
           style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: color.tarjeta, alignItems: 'center', justifyContent: 'center' }}
         >
           <CheckIcon size={28} tint={color.verde} />
-        </Pressable>
+        </Pulsable>
       </View>
 
       <View style={{ paddingTop: space.s24, paddingHorizontal: space.s16, flexDirection: 'row', gap: space.s8 }}>
-        <Dato label={`${r.minutes} minutos`} value={`${r.minutes}'`} mark={<View style={{ width: 32, height: 12, borderRadius: 6, backgroundColor: color.tarjeta }} />} />
-        <Dato label={`${r.tabatas} tabatas`} value={String(r.tabatas)} mark={<View style={{ width: 14, height: 14, borderRadius: radius.xs, backgroundColor: color.tarjeta }} />} />
-        <Dato label={`${r.series} series`} value={String(r.series)} mark={<View style={{ width: 14, height: 14, borderRadius: 7, backgroundColor: color.tarjeta }} />} />
+        <Dato i={0} label={`${r.minutes} minutos`} value={`${r.minutes}'`} mark={<View style={{ width: 32, height: 12, borderRadius: 6, backgroundColor: color.tarjeta }} />} />
+        <Dato i={1} label={`${r.tabatas} tabatas`} value={String(r.tabatas)} mark={<View style={{ width: 14, height: 14, borderRadius: radius.xs, backgroundColor: color.tarjeta }} />} />
+        <Dato i={2} label={`${r.series} series`} value={String(r.series)} mark={<View style={{ width: 14, height: 14, borderRadius: 7, backgroundColor: color.tarjeta }} />} />
       </View>
 
       <View
@@ -108,9 +110,10 @@ export function HechoScreen() {
             const d = 28 + n * 10;
             const on = n === rpe;
             return (
-              <Pressable
+              <Pulsable
                 key={n}
                 onPress={() => setRpe(n)}
+                haptic="selection"
                 accessibilityRole="radio"
                 accessibilityLabel={`${n} de 5`}
                 accessibilityState={{ checked: on }}
@@ -122,8 +125,9 @@ export function HechoScreen() {
         </View>
       </View>
 
-      <Pressable
+      <Pulsable
         onPress={markSent}
+        haptic="success"
         accessibilityRole="button"
         accessibilityLabel={extra.sent ? `Enviado a ${session.coach.name}` : `Enviar a ${session.coach.name}`}
         style={{ height: touch.mando + insets.bottom, paddingBottom: insets.bottom, backgroundColor: extra.sent ? color.verde : color.tinta, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.s16, borderTopWidth: extra.sent ? 2 : 0, borderTopColor: alpha.sobreColor }}
@@ -143,18 +147,21 @@ export function HechoScreen() {
             <Path d="M16 27V6M8 14l8-8 8 8" stroke={color.tarjeta} strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round" fill="none" />
           </Svg>
         )}
-      </Pressable>
+      </Pulsable>
     </View>
   );
 }
 
-function Dato({ value, mark, label }: { value: string; mark: ReactNode; label: string }) {
+/** Cifras del resumen: entran una tras otra (pantalla rara, aquí sí cabe un detalle). Con «reducir movimiento», sin entrada. */
+function Dato({ value, mark, label, i }: { value: string; mark: ReactNode; label: string; i: number }) {
   return (
-    <View accessibilityLabel={label} style={{ flex: 1, aspectRatio: 1, borderRadius: radius.lg, backgroundColor: alpha.tarjetaSobreColor, padding: space.s16, justifyContent: 'space-between' }}>
+    <Animated.View
+      entering={FadeInDown.duration(motion.pantalla).delay(i * 60)}
+      accessibilityLabel={label} style={{ flex: 1, aspectRatio: 1, borderRadius: radius.lg, backgroundColor: alpha.tarjetaSobreColor, padding: space.s16, justifyContent: 'space-between' }}>
       {mark}
       <KText size={cifra.c34} weight={300} tint={color.tarjeta} lineHeight={cifra.c34}>
         {value}
       </KText>
-    </View>
+    </Animated.View>
   );
 }

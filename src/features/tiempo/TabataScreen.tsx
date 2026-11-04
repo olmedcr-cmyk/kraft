@@ -9,12 +9,13 @@ import { PildoraFase } from '@/components/PildoraFase';
 import { Segmentado } from '@/components/Segmentado';
 import { useHideNav } from '@/state/chrome';
 import { setCurrent } from '@/state/saved';
-import { cifra, color, radius, space, texto } from '@/theme';
+import { cifra, color, radius, space, texto, transicionFondo, transicionPunto } from '@/theme';
 import { tabataPlan, type Snapshot } from '@/timer/engine';
 import { useTimer } from '@/timer/useTimer';
 import { pad2 } from './Cabecera';
 import { ModoTiempo } from './ModoTiempo';
 import { Radio } from './Radio';
+import Animated from 'react-native-reanimated';
 
 /** Tabata: 20/10×8, 30/15×8, 40/20×6. */
 export const MODES = [
@@ -91,8 +92,9 @@ export function TabataScreen() {
   const KeepAwake = t.keepAwake;
 
   return (
-    <View
+    <Animated.View
       style={{
+        ...transicionFondo,
         flex: 1,
         backgroundColor: bg,
         paddingTop: Math.max(insets.top, space.s48),
@@ -151,9 +153,10 @@ export function TabataScreen() {
             const done = s.phase === 'done' || r < s.round;
             const now = running && r === s.round;
             return (
-              <View
+              <Animated.View
                 key={k}
                 style={{
+                  ...transicionPunto,
                   width: 16,
                   height: 16,
                   borderRadius: 8,
@@ -181,6 +184,6 @@ export function TabataScreen() {
           centralLabel={running ? undefined : s.phase === 'done' ? 'Empezar otra vez' : 'Empezar Tabata'}
         />
       </View>
-    </View>
+    </Animated.View>
   );
 }

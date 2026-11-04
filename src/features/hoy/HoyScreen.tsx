@@ -1,6 +1,6 @@
 /** Hoy (J2Today): la sesión que mandó el entrenador, por bloques. Un toque y a entrenar. */
 import { router } from 'expo-router';
-import { Pressable, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BarraAccion } from '@/components/BarraAccion';
@@ -9,6 +9,7 @@ import { KText } from '@/components/KText';
 import { compiled, session, sessionRunner, useSession } from '@/session/store';
 import type { Block } from '@/session/types';
 import { cifra, color, layout, radius, space, texto, touch } from '@/theme';
+import { Pulsable } from '@/components/Pulsable';
 
 const WEEKDAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 const USER_INITIAL = 'C';
@@ -56,7 +57,7 @@ export function HoyScreen() {
             </KText>
             <KText size={texto.texto} tint={color.texto2}>{`${session.minutes}' · de ${session.coach.name}`}</KText>
           </View>
-          <Pressable
+          <Pulsable
             onPress={() => router.push('/tu')}
             accessibilityRole="button"
             accessibilityLabel="Tú"
@@ -65,7 +66,7 @@ export function HoyScreen() {
             <KText size={texto.lista} tint={color.tarjeta}>
               {USER_INITIAL}
             </KText>
-          </Pressable>
+          </Pulsable>
         </View>
 
         {session.blocks.map((b, i) => (

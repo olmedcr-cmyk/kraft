@@ -3,7 +3,8 @@ import { View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import { KText } from '@/components/KText';
-import { alpha, color, texto } from '@/theme';
+import { alpha, color, motion, ms, texto } from '@/theme';
+import Animated, { useReducedMotion } from 'react-native-reanimated';
 
 /** Dial de radio de Tabata: una marca por segundo; la aguja naranja es «ahora». */
 const PX = 8;
@@ -14,6 +15,7 @@ type Props = { work: number; rest: number; rounds: number; /** segundo actual de
 
 export function Radio({ work, rest, rounds, e }: Props) {
   const [w, setW] = useState(358);
+  const reduced = useReducedMotion();
   const cyc = work + rest;
   const T = rounds * cyc - rest;
   const past: string[] = [];
@@ -37,7 +39,20 @@ export function Radio({ work, rest, rounds, e }: Props) {
       accessibilityLabel={`Segundo ${Math.floor(e)} de ${T}`}
       style={{ height: H, overflow: 'hidden' }}
     >
-      <View style={{ position: 'absolute', left: 0, top: 0, height: H, width: (T + 1) * PX, transform: [{ translateX: tx }] }}>
+      <Animated.View
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          height: H,
+          width: (T + 1) * PX,
+          transform: [{ translateX: tx }],
+          // La tira se desliza de un marco del reloj al siguiente, lineal: la aguja nunca salta.
+          transitionProperty: 'transform',
+          transitionDuration: reduced ? '0ms' : ms(motion.marco),
+          transitionTimingFunction: 'linear',
+        }}
+      >
         <Svg width={(T + 1) * PX} height={H}>
           <Path d={past.join('')} stroke={alpha.sobreClaro} strokeWidth={2} strokeLinecap="round" />
           <Path d={workD.join('')} stroke={color.tinta} strokeWidth={2} strokeLinecap="round" />
@@ -48,7 +63,7 @@ export function Radio({ work, rest, rounds, e }: Props) {
             {String(k + 1)}
           </KText>
         ))}
-      </View>
+      </Animated.View>
       <View style={{ position: 'absolute', left: center - 1, top: 8, width: 2, height: 64, backgroundColor: color.naranja }} />
       <View style={{ position: 'absolute', left: center - 6, top: 0, width: 12, height: 12, borderRadius: 6, backgroundColor: color.naranja }} />
     </View>

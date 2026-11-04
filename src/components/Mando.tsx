@@ -1,8 +1,9 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { color, radius, touch } from '@/theme';
 import { CheckIcon, NextIcon, PauseIcon, PlayIcon, PrevIcon, StopIcon } from './icons';
+import { Pulsable } from './Pulsable';
 
 type Props = {
   /** Anterior, o parar (solo en pausa, ocupa su sitio). */
@@ -32,25 +33,26 @@ export function Mando({ left, central, onLeft, onCentral, onRight, bleed = true,
           : { height: 112, borderRadius: radius.lg },
       ]}
     >
-      <Pressable
+      <Pulsable
         onPress={onLeft}
         accessibilityRole="button"
         accessibilityLabel={left === 'stop' ? 'Parar y guardar lo hecho' : 'Anterior · un toque reinicia el tramo, dos van al anterior'}
         style={styles.side}
       >
         {left === 'stop' ? <StopIcon /> : <PrevIcon />}
-      </Pressable>
-      <Pressable
+      </Pulsable>
+      <Pulsable
         onPress={onCentral}
+        haptic="light"
         accessibilityRole="button"
         accessibilityLabel={centralLabel ?? (central === 'pause' ? 'Pausa' : central === 'check' ? 'Hecho' : 'Seguir')}
-        style={({ pressed }) => [styles.central, pressed && { transform: [{ scale: 0.97 }] }]}
+        style={styles.central}
       >
         {central === 'pause' ? <PauseIcon /> : central === 'check' ? <CheckIcon /> : <PlayIcon size={44} />}
-      </Pressable>
-      <Pressable onPress={onRight} accessibilityRole="button" accessibilityLabel={rightLabel} style={styles.side}>
+      </Pulsable>
+      <Pulsable onPress={onRight} accessibilityRole="button" accessibilityLabel={rightLabel} style={styles.side}>
         <NextIcon />
-      </Pressable>
+      </Pulsable>
     </View>
   );
 }

@@ -1,12 +1,14 @@
 /** Piezas compartidas por las pantallas en marcha de la sesión. */
 import { router } from 'expo-router';
 import { useEffect, useState, type ReactNode } from 'react';
-import { AccessibilityInfo, Image, Pressable, View, type ImageSourcePropType } from 'react-native';
+import { AccessibilityInfo, Image, View, type ImageSourcePropType } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { KText } from '@/components/KText';
-import { alpha, cifra, color, layout, radius, space, texto, touch } from '@/theme';
+import { alpha, cifra, color, layout, radius, space, texto, touch, transicionFondo, transicionPunto } from '@/theme';
+import { Pulsable } from '@/components/Pulsable';
+import Animated from 'react-native-reanimated';
 
 /** En marcha, nada bajo 18. */
 export const RUN = texto.bloque;
@@ -17,7 +19,9 @@ export const mmss = (sec: number) => `${Math.floor(sec / 60)}:${pad2(sec % 60)}`
 /** Fondo a sangre con el hueco de arriba. */
 export function Lienzo({ bg, children }: { bg: string; children: ReactNode }) {
   const insets = useSafeAreaInsets();
-  return <View style={{ flex: 1, backgroundColor: bg, paddingTop: Math.max(insets.top, layout.pantallaArriba) }}>{children}</View>;
+  return (
+    <Animated.View style={{ ...transicionFondo, flex: 1, backgroundColor: bg, paddingTop: Math.max(insets.top, layout.pantallaArriba) }}>{children}</Animated.View>
+  );
 }
 
 /** Cabecera en marcha: nombre del ejercicio y sus tramos; a la derecha, lo que toque. */
@@ -41,9 +45,10 @@ export function PuntosTramo({ total, current, fg, done = color.naranja, now = co
   return (
     <View style={{ flexDirection: 'row', gap: space.s4 }} accessibilityLabel={`Tramo ${current + 1} de ${total}`}>
       {Array.from({ length: total }, (_, i) => (
-        <View
+        <Animated.View
           key={i}
           style={{
+            ...transicionPunto,
             width: space.s12,
             height: space.s12,
             borderRadius: space.s12 / 2,
@@ -60,15 +65,15 @@ export function PuntosTramo({ total, current, fg, done = color.naranja, now = co
 /** Píldora de fase en marcha: punto + palabra (nunca solo color). */
 export function PildoraMarcha({ label, bg, fg }: { label: string; bg: string; fg: string }) {
   return (
-    <View
+    <Animated.View
       accessibilityLabel={label}
-      style={{ height: touch.dedo, paddingHorizontal: space.s16, borderRadius: radius.pill, backgroundColor: bg, flexDirection: 'row', alignItems: 'center', gap: space.s8, alignSelf: 'center' }}
+      style={{ ...transicionFondo, height: touch.dedo, paddingHorizontal: space.s16, borderRadius: radius.pill, backgroundColor: bg, flexDirection: 'row', alignItems: 'center', gap: space.s8, alignSelf: 'center' }}
     >
       <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: fg }} />
       <KText size={RUN} tint={fg}>
         {label}
       </KText>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -82,9 +87,9 @@ export function PuntosSegundos({ total, elapsed, size = 18, live = color.tarjeta
       style={{ width: cols * size + (cols - 1) * space.s8, flexDirection: 'row', flexWrap: 'wrap', gap: space.s8 }}
     >
       {Array.from({ length: total }, (_, i) => (
-        <View
+        <Animated.View
           key={i}
-          style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: i < elapsed ? gone : i === elapsed ? color.naranja : live }}
+          style={{ ...transicionPunto, width: size, height: size, borderRadius: size / 2, backgroundColor: i < elapsed ? gone : i === elapsed ? color.naranja : live }}
         />
       ))}
     </View>
@@ -145,7 +150,7 @@ export function Ilustracion({ phases, size, active = true, label }: { phases: Im
 /** Botón «?» → cómo se hace. El tiempo sigue. */
 export function BotonComo({ exerciseId, size = touch.tecla, label, bg = color.klein, fg = color.tarjeta }: { exerciseId: string; size?: number; label: string; bg?: string; fg?: string }) {
   return (
-    <Pressable
+    <Pulsable
       onPress={() => router.push({ pathname: '/sesion/como', params: { ex: exerciseId } })}
       accessibilityRole="button"
       accessibilityLabel={`¿Cómo se hace ${label}?`}
@@ -155,6 +160,6 @@ export function BotonComo({ exerciseId, size = touch.tecla, label, bg = color.kl
       <KText size={size >= touch.tecla ? cifra.c34 : RUN} weight={500} tint={fg} lineHeight={size >= touch.tecla ? cifra.c34 : RUN}>
         ?
       </KText>
-    </Pressable>
+    </Pulsable>
   );
 }

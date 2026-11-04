@@ -50,7 +50,36 @@ export const fontFamily = {
 } as const;
 export type Weight = keyof typeof fontFamily;
 
-export const motion = tokens.motion;
+/**
+ * Movimiento. punto (300) y pantalla (240) y la curva vienen de tokens.json; sin rebote.
+ * `toque` (120) y `marco` (200) no están en tokens.json: propuesta para añadirlos.
+ */
+export const motion = {
+  ...tokens.motion,
+  /** Respuesta al pulsar: casi imperceptible, se toca decenas de veces. */
+  toque: 120,
+  /** Intervalo del reloj: las barras se deslizan de un marco al siguiente sin saltos. */
+  marco: 200,
+  /** Curva de salida fuerte para la pulsación. */
+  salida: 'cubic-bezier(0.23, 1, 0.32, 1)',
+  /** Movimiento sobre la pantalla (indicador del selector). */
+  mover: 'cubic-bezier(0.77, 0, 0.175, 1)',
+} as const;
+export const ms = (n: number) => `${n}ms`;
+
+/** Cambio de estado de fondo (trabajo ↔ descanso ↔ pausa): color, a ritmo de pantalla. */
+export const transicionFondo = {
+  transitionProperty: 'backgroundColor',
+  transitionDuration: ms(motion.pantalla),
+  transitionTimingFunction: motion.easing,
+} as const;
+
+/** Un punto que cambia de estado (gastado, actual, pendiente). */
+export const transicionPunto = {
+  transitionProperty: ['backgroundColor', 'borderColor'] as ('backgroundColor' | 'borderColor')[],
+  transitionDuration: ms(motion.punto),
+  transitionTimingFunction: motion.easing,
+};
 
 /** Transparencias sobre fondos de estado (puntos gastados, base de barras). */
 export const alpha = {

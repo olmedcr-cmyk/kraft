@@ -1,9 +1,10 @@
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useNavHidden } from '@/state/chrome';
 import { color, inner, radius, space, texto, touch } from '@/theme';
 import { KText } from './KText';
+import { Pulsable } from './Pulsable';
 
 export const TABS = [
   { name: 'index', label: 'Hoy' },
@@ -56,7 +57,7 @@ export function Navegacion({ state, navigateToTab }: Props) {
           const route = state.routes.find((r) => r.name === t.name);
           const fg = on ? color.tarjeta : color.tinta;
           return (
-            <Pressable
+            <Pulsable
               key={t.name}
               onPress={() => route && navigateToTab(route.key)}
               accessibilityRole="tab"
@@ -76,7 +77,7 @@ export function Navegacion({ state, navigateToTab }: Props) {
               <KText size={texto.etiqueta} tint={fg}>
                 {t.label}
               </KText>
-            </Pressable>
+            </Pulsable>
           );
         })}
       </View>

@@ -1,14 +1,16 @@
 /** Tabata dentro de la sesión (J6Tabata): naranja trabajando, verde descansando. */
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 
 import { KText } from '@/components/KText';
 import { exercise } from '@/data/exercises';
 import type { StepInfo } from '@/session/compile';
 import { compiled } from '@/session/store';
-import { alpha, cifra, color, inner, radius, space, texto, touch } from '@/theme';
+import { alpha, cifra, color, inner, radius, space, texto, touch, transicionFondo, transicionPunto } from '@/theme';
 import type { Snapshot } from '@/timer/engine';
 import { BotonComo, Ilustracion, PildoraMarcha, RUN } from './piezas';
 import Svg, { Path } from 'react-native-svg';
+import { Pulsable } from '@/components/Pulsable';
+import Animated from 'react-native-reanimated';
 
 type Props = { s: Snapshot; step: StepInfo; onPalm: () => void };
 
@@ -36,9 +38,10 @@ export function TabataMarcha({ s, step, onPalm }: Props) {
       <View style={{ paddingHorizontal: space.s24, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
         <View style={{ flexDirection: 'row', gap: space.s4 }} accessibilityLabel={`Tabata ${set} de ${sets}`}>
           {Array.from({ length: sets }, (_, i) => (
-            <View
+            <Animated.View
               key={i}
               style={{
+                ...transicionPunto,
                 width: 14,
                 height: 14,
                 borderRadius: radius.xs,
@@ -53,7 +56,7 @@ export function TabataMarcha({ s, step, onPalm }: Props) {
       </View>
 
       <View style={{ flex: 1, justifyContent: 'center', gap: space.s24, paddingHorizontal: space.s16 }}>
-        <Pressable onPress={onPalm} accessibilityRole="button" accessibilityLabel="Palma · toca para pausar" style={{ alignSelf: 'center', alignItems: 'center', gap: space.s16 }}>
+        <Pulsable onPress={onPalm} haptic="light" scaleTo={0.99} accessibilityRole="button" accessibilityLabel="Palma · toca para pausar" style={{ alignSelf: 'center', alignItems: 'center', gap: space.s16 }}>
           <PildoraMarcha
             label={work ? `Trabajo · ${step.side ?? 'A'}` : restBetweenSets ? 'Descanso · cambia' : 'Descanso'}
             bg={soft}
@@ -62,13 +65,14 @@ export function TabataMarcha({ s, step, onPalm }: Props) {
           <KText size={cifra.c233} weight={300} title tabular tint={fg} lineHeight={Math.round(cifra.c233 * 0.85)}>
             {String(s.n)}
           </KText>
-        </Pressable>
+        </Pulsable>
 
         <View accessibilityRole="image" accessibilityLabel={`Ronda ${round} de ${rounds}`} style={{ flexDirection: 'row', gap: space.s4, paddingHorizontal: space.s8 }}>
           {Array.from({ length: rounds }, (_, i) => (
-            <View
+            <Animated.View
               key={i}
               style={{
+                ...transicionPunto,
                 flex: 1,
                 height: 10,
                 borderRadius: radius.pill,
@@ -94,8 +98,9 @@ function Tarjeta({ info, on, fg }: { info: StepInfo; on: boolean; fg: string }) 
   const ex = exercise(info.exercise);
   const pad = space.s12;
   return (
-    <View
+    <Animated.View
       style={{
+        ...transicionFondo,
         flex: 1,
         borderRadius: radius.lg,
         padding: pad,
@@ -131,7 +136,7 @@ function Tarjeta({ info, on, fg }: { info: StepInfo; on: boolean; fg: string }) 
           <BotonComo exerciseId={ex.id} size={touch.dedo} label={ex.name} />
         </View>
       )}
-    </View>
+    </Animated.View>
   );
 }
 

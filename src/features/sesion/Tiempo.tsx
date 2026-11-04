@@ -1,5 +1,5 @@
 /** Tramos con tiempo: minutos (J3Warmup) y mantener (J4Hold). Trabajo en Klein, descanso en verde. */
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 
 import { KText } from '@/components/KText';
 import { exercise } from '@/data/exercises';
@@ -7,6 +7,7 @@ import type { StepInfo } from '@/session/compile';
 import { alpha, cifra, color, space, texto } from '@/theme';
 import type { Snapshot } from '@/timer/engine';
 import { BotonComo, CabeceraMarcha, CirculosMinuto, PildoraMarcha, PuntosSegundos, PuntosTramo, mmss } from './piezas';
+import { Pulsable } from '@/components/Pulsable';
 
 type Props = { s: Snapshot; step: StepInfo; onPalm: () => void };
 
@@ -20,8 +21,10 @@ export function Minutos({ s, step, onPalm }: Props) {
         </KText>
         <CirculosMinuto seconds={s.duration} elapsed={s.duration - s.n} />
       </View>
-      <Pressable
+      <Pulsable
         onPress={onPalm}
+        haptic="light"
+        scaleTo={0.99}
         accessibilityRole="button"
         accessibilityLabel="Palma · toca el centro para pausar"
         style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: space.s24 }}
@@ -30,7 +33,7 @@ export function Minutos({ s, step, onPalm }: Props) {
         <KText size={cifra.c144} weight={300} title tabular tint={color.tarjeta} lineHeight={cifra.c144}>
           {mmss(s.n)}
         </KText>
-      </Pressable>
+      </Pulsable>
     </>
   );
 }
@@ -46,8 +49,10 @@ export function Mantener({ s, step, onPalm }: Props) {
         below={<PuntosTramo total={step.tramos} current={step.tramo} fg={color.tarjeta} />}
         right={ex ? <BotonComo exerciseId={ex.id} label={ex.name} bg={color.tarjeta} fg={color.klein} /> : null}
       />
-      <Pressable
+      <Pulsable
         onPress={onPalm}
+        haptic="light"
+        scaleTo={0.99}
         accessibilityRole="button"
         accessibilityLabel="Palma · toca el centro para pausar"
         style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: space.s32 }}
@@ -57,7 +62,7 @@ export function Mantener({ s, step, onPalm }: Props) {
           {String(s.n)}
         </KText>
         <PuntosSegundos total={s.duration} elapsed={s.duration - s.n} />
-      </Pressable>
+      </Pulsable>
     </>
   );
 }

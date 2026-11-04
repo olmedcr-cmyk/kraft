@@ -1,7 +1,7 @@
 /** Sesión en marcha (R2). Una pantalla por estado; abajo, siempre el mismo mando. */
 import { router } from 'expo-router';
 import { useEffect } from 'react';
-import { Image, Pressable, View } from 'react-native';
+import { Image, View } from 'react-native';
 
 import { CheckIcon } from '@/components/icons';
 import { KText } from '@/components/KText';
@@ -16,6 +16,7 @@ import { Escalera } from './Escalera';
 import { CabeceraMarcha, Lienzo, PildoraMarcha, PuntosSegundos, PuntosTramo, RUN, mmss } from './piezas';
 import { TabataMarcha } from './TabataMarcha';
 import { Mantener, Minutos } from './Tiempo';
+import { Pulsable } from '@/components/Pulsable';
 
 const LONG = 120;
 
@@ -164,7 +165,7 @@ function Pausa({ s, step, onPalm }: { s: Snapshot; step: StepInfo; onPalm: () =>
   return (
     <>
       <CabeceraMarcha title={step.label} fg={color.tarjeta} right={<PildoraMarcha label="En pausa" bg={alpha.sobreColor} fg={color.tarjeta} />} />
-      <Pressable onPress={onPalm} accessibilityRole="button" accessibilityLabel="Palma · seguir" style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: space.s32 }}>
+      <Pulsable onPress={onPalm} haptic="light" scaleTo={0.99} accessibilityRole="button" accessibilityLabel="Palma · seguir" style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: space.s32 }}>
         <View style={{ width: touch.palma, height: touch.palma, borderRadius: touch.palma / 2, backgroundColor: color.tarjeta, alignItems: 'center', justifyContent: 'center', gap: space.s8 }}>
           <KText size={cifra.c144} weight={300} tint={color.tinta} lineHeight={cifra.c144} tabular>
             {s.duration >= LONG ? mmss(s.n) : String(s.n)}
@@ -174,7 +175,7 @@ function Pausa({ s, step, onPalm }: { s: Snapshot; step: StepInfo; onPalm: () =>
           </KText>
         </View>
         {timed && s.duration < LONG && <PuntosSegundos total={s.duration} elapsed={s.duration - s.n} size={14} />}
-      </Pressable>
+      </Pulsable>
       <KText size={RUN} tint={color.linea} style={{ textAlign: 'center', paddingHorizontal: space.s24, paddingBottom: space.s16 }}>
         Parar guarda lo que llevas
       </KText>

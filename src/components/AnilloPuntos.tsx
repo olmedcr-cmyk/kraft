@@ -1,6 +1,7 @@
 import { View } from 'react-native';
+import Animated from 'react-native-reanimated';
 
-import { color } from '@/theme';
+import { color, transicionPunto } from '@/theme';
 
 type Props = {
   /** Un punto = un segundo. */
@@ -30,9 +31,10 @@ export function AnilloPuntos({ count, elapsed, size, ring, live, gone, showCurre
         if (allGone || i < elapsed) bg = gone;
         else if (showCurrent && i === elapsed) bg = color.naranja;
         return (
-          <View
+          <Animated.View
             key={i}
             style={{
+              ...transicionPunto,
               position: 'absolute',
               left: c + ring * Math.sin(a) - dot / 2,
               top: c - ring * Math.cos(a) - dot / 2,

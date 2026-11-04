@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 
 import { color, inner, radius, space, texto, touch } from '@/theme';
 import { PlayIcon } from './icons';
 import { KText } from './KText';
+import { Pulsable } from './Pulsable';
 
 type Props = {
   title: string;
@@ -23,11 +24,12 @@ export function FilaBloque({ title, tint, marks, onPress, play, aside, badge }: 
   const pad = space.s16;
   const square = touch.fila - pad * 2; // 56
   return (
-    <Pressable
+    <Pulsable
       onPress={onPress}
+      scaleTo={0.98}
       accessibilityRole="button"
       accessibilityLabel={title}
-      style={({ pressed }) => ({
+      style={{
         height: touch.fila,
         borderRadius: radius.xl,
         backgroundColor: color.tarjeta,
@@ -35,8 +37,7 @@ export function FilaBloque({ title, tint, marks, onPress, play, aside, badge }: 
         flexDirection: 'row',
         alignItems: 'center',
         gap: space.s16,
-        opacity: pressed ? 0.9 : 1,
-      })}
+      }}
     >
       <View style={{ width: square, height: square, borderRadius: inner(radius.xl, pad), backgroundColor: tint }} />
       <View style={{ flex: 1, gap: space.s8 }}>
@@ -71,7 +72,7 @@ export function FilaBloque({ title, tint, marks, onPress, play, aside, badge }: 
       ) : (
         aside
       )}
-    </Pressable>
+    </Pulsable>
   );
 }
 

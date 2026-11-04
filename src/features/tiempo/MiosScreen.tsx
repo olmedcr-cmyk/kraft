@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { Pressable, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { FilaBloque, Marcas } from '@/components/FilaBloque';
@@ -8,6 +8,7 @@ import { describe, saveCurrent, useSaved, type SavedTimer } from '@/state/saved'
 import { cifra, color, layout, radius, space, texto, touch } from '@/theme';
 import { MODES } from './TabataScreen';
 import { ModoTiempo } from './ModoTiempo';
+import { Pulsable } from '@/components/Pulsable';
 
 function open(t: SavedTimer) {
   if (t.kind === 'tabata') {
@@ -55,7 +56,7 @@ export function MiosScreen() {
           />
         );
       })}
-      <Pressable
+      <Pulsable
         onPress={saveCurrent}
         accessibilityRole="button"
         style={{
@@ -71,7 +72,7 @@ export function MiosScreen() {
         <KText size={texto.texto} tint={color.texto2}>
           + Guardar el actual
         </KText>
-      </Pressable>
+      </Pulsable>
     </ScrollView>
   );
 }

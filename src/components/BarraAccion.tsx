@@ -1,8 +1,9 @@
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 
 import { color, inner, radius, space, texto, touch } from '@/theme';
 import { PlayIcon } from './icons';
 import { KText } from './KText';
+import { Pulsable } from './Pulsable';
 
 type Props = { label: string; onPress: () => void };
 
@@ -11,11 +12,13 @@ export function BarraAccion({ label, onPress }: Props) {
   const pad = space.s16;
   const knob = inner(touch.accion, pad * 2); // 104 − 2·16 = 72
   return (
-    <Pressable
+    <Pulsable
       onPress={onPress}
+      haptic="light"
+      scaleTo={0.98}
       accessibilityRole="button"
       accessibilityLabel={label}
-      style={({ pressed }) => ({
+      style={{
         height: touch.accion,
         borderRadius: radius.lg,
         backgroundColor: color.tinta,
@@ -24,8 +27,7 @@ export function BarraAccion({ label, onPress }: Props) {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        transform: [{ scale: pressed ? 0.98 : 1 }],
-      })}
+      }}
     >
       <KText size={texto.boton} tint={color.tarjeta}>
         {label}
@@ -42,6 +44,6 @@ export function BarraAccion({ label, onPress }: Props) {
       >
         <PlayIcon />
       </View>
-    </Pressable>
+    </Pulsable>
   );
 }

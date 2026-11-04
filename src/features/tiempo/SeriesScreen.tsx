@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnilloPuntos } from '@/components/AnilloPuntos';
@@ -12,12 +12,14 @@ import { Palma } from '@/components/Palma';
 import { PildoraFase } from '@/components/PildoraFase';
 import { useHideNav } from '@/state/chrome';
 import { setCurrent } from '@/state/saved';
-import { alpha, cifra, color, radius, space, texto, touch } from '@/theme';
+import { alpha, cifra, color, motion, ms, radius, space, texto, touch, transicionFondo } from '@/theme';
 import { seriesPlan, type Snapshot } from '@/timer/engine';
 import { useTimer } from '@/timer/useTimer';
 import { Cabecera, pad2 } from './Cabecera';
 import { Dial, DIAL_SIZE } from './Dial';
 import { ModoTiempo } from './ModoTiempo';
+import { Pulsable } from '@/components/Pulsable';
+import Animated, { useReducedMotion } from 'react-native-reanimated';
 
 /** Libre: trabajo 30/45/60/90 s, descanso manual/10/15/30 s. */
 export const WORK = [30, 45, 60, 90] as const;
@@ -112,8 +114,9 @@ export function SeriesScreen() {
   const KeepAwake = t.keepAwake;
 
   return (
-    <View
+    <Animated.View
       style={{
+        ...transicionFondo,
         flex: 1,
         backgroundColor: bg,
         paddingTop: Math.max(insets.top, space.s48),
@@ -206,7 +209,7 @@ export function SeriesScreen() {
           </View>
         </>
       )}
-    </View>
+    </Animated.View>
   );
 }
 
@@ -231,8 +234,9 @@ function Elegir({
     <View style={{ flex: 1, minHeight: 0, gap: space.s8 }}>
       <DialCard wi={wi} onWork={onWork} />
       <View style={{ flexDirection: 'row', gap: space.s8 }}>
-        <Pressable
+        <Pulsable
           onPress={onRest}
+          haptic="selection"
           accessibilityRole="button"
           accessibilityLabel={`Descanso: ${rest === 0 ? 'manual, tocas tú para seguir' : `${rest} segundos`}. Toca para cambiar`}
           style={cardStyle}
@@ -251,8 +255,8 @@ function Elegir({
               {rest === 0 ? 'tocas tú ›' : 's ›'}
             </KText>
           </View>
-        </Pressable>
-        <Pressable
+        </Pulsable>
+        <Pulsable
           onPress={() => router.navigate('/')}
           accessibilityRole="link"
           accessibilityLabel={`${rounds} series, las fija tu sesión`}
@@ -266,7 +270,7 @@ function Elegir({
               <View key={i} style={{ width: 16, height: 16, borderRadius: 8, backgroundColor: color.tinta }} />
             ))}
           </View>
-        </Pressable>
+        </Pulsable>
       </View>
       <BarraAccion label="Empezar" onPress={onStart} />
     </View>
@@ -301,6 +305,7 @@ const cardStyle = {
 
 /** Barra de la sesión: un tramo por serie y por descanso, proporcional a su duración. */
 function Progreso({ s, work, rest, rounds }: { s: Snapshot; work: number; rest: number; rounds: number }) {
+  const reduced = useReducedMotion();
   const cur = s.round - 1;
   const segs: { grow: number; pct: number; current: boolean }[] = [];
   for (let i = 0; i < rounds; i++) {
@@ -327,8 +332,20 @@ function Progreso({ s, work, rest, rounds }: { s: Snapshot; work: number; rest: 
           key={i}
           style={{ flexGrow: g.grow, flexBasis: 0, minWidth: space.s8, height: space.s8, borderRadius: radius.pill, backgroundColor: alpha.sobreColor, overflow: 'hidden' }}
         >
-          <View
-            style={{ width: `${g.pct * 100}%`, height: space.s8, borderRadius: radius.pill, backgroundColor: g.current ? color.naranja : color.tarjeta }}
+          <Animated.View
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              width: `${g.pct * 100}%`,
+              height: space.s8,
+              borderRadius: radius.pill,
+              backgroundColor: g.current ? color.naranja : color.tarjeta,
+              // Lineal y del mismo largo que un marco del reloj: avanza sin saltos.
+              transitionProperty: 'width',
+              transitionDuration: reduced || g.pct === 0 ? '0ms' : ms(motion.marco),
+              transitionTimingFunction: 'linear',
+            }}
           />
         </View>
       ))}
