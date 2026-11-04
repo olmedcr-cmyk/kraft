@@ -10,7 +10,7 @@ import { CheckIcon } from '@/components/icons';
 import { KText } from '@/components/KText';
 import { weekDays } from '@/diario/model';
 import { logOwn, useDiary } from '@/diario/store';
-import { compiled, markSent, resetExtra, session, sessionRunner, setRpe, useSession, useSessionExtra } from '@/session/store';
+import { compiled, markSent, resetExtra, resetSession, session, sessionRunner, setRpe, useSession, useSessionExtra } from '@/session/store';
 import { alpha, cifra, color, layout, motion, radius, space, texto, touch } from '@/theme';
 import { Pulsable } from '@/components/Pulsable';
 
@@ -50,7 +50,7 @@ export function HechoScreen() {
 
   const close = () => {
     logOwn(Date.now(), r.minutes, r.tabatas);
-    sessionRunner.reset();
+    resetSession();
     resetExtra();
     router.replace('/');
   };

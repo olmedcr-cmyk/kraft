@@ -39,4 +39,17 @@ describe('ajustes', () => {
     expect(r.acceptedAt).toBe(5);
     expect(r.coach?.name).toBe('Elena');
   });
+  it('valida los ajustes con valores fijos', () => {
+    const r = restore({ cuentaAtras: 7, descanso: 'auto', peso: 'st', volumen: 11, avisoAntes: 3, voz: true });
+    expect(r.cuentaAtras).toBe(3);
+    expect(r.descanso).toBe('auto');
+    expect(r.peso).toBe('kg');
+    expect(r.volumen).toBe(6);
+    expect(r.avisoAntes).toBe(3);
+    expect(r.voz).toBe(true);
+  });
+  it('salud y voz, apagadas por defecto', () => {
+    expect(DEFAULT_SETTINGS.salud).toBe(false);
+    expect(DEFAULT_SETTINGS.voz).toBe(false);
+  });
 });

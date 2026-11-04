@@ -77,13 +77,15 @@ export interface IntervalConfig {
   /** 0 = manual (espera hasta que el atleta toca). */
   rest: number;
   rounds: number;
+  /** Segundos de cuenta atrás (Tú · Entreno); 0 = sin 3·2·1. */
+  countdown?: number;
 }
 
 /** Libre por series: 3·2·1 antes de cada serie; descanso fijo o espera manual entre series. */
-export function seriesPlan({ work, rest, rounds }: IntervalConfig): Plan {
+export function seriesPlan({ work, rest, rounds, countdown = COUNTDOWN }: IntervalConfig): Plan {
   const plan: Plan = [];
   for (let r = 1; r <= rounds; r++) {
-    plan.push({ kind: 'countdown', duration: COUNTDOWN, round: r });
+    if (countdown > 0) plan.push({ kind: 'countdown', duration: countdown, round: r });
     plan.push({ kind: 'work', duration: work, round: r });
     if (r < rounds) {
       plan.push(rest > 0 ? { kind: 'rest', duration: rest, round: r } : { kind: 'wait', duration: Infinity, round: r });
@@ -93,8 +95,8 @@ export function seriesPlan({ work, rest, rounds }: IntervalConfig): Plan {
 }
 
 /** Tabata: un solo 3·2·1 y rondas trabajo/descanso seguidas. */
-export function tabataPlan({ work, rest, rounds }: IntervalConfig): Plan {
-  const plan: Plan = [{ kind: 'countdown', duration: COUNTDOWN, round: 1 }];
+export function tabataPlan({ work, rest, rounds, countdown = COUNTDOWN }: IntervalConfig): Plan {
+  const plan: Plan = countdown > 0 ? [{ kind: 'countdown', duration: countdown, round: 1 }] : [];
   for (let r = 1; r <= rounds; r++) {
     plan.push({ kind: 'work', duration: work, round: r });
     if (r < rounds) plan.push({ kind: 'rest', duration: rest, round: r });
@@ -377,7 +379,8 @@ export function cues(prev: Snapshot, next: Snapshot): Cue[] {
   if (next.paused) return [];
   const out: Cue[] = [];
   const moved = prev.phase !== next.phase || prev.index !== next.index;
-  if (next.phase === 'countdown' && (moved || prev.n !== next.n)) out.push('count');
+  // Pitido corto solo en el 3·2·1, aunque la cuenta atrás sea más larga.
+  if (next.phase === 'countdown' && next.n <= COUNTDOWN && (moved || prev.n !== next.n)) out.push('count');
   if ((next.phase === 'work' || next.phase === 'rest') && moved) out.push('start');
   if (next.phase === 'wait' && moved) out.push('end');
   if (next.phase === 'done' && prev.phase !== 'done' && !next.stopped) out.push('finish');

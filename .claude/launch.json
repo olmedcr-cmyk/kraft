@@ -6,6 +6,12 @@
       "runtimeExecutable": "sh",
       "runtimeArgs": ["-c", "export npm_config_cache=${TMPDIR:-/tmp}/npm-cache __UNSAFE_EXPO_HOME_DIRECTORY=${TMPDIR:-/tmp}/expo-home EXPO_NO_TELEMETRY=1;npx expo start --web --port 8081"],
       "port": 8081
+    },
+    {
+      "name": "kraft-web-2",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": ["-c", "export npm_config_cache=${TMPDIR:-/tmp}/npm-cache __UNSAFE_EXPO_HOME_DIRECTORY=${TMPDIR:-/tmp}/expo-home EXPO_NO_TELEMETRY=1;npx expo start --web --port 8082"],
+      "port": 8082
     }
   ]
 }

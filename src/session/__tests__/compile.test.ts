@@ -57,3 +57,19 @@ describe('compilar la sesión', () => {
     expect(snapshot(s, t).roundsDone).toBe(4 + 48 + 8 + 4 + 1);
   });
 });
+
+describe('ajustes de entreno', () => {
+  it('cuenta atrás de 5 s, o ninguna', () => {
+    const c5 = compileSession(SAMPLE_SESSION, { countdown: 5 });
+    expect(c5.plan.filter((p) => p.kind === 'countdown').every((p) => p.duration === 5)).toBe(true);
+    const c0 = compileSession(SAMPLE_SESSION, { countdown: 0 });
+    expect(c0.plan.some((p) => p.kind === 'countdown')).toBe(false);
+    expect(c0.steps).toEqual(compileSession(SAMPLE_SESSION).steps);
+  });
+  it('descanso automático: sin esperas manuales', () => {
+    const c = compileSession(SAMPLE_SESSION, { descanso: 'auto' });
+    expect(c.plan.some((p) => p.kind === 'wait')).toBe(false);
+    expect(c.blockStart).toHaveLength(SAMPLE_SESSION.blocks.length);
+    expect(compileSession(SAMPLE_SESSION).plan.some((p) => p.kind === 'wait')).toBe(true);
+  });
+});

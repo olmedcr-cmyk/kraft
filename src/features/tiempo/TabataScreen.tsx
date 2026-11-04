@@ -10,6 +10,7 @@ import { Segmentado } from '@/components/Segmentado';
 import { useHideNav } from '@/state/chrome';
 import { setCurrent } from '@/state/saved';
 import { cifra, color, radius, space, texto, transicionFondo, transicionPunto } from '@/theme';
+import { useSettings } from '@/state/settings';
 import { tabataPlan, type Snapshot } from '@/timer/engine';
 import { useTimer } from '@/timer/useTimer';
 import { pad2 } from './Cabecera';
@@ -68,7 +69,8 @@ export function TabataScreen() {
 
   const cfg = MODES[mi];
   useEffect(() => setCurrent({ kind: 'tabata', ...cfg }), [cfg]);
-  const plan = useMemo(() => tabataPlan(cfg), [cfg]);
+  const { cuentaAtras } = useSettings();
+  const plan = useMemo(() => tabataPlan({ ...cfg, countdown: cuentaAtras }), [cfg, cuentaAtras]);
   const t = useTimer(plan);
   const s = t.snap;
 

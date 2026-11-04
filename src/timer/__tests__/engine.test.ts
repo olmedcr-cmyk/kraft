@@ -290,3 +290,23 @@ describe('repeticiones', () => {
     expect(snapshot(s, 2.1 * S).ref).toBe(10);
   });
 });
+
+describe('cuenta atrás configurable', () => {
+  it('sin 3·2·1 o con 10 s', () => {
+    expect(seriesPlan({ work: 30, rest: 0, rounds: 2, countdown: 0 }).map((p) => p.kind)).toEqual(['work', 'wait', 'work']);
+    expect(tabataPlan({ work: 20, rest: 10, rounds: 2, countdown: 10 })[0]).toEqual({ kind: 'countdown', duration: 10, round: 1 });
+    expect(tabataPlan({ work: 20, rest: 10, rounds: 2, countdown: 0 })[0].kind).toBe('work');
+  });
+  it('con 10 s solo pita en el 3·2·1', () => {
+    let s: TimerState = start(createTimer(seriesPlan({ work: 30, rest: 0, rounds: 1, countdown: 10 })), 0);
+    let prevSnap = snapshot(s, 0);
+    let counts = 0;
+    for (let t = 200; t <= 10_000; t += 200) {
+      s = tick(s, t);
+      const snap = snapshot(s, t);
+      counts += cues(prevSnap, snap).filter((c) => c === 'count').length;
+      prevSnap = snap;
+    }
+    expect(counts).toBe(3);
+  });
+});

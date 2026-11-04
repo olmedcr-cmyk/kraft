@@ -7,6 +7,7 @@ import { CheckIcon } from '@/components/icons';
 import { KText } from '@/components/KText';
 import { Mando } from '@/components/Mando';
 import { Palma } from '@/components/Palma';
+import { useSettings } from '@/state/settings';
 import { exercise } from '@/data/exercises';
 import { stepSeconds, upcoming, type StepInfo } from '@/session/compile';
 import { compiled, session, useSession } from '@/session/store';
@@ -40,6 +41,7 @@ export function MarchaScreen() {
   const s = t.snap;
   const step = s.ref !== undefined ? compiled.steps[s.ref] : undefined;
   const KeepAwake = t.keepAwake;
+  const { palmaPausa } = useSettings();
 
   useEffect(() => {
     if (s.phase === 'done') router.replace('/sesion/hecho');
@@ -48,14 +50,16 @@ export function MarchaScreen() {
 
   if (!step || s.phase === 'done' || s.phase === 'select') return <Lienzo bg={color.tinta}>{null}</Lienzo>;
 
+  // Con «pausa con la palma» apagada, tocar el número en marcha no hace nada (el mando sigue).
+  const palmRun = palmaPausa ? t.primary : () => {};
   let body;
   if (s.paused) body = <Pausa s={s} step={step} onPalm={t.primary} />;
   else if (s.phase === 'countdown') body = <Preparado s={s} step={step} onPalm={t.primary} />;
   else if (s.phase === 'wait') body = <Espera s={s} step={step} onPalm={t.primary} />;
   else if (s.phase === 'reps') body = <Escalera step={step} refId={s.ref!} />;
-  else if (step.blockKind === 'tabata') body = <TabataMarcha s={s} step={step} onPalm={t.primary} />;
-  else if (s.duration >= LONG) body = <Minutos s={s} step={step} onPalm={t.primary} />;
-  else body = <Mantener s={s} step={step} onPalm={t.primary} />;
+  else if (step.blockKind === 'tabata') body = <TabataMarcha s={s} step={step} onPalm={palmRun} />;
+  else if (s.duration >= LONG) body = <Minutos s={s} step={step} onPalm={palmRun} />;
+  else body = <Mantener s={s} step={step} onPalm={palmRun} />;
 
   return (
     <Lienzo bg={background(s, step)}>

@@ -13,6 +13,7 @@ import { PildoraFase } from '@/components/PildoraFase';
 import { useHideNav } from '@/state/chrome';
 import { setCurrent } from '@/state/saved';
 import { alpha, cifra, color, motion, ms, radius, space, texto, touch, transicionFondo } from '@/theme';
+import { useSettings } from '@/state/settings';
 import { seriesPlan, type Snapshot } from '@/timer/engine';
 import { useTimer } from '@/timer/useTimer';
 import { Cabecera, pad2 } from './Cabecera';
@@ -102,7 +103,8 @@ export function SeriesScreen() {
 
   useEffect(() => setCurrent({ kind: 'series', work, rest, rounds }), [work, rest, rounds]);
 
-  const plan = useMemo(() => seriesPlan({ work, rest, rounds }), [work, rest, rounds]);
+  const { cuentaAtras, palmaPausa } = useSettings();
+  const plan = useMemo(() => seriesPlan({ work, rest, rounds, countdown: cuentaAtras }), [work, rest, rounds, cuentaAtras]);
   const t = useTimer(plan);
   const s = t.snap;
   const selecting = s.phase === 'select';
@@ -194,7 +196,7 @@ export function SeriesScreen() {
                 showCurrent={s.phase === 'work' || s.phase === 'rest'}
                 allGone={s.phase === 'wait' || s.phase === 'done'}
               />
-              <PalmaSerie s={s} bg={bg} onPress={t.primary} />
+              <PalmaSerie s={s} bg={bg} onPress={(s.phase === 'work' || s.phase === 'rest') && !s.paused && !palmaPausa ? () => {} : t.primary} />
             </View>
           </View>
           <View style={{ flex: 1 }} />

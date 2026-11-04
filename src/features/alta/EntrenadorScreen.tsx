@@ -20,7 +20,7 @@ const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'pegar', '0', 'borrar
 export function EntrenadorScreen() {
   const insets = useSafeAreaInsets();
   // Llega con código si se abrió desde el enlace del entrenador (kraft://alta/entrenador?codigo=…).
-  const { codigo } = useLocalSearchParams<{ codigo?: string }>();
+  const { codigo, desde } = useLocalSearchParams<{ codigo?: string; desde?: string }>();
   const [code, setCode] = useState(() => (codigo && pasteCode(codigo)) || '');
   const [miss, setMiss] = useState(false);
   const coach = findCoach(code);
@@ -41,7 +41,9 @@ export function EntrenadorScreen() {
   const link = () => {
     if (!coach) return;
     updateSettings({ coach });
-    router.push('/alta/permisos');
+    // Desde Tú (cambiar de entrenador) se vuelve atrás; en el alta se sigue a permisos.
+    if (desde === 'tu') router.canGoBack() ? router.back() : router.replace('/tu');
+    else router.push('/alta/permisos');
   };
 
   return (

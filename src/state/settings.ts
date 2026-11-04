@@ -39,5 +39,8 @@ const subscribe = (f: () => void) => {
   };
 };
 
+/** Para módulos fuera de React (la sesión recompila su plan). */
+export const subscribeSettings = subscribe;
+
 export const useSettings = () => useSyncExternalStore(subscribe, () => state, () => state);
 export const useHydrated = () => useSyncExternalStore(subscribe, () => hydrated, () => hydrated);

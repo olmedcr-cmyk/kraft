@@ -6,16 +6,23 @@ import { KText } from '@/components/KText';
 import { exercise } from '@/data/exercises';
 import type { StepInfo } from '@/session/compile';
 import { compiled, setWeight, useSessionExtra } from '@/session/store';
+import { useSettings } from '@/state/settings';
 import { cifra, color, inner, radius, space, texto, touch, transicionPunto } from '@/theme';
 import { BotonComo, RUN } from './piezas';
 import { Pulsable } from '@/components/Pulsable';
 import Animated from 'react-native-reanimated';
 
 const STEP_KG = 2.5;
-const kgLabel = (w: number | null) => (w == null ? 'barra' : String(w).replace('.', ','));
+const LB_PER_KG = 2.20462;
+type Unidad = 'kg' | 'lb';
+/** Se guarda siempre en kg; se enseña en la unidad de Tú · Entreno (lb, redondeado a media libra). */
+const kgLabel = (w: number | null, u: Unidad = 'kg') =>
+  w == null ? 'barra' : String(u === 'lb' ? Math.round(w * LB_PER_KG * 2) / 2 : w).replace('.', ',');
+const unitName = (u: Unidad) => (u === 'lb' ? 'libras' : 'kilos');
 
 export function Escalera({ step, refId }: { step: StepInfo; refId: number }) {
   const extra = useSessionExtra();
+  const { peso } = useSettings();
   const block = compiled.steps.map((x, i) => ({ ...x, ref: i })).filter((x) => x.block === step.block);
   const ladder = block.filter((x) => x.ladder !== undefined);
   const after = block.filter((x) => x.after !== undefined);
@@ -61,7 +68,7 @@ export function Escalera({ step, refId }: { step: StepInfo; refId: number }) {
                 </KText>
               </Animated.View>
               <KText size={texto.etiqueta} tint={now ? color.tinta : color.texto2}>
-                {kgLabel(weightOf(l.ref, l.weight))}
+                {kgLabel(weightOf(l.ref, l.weight), peso)}
               </KText>
             </View>
           );
@@ -70,18 +77,18 @@ export function Escalera({ step, refId }: { step: StepInfo; refId: number }) {
 
       {inLadder && (
         <View style={{ backgroundColor: color.tarjeta, borderRadius: radius.lg, padding: space.s16, flexDirection: 'row', alignItems: 'center', gap: space.s8 }}>
-          <Ajuste dir="down" onPress={() => setWeight(refId, w == null ? null : Math.max(0, w - STEP_KG) || null)} />
-          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', gap: space.s4 }} accessibilityLabel={w == null ? 'Barra sola' : `${kgLabel(w)} kilos`}>
+          <Ajuste unit={peso} dir="down" onPress={() => setWeight(refId, w == null ? null : Math.max(0, w - STEP_KG) || null)} />
+          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', gap: space.s4 }} accessibilityLabel={w == null ? 'Barra sola' : `${kgLabel(w, peso)} ${unitName(peso)}`}>
             <KText size={cifra.c55} weight={300} tabular lineHeight={cifra.c55}>
-              {w == null ? 'barra' : kgLabel(w)}
+              {w == null ? 'barra' : kgLabel(w, peso)}
             </KText>
             {w != null && (
               <KText size={texto.texto} tint={color.texto2}>
-                kg
+                {peso}
               </KText>
             )}
           </View>
-          <Ajuste dir="up" onPress={() => setWeight(refId, (w ?? 20) + STEP_KG)} />
+          <Ajuste unit={peso} dir="up" onPress={() => setWeight(refId, (w ?? 20) + STEP_KG)} />
         </View>
       )}
 
@@ -118,13 +125,13 @@ export function Escalera({ step, refId }: { step: StepInfo; refId: number }) {
   );
 }
 
-function Ajuste({ dir, onPress }: { dir: 'up' | 'down'; onPress: () => void }) {
+function Ajuste({ dir, onPress, unit }: { dir: 'up' | 'down'; onPress: () => void; unit: Unidad }) {
   const pad = space.s16;
   return (
     <Pulsable
       onPress={onPress}
       accessibilityRole="button"
-      accessibilityLabel={`${dir === 'up' ? 'Más' : 'Menos'} ${kgLabel(STEP_KG)} kg`}
+      accessibilityLabel={`${dir === 'up' ? 'Más' : 'Menos'} ${kgLabel(STEP_KG, unit)} ${unitName(unit)}`}
       haptic="selection"
       style={{
         width: touch.tecla + space.s16,

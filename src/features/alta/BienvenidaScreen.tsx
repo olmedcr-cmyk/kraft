@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { KText } from '@/components/KText';
 import { Pulsable } from '@/components/Pulsable';
-import { updateSettings } from '@/state/settings';
+import { getSettings, updateSettings } from '@/state/settings';
 import { alpha, cifra, color, layout, radius, space, texto, touch } from '@/theme';
 
 const HERO_H = 340;
@@ -24,7 +24,8 @@ export function BienvenidaScreen() {
 
   /** Sin backend de cuentas todavía: entrar = aceptar y seguir. */
   const enter = (_via: Via) => {
-    updateSettings({ acceptedAt: Date.now() });
+    // El nombre lo dará la cuenta (Apple, Google o email); de momento, el de ejemplo.
+    updateSettings({ acceptedAt: Date.now(), nombre: getSettings().nombre || 'Cris' });
     router.push('/alta/entrenador');
   };
 

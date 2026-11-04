@@ -11,7 +11,6 @@ import { hhmm, type Slot } from '@/agenda/model';
 import { getSettings } from '@/state/settings';
 
 const CATEGORY = 'clase';
-const BEFORE_MS = 3600_000;
 const native = Platform.OS !== 'web';
 
 /** Pide permiso de avisos (K8Permissions). En web, nada. */
@@ -52,7 +51,8 @@ export function reminderBody(slot: Slot) {
 
 export async function scheduleClassReminder(slot: Slot) {
   if (!native || !getSettings().avisos) return;
-  const at = slot.start - BEFORE_MS;
+  // Tú · Avisos: 1 h o 3 h antes de clase.
+  const at = slot.start - getSettings().avisoAntes * 3600_000;
   if (at <= Date.now()) return;
   try {
     const perm = await Notifications.getPermissionsAsync();

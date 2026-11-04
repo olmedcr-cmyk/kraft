@@ -32,12 +32,23 @@ export interface CompiledSession {
   blockStart: number[];
 }
 
-export function compileSession(session: Session): CompiledSession {
+export interface CompileOptions {
+  /** Segundos de cuenta atrás; 0 = sin 3·2·1. */
+  countdown?: number;
+  /** 'auto': sin espera manual entre tramos y bloques; sigue solo con su cuenta atrás. */
+  descanso?: 'manual' | 'auto';
+}
+
+export function compileSession(session: Session, { countdown = COUNTDOWN, descanso = 'manual' }: CompileOptions = {}): CompiledSession {
   const plan: Plan = [];
   const steps: StepInfo[] = [];
   const blockStart: number[] = [];
   const add = (info: StepInfo) => steps.push(info) - 1;
-  const seg = (kind: Segment['kind'], duration: number, round: number, ref: number) => plan.push({ kind, duration, round, ref });
+  const seg = (kind: Segment['kind'], duration: number, round: number, ref: number) => {
+    if (kind === 'countdown' && duration <= 0) return;
+    if (kind === 'wait' && descanso === 'auto') return;
+    plan.push({ kind, duration, round, ref });
+  };
 
   session.blocks.forEach((b, bi) => {
     blockStart.push(plan.length);
@@ -47,7 +58,7 @@ export function compileSession(session: Session): CompiledSession {
     if (b.kind === 'interval') {
       b.steps.forEach((st, i) => {
         const ref = add({ block: bi, blockKind: 'interval', label: st.label, exercise: st.exercise, hold: st.hold, tramo: i, tramos: b.steps.length });
-        seg('countdown', COUNTDOWN, i + 1, ref);
+        seg('countdown', countdown, i + 1, ref);
         seg('work', st.seconds, i + 1, ref);
         if (i < b.steps.length - 1) {
           if (st.rest > 0) seg('rest', st.rest, i + 1, ref);
@@ -77,7 +88,7 @@ export function compileSession(session: Session): CompiledSession {
             tramo: s * b.rounds + r,
             tramos: total,
           });
-          if (first) seg('countdown', COUNTDOWN, r + 1, ref);
+          if (first) seg('countdown', countdown, r + 1, ref);
           first = false;
           seg('work', b.work, r + 1, ref);
           if (r < b.rounds - 1) seg('rest', b.rest, r + 1, ref);
