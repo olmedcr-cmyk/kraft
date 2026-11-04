@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Ejercicio</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#141414}a:hover{color:#000000}
+button:focus-visible,a:focus-visible{outline:2px solid #141414;outline-offset:3px}
+.dot{transition:background-color .35s ease,transform .35s ease}
+@media (prefers-reduced-motion: reduce){.dot{transition:none}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 64px 16px 16px; background: #F2F1ED; color: #141414; font-family: 'Roboto Mono', ui-monospace, monospace; display: flex; flex-direction: column; gap: 16px">
+
+  <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #5F5E59">
+    <a href="J2Today.dc.html" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: #5F5E59; min-height: 24px"><span style="width: 8px; height: 8px; border-radius: 50%; background: #FF5A1F"></span>Sesión</a>
+    <span>{{pos}}</span>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 12px">
+    <div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+      <h1 style="margin: 0; font-weight: 300; font-size: 34px; line-height: 1; letter-spacing: -0.04em">{{ex.name}}</h1>
+      <span style="font-size: 13px; color: #5F5E59">{{ex.muscles}}</span>
+    </div>
+    <div style="display: flex; gap: 8px; flex: none">
+      <button type="button" onClick="{{prev}}" aria-label="Ejercicio anterior" style="width: 48px; height: 48px; border-radius: 50%; border: 2px solid #141414; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M9 2 L4 7 L9 12" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+      <button type="button" onClick="{{next}}" aria-label="Ejercicio siguiente" style="width: 48px; height: 48px; border-radius: 50%; border: 0; background: #141414; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M5 2 L10 7 L5 12" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+    </div>
+  </div>
+
+  <div style="background: #FFFFFF; border-radius: 24px; padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 16px">
+    <img src="{{frameSrc}}" alt="{{frameAlt}}" style="width: 216px; height: 216px; object-fit: contain; display: block">
+    <div style="width: 100%; display: flex; align-items: center; gap: 8px">
+      <sc-for list="{{frames}}" as="f" hint-placeholder-count="3">
+        <button type="button" class="dot" onClick="{{f.pick}}" aria-label="{{f.aria}}" aria-pressed="{{f.on}}" style="width: 64px; height: 64px; flex: none; border-radius: 16px; box-sizing: border-box; border: 2px solid {{f.bd}}; background: {{f.tbg}}; padding: 4px; cursor: pointer; position: relative"><img src="{{f.src}}" alt="" style="width: 100%; height: 100%; object-fit: contain; display: block"><span style="position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; border-radius: 50%; background: {{f.bg}}"></span></button>
+      </sc-for>
+      <span style="flex: 1"></span>
+      <button type="button" onClick="{{togglePlay}}" style="height: 48px; padding: 0 16px; border-radius: 999px; border: 0; background: #F2F1ED; color: #141414; font-family: 'Roboto Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer">{{playLabel}}</button>
+    </div>
+  </div>
+
+  <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; flex: 1; min-height: 0">
+    <sc-for list="{{steps}}" as="st" hint-placeholder-count="3">
+      <li style="display: flex; gap: 12px; align-items: flex-start">
+        <span style="width: 24px; height: 24px; flex: none; border-radius: 50%; background: {{st.bg}}; color: #FFFFFF; font-family: 'Roboto Mono', monospace; font-weight: 400; font-size: 13px; display: flex; align-items: center; justify-content: center">{{st.n}}</span>
+        <span style="font-size: 13px; line-height: 1.5; padding-top: 2px">{{st.t}}</span>
+      </li>
+    </sc-for>
+  </ol>
+
+  <div style="display: flex; align-items: center; justify-content: space-between">
+    <span style="display: flex; gap: 4px" aria-label="{{ex.setsAria}}">
+      <sc-for list="{{sets}}" as="s" hint-placeholder-count="4">
+        <span style="width: 12px; height: 12px; border-radius: 50%; background: #141414"></span>
+      </sc-for>
+    </span>
+    <span style="font-size: 11px; letter-spacing: 0.04em; color: #5F5E59; text-align: right">Ilustración: Workout Guide · Bryl Lim / Everkinetic · CC BY-SA 4.0</span>
+  </div>
+
+  <a href="KR5Time.dc.html" style="height: 56px; border-radius: 999px; background: #141414; color: #FFFFFF; text-decoration: none; font-size: 15px; letter-spacing: 0.08em; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px"><span style="width: 10px; height: 10px; border-radius: 50%; background: #FF5A1F"></span>Empezar serie · {{ex.dose}}</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"speed":{"editor":"int","default":900,"min":400,"max":2000,"step":100,"unit":"ms","section":"Ilustración"},"$preview":{"width":390,"height":844}}'>
+var EXERCISES = [
+  { name: 'Sentadilla', muscles: 'Cuádriceps · glúteo · core', sets: 4, dose: '12 reps',
+    frames: ['/_blob/731ed9f380bf492c1830f256760c7b98', '/_blob/5557da5aa3cf9b25e95b6e8e90516667', '/_blob/287de5e83d129dccf533ddec2cd05ae0'],
+    alts: ['De pie, pies al ancho de hombros, brazos al frente', 'Bajando: cadera atrás, rodillas sobre los pies', 'Abajo: muslos paralelos al suelo'],
+    steps: ['Pies al ancho de los hombros, puntas un poco abiertas.', 'Cadera atrás y abajo, rodillas en la línea de los pies.', 'Baja a muslos paralelos y sube empujando el suelo.'] },
+  { name: 'Zancada', muscles: 'Cuádriceps · glúteo', sets: 3, dose: '10 por lado',
+    frames: ['/_blob/ae54c40f52cc8432a2138075085bf524', '/_blob/fcd2f7c34d3cdb84f5a802eb2f2b3c49', '/_blob/1d71c5fffd625983ec7d2cdba6acb474'],
+    alts: ['De pie, manos en la cadera', 'Paso largo al frente', 'Abajo: ambas rodillas a 90 grados'],
+    steps: ['De pie, tronco erguido, mirada al frente.', 'Da un paso largo y baja la rodilla de atrás.', 'Empuja con el talón delantero para volver.'] },
+  { name: 'Puente', muscles: 'Glúteo · isquiotibiales', sets: 4, dose: '15 reps',
+    frames: ['/_blob/389256f55812cf1b8d9f310a536bd92a', '/_blob/b845e5f6cd6be35b9be57a12c6b98975', '/_blob/474e222200c9c61820d96b1db5365295'],
+    alts: ['Tumbado boca arriba, rodillas flexionadas', 'Elevando la cadera', 'Arriba: hombros, cadera y rodillas en línea'],
+    steps: ['Boca arriba, rodillas flexionadas, pies apoyados.', 'Aprieta glúteos y eleva la cadera.', 'Mantén un segundo arriba y baja despacio.'] },
+  { name: 'Plancha', muscles: 'Core · hombros', sets: 3, dose: '45 círculos',
+    frames: ['/_blob/21b6b4c06d3cc8b2a3ae47237b4e704d', '/_blob/2153543676c8d34477e7231bc6655455', '/_blob/8f320d653b052c03bab6e6da87123b64'],
+    alts: ['Plancha sobre antebrazos', 'Cuerpo en línea, abdomen activo', 'Rodillas al suelo para descansar'],
+    steps: ['Codos bajo los hombros, antebrazos en el suelo.', 'Cuerpo en línea de la cabeza a los talones.', 'Respira sin dejar caer la cadera.'] },
+  { name: 'Burpee', muscles: 'Cuerpo completo', sets: 8, dose: 'Tabata 20/10',
+    frames: ['/_blob/fa59e1c0d25507df8de728d6f71ff3c5', '/_blob/af28f5ae526a6abf3ae66761c1f39a62', '/_blob/3ab7a76d94c403eac5e4a584d65efd06'],
+    alts: ['Salto con brazos arriba', 'Agachado, manos al suelo', 'Plancha alta'],
+    steps: ['Desde de pie, agáchate y apoya las manos.', 'Lleva los pies atrás hasta plancha alta.', 'Recoge los pies y salta con brazos arriba.'] },
+];
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { ex: 0, frame: 0, playing: true };
+    this._t = null;
+  }
+  componentDidMount() { this.play(); }
+  componentWillUnmount() { this.halt(); }
+  halt() { if (this._t) { clearInterval(this._t); this._t = null; } }
+  play() {
+    this.halt();
+    this._t = setInterval(() => { if (this.state.playing) this.setState({ frame: (this.state.frame + 1) % 3 }); }, this.props.speed ?? 900);
+  }
+  renderVals() {
+    const s = this.state;
+    const e = EXERCISES[s.ex];
+    const INK = '#141414', DIM = '#D7D6D0', RED = '#FF5A1F';
+    return {
+      ex: { name: e.name, muscles: e.muscles, dose: e.dose, setsAria: e.sets + ' series' },
+      pos: String(s.ex + 1).padStart(2, '0') + ' / ' + String(EXERCISES.length).padStart(2, '0'),
+      frameSrc: e.frames[s.frame],
+      frameAlt: e.name + ': ' + e.alts[s.frame],
+      frames: e.frames.map((_, i) => ({
+        aria: 'Fase ' + (i + 1) + ': ' + e.alts[i],
+        on: i === s.frame ? 'true' : 'false',
+        src: e.frames[i],
+        bd: i === s.frame ? INK : 'transparent',
+        tbg: i === s.frame ? '#FFFFFF' : '#F2F1ED',
+        bg: i === s.frame ? RED : 'transparent',
+        scale: i === s.frame ? '1.25' : '1',
+        pick: () => this.setState({ frame: i, playing: false }),
+      })),
+      steps: e.steps.map((t, i) => ({ t, n: String(i + 1), bg: i === s.frame ? RED : INK })),
+      sets: Array.from({ length: e.sets }, () => ({})),
+      playLabel: s.playing ? 'Pausa' : 'Animar',
+      togglePlay: () => this.setState({ playing: !this.state.playing }),
+      prev: () => this.setState({ ex: (s.ex + EXERCISES.length - 1) % EXERCISES.length, frame: 0 }),
+      next: () => this.setState({ ex: (s.ex + 1) % EXERCISES.length, frame: 0 }),
+    };
+  }
+}
+</script>
+</body>
+</html>

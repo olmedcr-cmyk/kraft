@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Prueba la palma</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit;text-decoration:none}
+a:focus-visible,button:focus-visible{outline:3px solid #FF5A1F;outline-offset:3px}
+.k{font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.ctr{display:flex;align-items:center;justify-content:center}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 64px 16px 16px; background: {{bg}}; color: #FFFFFF; font-family: 'Roboto Mono', ui-monospace, monospace; display: flex; flex-direction: column; gap: 8px; transition: background-color .24s ease">
+  <div style="padding: 0 8px; display: flex; flex-direction: column; gap: 8px">
+    <span style="font-size: 34px; font-weight: 300; letter-spacing: -0.04em; line-height: 1">{{title}}</span>
+    <span style="font-size: 13px; opacity: .75">{{sub}}</span>
+  </div>
+  <div style="flex: 1; display: flex; align-items: center; justify-content: center">
+    <button type="button" onClick="{{tap}}" aria-label="{{aria}}" class="ctr" style="width: 280px; height: 280px; border-radius: 50%; border: 0; background: {{palm}}; color: {{palmFg}}; cursor: pointer; flex-direction: column; gap: 16px; font-family: 'Roboto Mono', monospace; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; transition: background-color .24s ease">
+      <sc-if value="{{paused}}"><span style="display: flex; gap: 12px" aria-hidden="true"><span style="width: 16px; height: 64px; border-radius: 999px; background: #FFFFFF"></span><span style="width: 16px; height: 64px; border-radius: 999px; background: #FFFFFF"></span></span></sc-if>
+      <span>{{palmLabel}}</span>
+    </button>
+  </div>
+  <sc-if value="{{paused}}">
+    <a href="J2Today.dc.html" style="height: 104px; flex: none; border-radius: 24px; background: #FF5A1F; color: #141414; padding: 0 16px 0 24px; display: flex; align-items: center; justify-content: space-between; font-size: 22px">Ir a Hoy<span class="ctr" style="width: 72px; height: 72px; border-radius: 50%; background: #141414"><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><path d="M10 7.5C10 5.6 12.1 4.4 13.8 5.4L26.3 13.4C27.9 14.4 27.9 16.6 26.3 17.6L13.8 25.6C12.1 26.6 10 25.4 10 23.5Z" fill="#FF5A1F"></path></svg></span></a>
+  </sc-if>
+  <sc-if value="{{waiting}}"><span style="height: 104px; flex: none; display: flex; align-items: center; justify-content: center; font-size: 13px; opacity: .6">El móvil en el suelo. La mano encima.</span></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { paused: false }; }
+  renderVals() {
+    const p = this.state.paused;
+    return {
+      paused: p, waiting: !p,
+      bg: p ? '#141414' : '#002FA7',
+      palm: p ? '#002FA7' : '#FFFFFF',
+      palmFg: p ? '#FFFFFF' : '#002FA7',
+      palmLabel: p ? 'Pausa' : 'Toca',
+      aria: p ? 'Reanudar' : 'Pausar',
+      title: p ? 'Eso es' : 'Prueba',
+      sub: p ? 'Otro toque y sigue' : 'Toca con la palma',
+      tap: () => this.setState({ paused: !p }),
+    };
+  }
+}
+</script>
+</body>
+</html>

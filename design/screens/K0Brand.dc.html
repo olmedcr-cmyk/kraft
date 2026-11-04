@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>KRAFT · marca y fundamentos</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.c{background:#FFFFFF;border-radius:24px;padding:24px;box-sizing:border-box;display:flex;flex-direction:column;gap:16px}
+.k{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5F5E59}
+.sw{border-radius:16px;padding:12px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;height:120px;font-size:11px}
+.row{display:flex;gap:8px}
+</style>
+</helmet>
+<div style="width: 1600px; height: 920px; box-sizing: border-box; padding: 32px; background: #F2F1ED; color: #141414; font-family: 'Roboto Mono', ui-monospace, monospace; display: grid; grid-template-columns: 520px 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 8px">
+
+  <!-- Marca -->
+  <section class="c" style="grid-row: span 2; background: #002FA7; color: #FFFFFF; justify-content: space-between">
+    <span class="k" style="color: #D9E0F5">01 · Marca</span>
+    <div style="display: flex; flex-direction: column; gap: 24px">
+      <span style="display: flex; align-items: flex-end; gap: 8px; font-size: 104px; font-weight: 500; letter-spacing: -0.02em; line-height: 0.8">KRAFT<span style="width: 24px; height: 24px; border-radius: 50%; background: #FF5A1F; margin-bottom: 4px"></span></span>
+      <span style="font-size: 15px; line-height: 1.5; color: #D9E0F5; max-width: 400px">Tu entrenador manda la sesión. Tú solo tocas. El círculo es la unidad: un segundo, una serie, una ronda.</span>
+    </div>
+    <div style="display: flex; gap: 16px; align-items: flex-end">
+      <span aria-label="Icono de la app" style="position: relative; width: 168px; height: 168px; border-radius: 40px; background: #FFFFFF; flex: none">
+        <sc-for list="{{iconDots}}" as="d" hint-placeholder-count="12"><span style="position: absolute; left: {{d.x}}px; top: {{d.y}}px; width: 12px; height: 12px; border-radius: 50%; background: #002FA7"></span></sc-for>
+        <span style="position: absolute; left: 52px; top: 52px; width: 64px; height: 64px; border-radius: 50%; background: #FF5A1F"></span>
+      </span>
+      <span style="position: relative; width: 88px; height: 88px; border-radius: 22px; background: #141414; flex: none">
+        <span style="position: absolute; left: 30px; top: 30px; width: 28px; height: 28px; border-radius: 50%; background: #FF5A1F"></span>
+      </span>
+      <span style="width: 48px; height: 48px; border-radius: 12px; background: #FF5A1F; flex: none; display: flex; align-items: center; justify-content: center"><span style="width: 16px; height: 16px; border-radius: 50%; background: #141414"></span></span>
+      <span class="k" style="color: #D9E0F5; padding-bottom: 4px">Icono · oscuro · notificación</span>
+    </div>
+  </section>
+
+  <!-- Color -->
+  <section class="c">
+    <span class="k">02 · Color · un color, un significado</span>
+    <div class="row">
+      <span class="sw" style="flex: 2; background: #002FA7; color: #FFFFFF"><span>Klein</span><span>Trabajo · marca<br>#002FA7</span></span>
+      <span class="sw" style="flex: 1; background: #FF5A1F"><span>Naranja</span><span>Acción · Tabata<br>#FF5A1F</span></span>
+      <span class="sw" style="flex: 1; background: #0A7B57; color: #FFFFFF"><span>Verde</span><span>Descanso · hecho<br>#0A7B57</span></span>
+      <span class="sw" style="flex: 1; background: #141414; color: #FFFFFF"><span>Tinta</span><span>Espera · pausa<br>#141414</span></span>
+    </div>
+    <div class="row">
+      <span class="sw" style="flex: 1; height: 72px; background: #FFC93C"><span>Amarillo · solo marcas</span><span>Grupo · #FFC93C</span></span>
+      <span class="sw" style="flex: 1; height: 72px; background: #F2F1ED; border: 1px solid #D7D6D0"><span>Fondo</span><span>#F2F1ED</span></span>
+      <span class="sw" style="flex: 1; height: 72px; background: #FFFFFF; border: 1px solid #D7D6D0"><span>Tarjeta</span><span>#FFFFFF</span></span>
+      <span class="sw" style="flex: 1; height: 72px; background: #E8E7E2"><span>Hundido</span><span>#E8E7E2</span></span>
+    </div>
+    <span style="font-size: 12px; color: #5F5E59">Amarillo nunca junto a Klein. Texto en color: solo Klein. Blanco sobre Klein 10,7:1 · tinta sobre naranja 5,9:1.</span>
+  </section>
+
+  <!-- Tipo -->
+  <section class="c">
+    <span class="k">03 · Tipo · Roboto Mono</span>
+    <div style="display: flex; align-items: baseline; gap: 16px"><span style="font-size: 144px; font-weight: 300; letter-spacing: -0.04em; line-height: 0.85">18</span><span class="k">Cifra · 233 · 144 · 89 · 55 · 34</span></div>
+    <div style="display: flex; align-items: baseline; gap: 16px"><span style="font-size: 34px; font-weight: 300; letter-spacing: -0.04em">Martes</span><span class="k">Título · 34/300</span></div>
+    <div style="display: flex; align-items: baseline; gap: 16px"><span style="font-size: 22px">Empezar</span><span class="k">Botón · 22/400</span></div>
+    <div style="display: flex; align-items: baseline; gap: 16px"><span style="font-size: 18px">Calentar</span><span class="k">Bloque · 18 · lista 15</span></div>
+    <div style="display: flex; align-items: baseline; gap: 16px"><span style="font-size: 13px">Pierna izquierda · 30 s</span><span class="k">Texto · 13 · Etiqueta · 11</span></div>
+    <span style="font-size: 12px; color: #5F5E59">Cifras en Fibonacci (×φ): 34·55·89·144·233. Texto: 11·13·15·18·22. En marcha, nada bajo 18.</span>
+  </section>
+
+  <!-- Retícula y radios -->
+  <section class="c">
+    <span class="k">04 · Retícula 8 · radios · toque</span>
+    <div style="display: flex; gap: 8px; align-items: flex-end">
+      <span style="width: 48px; height: 48px; border-radius: 8px; background: #E8E7E2; font-size: 11px; display: flex; align-items: center; justify-content: center">8</span>
+      <span style="width: 64px; height: 64px; border-radius: 16px; background: #E8E7E2; font-size: 11px; display: flex; align-items: center; justify-content: center">16</span>
+      <span style="width: 72px; height: 72px; border-radius: 24px; background: #E8E7E2; font-size: 11px; display: flex; align-items: center; justify-content: center">24</span><span style="width: 80px; height: 80px; border-radius: 32px; background: #E8E7E2; font-size: 11px; display: flex; align-items: center; justify-content: center">32</span>
+      <span style="width: 72px; height: 40px; border-radius: 999px; background: #E8E7E2; font-size: 11px; display: flex; align-items: center; justify-content: center">píldora</span>
+      <span style="width: 72px; height: 72px; border-radius: 50%; background: #E8E7E2; font-size: 11px; display: flex; align-items: center; justify-content: center">círculo</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; font-size: 11px">
+      <span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 22px; font-weight: 300">48</span>dedo</span>
+      <span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 22px; font-weight: 300">64</span>tecla</span>
+      <span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 22px; font-weight: 300">88+</span>barra</span>
+      <span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 22px; font-weight: 300">280</span>palma</span>
+    </div>
+    <span style="font-size: 12px; color: #5F5E59">Retícula 4/8. Interior = exterior − padding: 32−16=16, 24−16=8. Fila 88 / icono 56 ≈ 1/φ.</span>
+  </section>
+
+  <!-- Movimiento y sonido -->
+  <section class="c">
+    <span class="k">05 · Movimiento · sonido · vibración</span>
+    <div style="display: flex; gap: 8px; align-items: center">
+      <span style="width: 56px; height: 56px; border-radius: 50%; background: #FF5A1F; display: flex; align-items: center; justify-content: center; font-size: 22px">3</span>
+      <span style="width: 56px; height: 56px; border-radius: 50%; background: #FF5A1F; opacity: .6; display: flex; align-items: center; justify-content: center; font-size: 22px">2</span>
+      <span style="width: 56px; height: 56px; border-radius: 50%; background: #FF5A1F; opacity: .3; display: flex; align-items: center; justify-content: center; font-size: 22px">1</span>
+      <span style="flex: 1; height: 56px; border-radius: 999px; background: #002FA7"></span>
+    </div>
+    <div style="display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; font-size: 12px">
+      <span class="k">Punto</span><span>se apaga 1 por segundo · 300 ms</span>
+      <span class="k">Cambio</span><span>pantalla a sangre · 240 ms · sin rebote</span>
+      <span class="k">Pitido</span><span>3 cortos (3·2·1) · 1 largo al fin</span>
+      <span class="k">Vibra</span><span>al empezar y al acabar cada tramo</span>
+      <span class="k">Música</span><span>se baja, no se para</span>
+    </div>
+    <span style="font-size: 12px; color: #5F5E59">Movimiento reducido: los puntos cambian sin transición.</span>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1600,"height":920}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      iconDots: Array.from({ length: 12 }, (_, i) => {
+        const a = (2 * Math.PI * i) / 12;
+        return { x: (84 + 58 * Math.sin(a) - 6).toFixed(1), y: (84 - 58 * Math.cos(a) - 6).toFixed(1) };
+      }),
+    };
+  }
+}
+</script>
+</body>
+</html>

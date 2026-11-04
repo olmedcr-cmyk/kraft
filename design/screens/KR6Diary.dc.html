@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Bitácora</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#141414}a:hover{color:#000000}
+button:focus-visible,a:focus-visible{outline:2px solid #141414;outline-offset:3px}
+button:disabled{cursor:default}
+.dot{transition:background-color .3s ease,border-color .3s ease,color .3s ease}
+@media (prefers-reduced-motion: reduce){.dot{transition:none}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 64px 16px 16px; background: #F2F1ED; color: #141414; font-family: 'Roboto Mono', ui-monospace, monospace; display: flex; flex-direction: column; gap: 8px">
+
+  <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 8px; font-size: 13px; color: #5F5E59">
+    <span style="display: flex; align-items: center; gap: 8px"><span style="width: 8px; height: 8px; border-radius: 50%; background: #FF5A1F"></span>Diario</span>
+    <a href="KR6Data.dc.html" style="min-height: 24px; display: flex; align-items: center; color: #5F5E59; text-decoration: none">Gráficas →</a>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; align-items: flex-end; padding: 8px">
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <h1 style="margin: 0; font-weight: 300; font-size: 34px; line-height: 1; letter-spacing: -0.04em">Bitácora</h1>
+      <span style="font-size: 13px; color: #5F5E59">{{daysLabel}}</span>
+    </div>
+    <div style="display: flex; gap: 4px; padding: 4px; background: #FFFFFF; border-radius: 999px">
+      <sc-for list="{{months}}" as="m" hint-placeholder-count="2">
+        <button type="button" class="dot" onClick="{{m.pick}}" aria-pressed="{{m.on}}" style="height: 40px; padding: 0 12px; border: 0; border-radius: 999px; background: {{m.bg}}; color: {{m.fg}}; font-family: 'Roboto Mono', monospace; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer">{{m.label}}</button>
+      </sc-for>
+    </div>
+  </div>
+
+  <section aria-label="Días del mes" style="background: #FFFFFF; border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+    <div aria-hidden="true" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; font-size: 11px; color: #5F5E59; text-align: center"><span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+    <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; justify-items: center">
+      <sc-for list="{{cells}}" as="c" hint-placeholder-count="35">
+        <sc-if value="{{c.blank}}" hint-placeholder-val="{{ false }}"><span style="width: 32px; height: 32px"></span></sc-if>
+        <sc-if value="{{c.day}}" hint-placeholder-val="{{ true }}">
+          <button type="button" class="dot" onClick="{{c.pick}}" aria-label="{{c.aria}}" aria-pressed="{{c.on}}" style="width: 32px; height: 32px; border-radius: 50%; box-sizing: border-box; padding: 0; border: 2px solid {{c.bd}}; background: {{c.bg}}; color: {{c.fg}}; font-family: 'Roboto Mono', monospace; font-size: 11px; cursor: pointer; outline: {{c.ring}}; outline-offset: 2px">{{c.n}}</button>
+        </sc-if>
+      </sc-for>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #F2F1ED; padding-top: 12px; font-size: 11px">
+      <span style="display: flex; gap: 12px; color: #5F5E59">
+        <span style="display: flex; align-items: center; gap: 4px"><span style="width: 10px; height: 10px; border-radius: 50%; background: #FFC93C"></span>Grupo</span>
+        <span style="display: flex; align-items: center; gap: 4px"><span style="width: 10px; height: 10px; border-radius: 50%; background: #141414"></span>Solo</span>
+        <span style="display: flex; align-items: center; gap: 4px"><span style="width: 10px; height: 10px; border-radius: 50%; background: #002FA7"></span>Online</span>
+      </span>
+      <span>{{detail}}</span>
+    </div>
+  </section>
+
+  <section aria-label="Pago del mes" class="dot" style="background: {{payBg}}; color: {{payFg}}; border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start">
+      <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.75">{{payTitle}}</span>
+      <span style="font-size: 11px; opacity: 0.75">{{payDue}}</span>
+    </div>
+    <span style="font-size: 55px; font-weight: 300; line-height: 1">{{amount}} €</span>
+    <div style="display: flex; flex-direction: column; gap: 4px; font-size: 13px">
+      <sc-for list="{{lines}}" as="l" hint-placeholder-count="3">
+        <div style="display: flex; align-items: center; gap: 8px">
+          <span style="width: 10px; height: 10px; border-radius: 50%; background: {{l.c}}; box-shadow: 0 0 0 1px {{l.ring}}"></span>
+          <span style="flex: 1">{{l.label}}</span>
+          <span>{{l.total}} €</span>
+        </div>
+      </sc-for>
+    </div>
+    <a href="KR6Pay.dc.html" class="dot" style="height: 56px; border: 0; border-radius: 999px; background: {{btnBg}}; color: {{btnFg}}; font-family: 'Roboto Mono', monospace; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 12px"><span style="width: 10px; height: 10px; border-radius: 50%; background: {{btnDot}}"></span>{{btnLabel}}</a>
+  </section>
+
+  <div style="flex: 1"></div>
+
+  <nav aria-label="Secciones" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 4px; background: #E8E7E2; border-radius: 24px; flex: none"><a href="J2Today.dc.html" style="height: 64px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-size: 11px; background: transparent; color: #141414"><span style="width: 12px; height: 12px; border-radius: 4px; background: #141414"></span>Hoy</a><a href="KR5Time.dc.html" style="height: 64px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-size: 11px; background: transparent; color: #141414"><span style="width: 12px; height: 12px; border-radius: 50%; box-sizing: border-box; border: 2px solid #141414"></span>Tiempo</a><a href="KR4Agenda.dc.html" style="height: 64px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-size: 11px; background: transparent; color: #141414"><span style="width: 18px; height: 8px; border-radius: 999px; box-sizing: border-box; border: 2px solid #141414"></span>Agenda</a><a href="KR6Diary.dc.html" aria-current="page" style="height: 64px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-size: 11px; background: #141414; color: #FFFFFF"><span style="display: grid; grid-template-columns: 4px 4px 4px; gap: 2px"><span style="height: 4px; border-radius: 50%; background: #FFFFFF"></span><span style="height: 4px; border-radius: 50%; background: #FFFFFF"></span><span style="height: 4px; border-radius: 50%; background: #FFFFFF"></span><span style="height: 4px; border-radius: 50%; background: #FFFFFF"></span><span style="height: 4px; border-radius: 50%; background: #FFFFFF"></span><span style="height: 4px; border-radius: 50%; background: #FFFFFF"></span></span>Diario</a></nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"priceGroup":{"editor":"int","default":8,"min":0,"max":100,"unit":"€","section":"Precios"},"priceSolo":{"editor":"int","default":30,"min":0,"max":200,"unit":"€","section":"Precios"},"priceOnline":{"editor":"int","default":5,"min":0,"max":100,"unit":"€","section":"Precios"},"$preview":{"width":390,"height":844}}'>
+var Y = '#FFC93C', B = '#002FA7', INK = '#141414', W = '#FFFFFF', RED = '#FF5A1F', GREEN = '#0A7B57', NONE = 'transparent';
+var MONTHS = {
+  oct: { label: 'Oct', name: 'octubre', offset: 3, len: 31, today: 0, closed: true,
+    done: { 1: 'g', 6: 'g', 8: 'g', 13: 'g', 15: 'g', 20: 'g', 22: 'g', 27: 'g', 29: 'g', 3: 's', 17: 's', 10: 'o', 24: 'o', 31: 'o' }, booked: {} },
+  nov: { label: 'Nov', name: 'noviembre', offset: 6, len: 30, today: 3, closed: false,
+    done: { 2: 'g', 3: 'o' }, booked: { 5: 'g', 12: 'g', 14: 's' } },
+};
+var KIND = { g: { n: 'Grupo', c: Y, fg: INK }, s: { n: 'Solo', c: INK, fg: W }, o: { n: 'Online', c: B, fg: W } };
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { m: 'oct', sel: 29, paid: { oct: false } }; }
+  renderVals() {
+    const s = this.state, M = MONTHS[s.m];
+    const price = { g: this.props.priceGroup ?? 8, s: this.props.priceSolo ?? 30, o: this.props.priceOnline ?? 5 };
+    const cells = [];
+    for (let i = 0; i < M.offset; i++) cells.push({ blank: true, day: false });
+    for (let d = 1; d <= M.len; d++) {
+      const k = M.done[d], b = M.booked[d], on = d === s.sel, today = d === M.today;
+      let bg = NONE, fg = '#9A9995', bd = '#E8E7E2';
+      if (k) { bg = KIND[k].c; fg = KIND[k].fg; bd = KIND[k].c; }
+      else if (b) { bg = W; fg = INK; bd = KIND[b].c; }
+      if (today && !k) bd = RED;
+      cells.push({
+        blank: false, day: true, n: String(d), bg, fg, bd, on: on ? 'true' : 'false',
+        ring: on ? '2px solid ' + INK : 'none',
+        aria: d + ' de ' + M.name + (k ? ', entrenado ' + KIND[k].n : '') + (b ? ', reservado ' + KIND[b].n : '') + (today ? ', hoy' : ''),
+        pick: () => this.setState({ sel: d }),
+      });
+    }
+    const counts = { g: 0, s: 0, o: 0 };
+    Object.values(M.done).forEach((k) => { counts[k]++; });
+    const totalDays = counts.g + counts.s + counts.o;
+    const amount = counts.g * price.g + counts.s * price.s + counts.o * price.o;
+    const lines = ['g', 's', 'o'].map((k) => ({ c: KIND[k].c, ring: KIND[k].c === INK ? '#555' : KIND[k].c, label: counts[k] + ' × ' + KIND[k].n + ' · ' + price[k] + ' €', total: String(counts[k] * price[k]) }));
+    const paid = !!s.paid[s.m];
+    const selK = M.done[s.sel], selB = M.booked[s.sel];
+    const detail = s.sel + ' ' + M.name.slice(0, 3) + ' · ' + (selK ? KIND[selK].n + ' · ' + price[selK] + ' €' : (selB ? 'Reservado · ' + KIND[selB].n : 'Sin entreno'));
+    let payBg = INK, payFg = W, payTitle = 'A pagar · ' + M.name, payDue = 'Vence 5 nov', btnLabel = 'Pagar ' + amount + ' €', btnBg = RED, btnFg = INK, btnDot = INK, payDis = false;
+    if (!M.closed) { payBg = W; payFg = INK; payTitle = 'En curso · ' + M.name; payDue = 'Se cobra el 30'; btnLabel = 'Se cobra a fin de mes'; btnBg = '#F2F1ED'; btnFg = '#5F5E59'; btnDot = '#9A9995'; payDis = true; }
+    if (paid) { payBg = GREEN; payFg = W; payTitle = 'Pagado · ' + M.name; payDue = 'Gracias'; btnLabel = 'Recibo enviado'; btnBg = W; btnFg = GREEN; btnDot = GREEN; payDis = true; }
+    return {
+      cells, lines, detail, amount: String(amount),
+      daysLabel: totalDays + ' días entrenados',
+      months: ['oct', 'nov'].map((id) => ({ label: MONTHS[id].label, on: id === s.m ? 'true' : 'false', bg: id === s.m ? INK : NONE, fg: id === s.m ? W : INK, pick: () => this.setState({ m: id, sel: id === 'nov' ? 3 : 29 }) })),
+      payBg, payFg, payTitle, payDue, btnLabel, btnBg, btnFg, btnDot, payDis,
+      pay: () => this.setState({ paid: Object.assign({}, this.state.paid, { [this.state.m]: true }) }),
+    };
+  }
+}
+</script>
+</body>
+</html>

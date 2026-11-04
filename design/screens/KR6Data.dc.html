@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Datos</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#141414}a:hover{color:#000000}
+button:focus-visible,a:focus-visible{outline:2px solid #141414;outline-offset:3px}
+.dot{transition:background-color .3s ease,height .4s ease}
+@media (prefers-reduced-motion: reduce){.dot{transition:none}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 64px 16px 16px; background: #F2F1ED; color: #141414; font-family: 'Roboto Mono', ui-monospace, monospace; display: flex; flex-direction: column; gap: 16px">
+
+  <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #5F5E59">
+    <span style="display: flex; align-items: center; gap: 8px"><span style="width: 8px; height: 8px; border-radius: 50%; background: #FF5A1F"></span>Datos</span>
+    <span>Últimas 8 semanas</span>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; align-items: flex-end">
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <h1 style="margin: 0; font-weight: 300; font-size: 34px; line-height: 1; letter-spacing: -0.04em">Progreso</h1>
+      <span style="font-size: 13px; color: #5F5E59">Un círculo = 5 minutos</span>
+    </div>
+    <span style="font-weight: 300; font-size: 34px; line-height: 0.9">+18%</span>
+  </div>
+
+  <section aria-label="Minutos por semana" style="background: #141414; color: #FFFFFF; border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; justify-content: space-between; align-items: center">
+      <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #A3A39F">Minutos entrenados</span>
+      <span style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: #A3A39F"><span style="width: 8px; height: 8px; border-radius: 50%; background: #FF5A1F"></span>esta semana</span>
+    </div>
+    <div role="img" aria-label="Minutos por semana en aumento, de 75 a 200 minutos en ocho semanas" style="display: grid; grid-template-columns: repeat(24, minmax(0, 1fr)); gap: 4px; align-items: end">
+      <sc-for list="{{cols}}" as="c" hint-placeholder-count="24">
+        <span style="display: flex; flex-direction: column; gap: 4px">
+          <sc-for list="{{c.dots}}" as="d" hint-placeholder-count="8">
+            <span style="aspect-ratio: 1; border-radius: 50%; background: {{d.bg}}"></span>
+          </sc-for>
+        </span>
+      </sc-for>
+    </div>
+    <div style="display: flex; justify-content: space-between; font-size: 11px; color: #A3A39F"><span>S1</span><span>S4</span><span>S8</span></div>
+  </section>
+
+  <section aria-label="Esta semana" style="background: #FFFFFF; border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; justify-content: space-between; align-items: center">
+      <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #5F5E59">Esta semana</span>
+      <span style="font-size: 13px">{{pickLabel}}</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; align-items: end; height: 120px">
+      <sc-for list="{{days}}" as="d" hint-placeholder-count="7">
+        <button type="button" class="dot" onClick="{{d.pick}}" aria-label="{{d.aria}}" aria-pressed="{{d.on}}" style="height: {{d.h}}px; border-radius: 999px; box-sizing: border-box; border: 2px solid {{d.bd}}; background: {{d.bg}}; padding: 0; cursor: pointer"></button>
+      </sc-for>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; font-size: 11px; color: #5F5E59; text-align: center">
+      <span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span>
+    </div>
+  </section>
+
+  <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+    <div style="aspect-ratio: 1; border-radius: 24px; background: #FFFFFF; padding: 16px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between">
+      <span style="display: flex; gap: 4px" aria-hidden="true"><span style="width: 8px; height: 8px; border-radius: 50%; background: #141414"></span><span style="width: 8px; height: 8px; border-radius: 50%; background: #141414"></span><span style="width: 8px; height: 8px; border-radius: 50%; background: #141414"></span><span style="width: 8px; height: 8px; border-radius: 50%; background: #141414"></span><span style="width: 8px; height: 8px; border-radius: 50%; background: #141414"></span><span style="width: 8px; height: 8px; border-radius: 50%; background: #FF5A1F"></span></span>
+      <span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 34px; font-weight: 300; line-height: 1">6</span><span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #5F5E59">Días seguidos</span></span>
+    </div>
+    <div style="aspect-ratio: 1; border-radius: 24px; background: #FFFFFF; padding: 16px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between">
+      <span style="width: 16px; height: 16px; border-radius: 6px; background: #141414" aria-hidden="true"></span>
+      <span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 34px; font-weight: 300; line-height: 1">14</span><span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #5F5E59">Sesiones</span></span>
+    </div>
+    <a href="KR5Tabata.dc.html" style="aspect-ratio: 1; border-radius: 24px; background: #141414; color: #FFFFFF; text-decoration: none; padding: 16px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between">
+      <span style="width: 32px; height: 16px; border-radius: 999px; background: #FF5A1F" aria-hidden="true"></span>
+      <span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 34px; font-weight: 300; line-height: 1">9</span><span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #C9C9C5">Tabatas</span></span>
+    </a>
+  </div>
+
+  <div style="flex: 1"></div>
+
+  <nav aria-label="Secciones" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 4px; background: #E8E7E2; border-radius: 24px; flex: none"><a href="J2Today.dc.html" style="height: 64px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-size: 11px; background: transparent; color: #141414"><span style="width: 12px; height: 12px; border-radius: 4px; background: #141414"></span>Hoy</a><a href="KR5Time.dc.html" style="height: 64px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-size: 11px; background: transparent; color: #141414"><span style="width: 12px; height: 12px; border-radius: 50%; box-sizing: border-box; border: 2px solid #141414"></span>Tiempo</a><a href="KR4Agenda.dc.html" style="height: 64px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-size: 11px; background: transparent; color: #141414"><span style="width: 18px; height: 8px; border-radius: 999px; box-sizing: border-box; border: 2px solid #141414"></span>Agenda</a><a href="KR6Diary.dc.html" aria-current="page" style="height: 64px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-size: 11px; background: #141414; color: #FFFFFF"><span style="display: grid; grid-template-columns: 4px 4px 4px; gap: 2px"><span style="height: 4px; border-radius: 50%; background: #FFFFFF"></span><span style="height: 4px; border-radius: 50%; background: #FFFFFF"></span><span style="height: 4px; border-radius: 50%; background: #FFFFFF"></span><span style="height: 4px; border-radius: 50%; background: #FFFFFF"></span><span style="height: 4px; border-radius: 50%; background: #FFFFFF"></span><span style="height: 4px; border-radius: 50%; background: #FFFFFF"></span></span>Diario</a></nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+var SERIES = [3, 4, 4, 5, 4, 3, 5, 6, 6, 5, 7, 6, 5, 6, 7, 8, 7, 6, 7, 8, 9, 8, 9, 10];
+var WEEK = [45, 30, 0, 0, 0, 0, 0];
+var NAMES = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+var TODAY = 1;
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { day: TODAY }; }
+  renderVals() {
+    const ROWS = 8;
+    const cols = SERIES.map((v, ci) => {
+      const h = Math.round((v / 10) * ROWS);
+      const recent = ci >= SERIES.length - 3;
+      return {
+        dots: Array.from({ length: ROWS }, (_, ri) => {
+          const fromBottom = ROWS - 1 - ri;
+          let bg = '#262624';
+          if (fromBottom < h) bg = recent && fromBottom === h - 1 ? '#FF5A1F' : '#FFFFFF';
+          else if (fromBottom === h) bg = '#4A4A47';
+          return { bg };
+        }),
+      };
+    });
+    const max = 60;
+    const days = WEEK.map((m, i) => {
+      const on = i === this.state.day, today = i === TODAY, future = i > TODAY;
+      const h = m === 0 ? 32 : Math.max(32, Math.round((m / max) * 120));
+      return {
+        h, on: on ? 'true' : 'false',
+        bg: on ? (today ? '#FF5A1F' : '#141414') : (m === 0 ? 'transparent' : '#D9D9D5'),
+        bd: on ? (today ? '#FF5A1F' : '#141414') : (m === 0 ? (future ? '#D9D9D5' : '#141414') : '#D9D9D5'),
+        aria: NAMES[i] + ': ' + m + ' minutos',
+        pick: () => this.setState({ day: i }),
+      };
+    });
+    const d = this.state.day;
+    return {
+      cols, days,
+      pickLabel: NAMES[d] + ' · ' + WEEK[d] + ' min' + (WEEK[d] ? ' · ' + Math.round(WEEK[d] / 5) + ' círculos' : ''),
+    };
+  }
+}
+</script>
+</body>
+</html>

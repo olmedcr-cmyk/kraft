@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>KRAFT · 6 recorridos</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#141414;text-decoration:none}
+a:focus-visible{outline:3px solid #002FA7;outline-offset:3px}
+.k{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5F5E59}
+</style>
+</helmet>
+<div style="width: 1600px; height: 1000px; box-sizing: border-box; padding: 32px; background: #F2F1ED; color: #141414; font-family: 'Roboto Mono', ui-monospace, monospace; display: flex; flex-direction: column; gap: 8px">
+
+  <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 8px 8px">
+    <span class="k">6 recorridos unificados · atleta</span>
+    <span style="display: flex; gap: 24px; font-size: 13px; color: #5F5E59">
+      <span style="display: flex; align-items: center; gap: 8px"><span style="width: 12px; height: 12px; border-radius: 50%; background: #002FA7"></span>KRAFT</span>
+      <span style="display: flex; align-items: center; gap: 8px"><span style="width: 12px; height: 12px; border-radius: 50%; background: #B5B4AF"></span>Existe · por migrar</span>
+      <span style="display: flex; align-items: center; gap: 8px"><span style="width: 12px; height: 12px; border-radius: 50%; box-sizing: border-box; border: 2px solid #141414"></span>Pendiente</span>
+    </span>
+  </div>
+
+  <sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+    <a href="{{r.href}}" style="flex: 1; background: #FFFFFF; border-radius: 24px; padding: 16px 24px 16px 16px; display: flex; align-items: center; gap: 24px">
+      <span style="width: 96px; height: 96px; border-radius: 16px; flex: none; background: {{r.bg}}; color: {{r.fg}}; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 300">{{r.n}}</span>
+      <span style="width: 260px; flex: none; display: flex; flex-direction: column; gap: 8px"><span style="font-size: 18px">{{r.name}}</span><span style="font-size: 13px; color: #5F5E59">{{r.why}}</span></span>
+      <span style="flex: 1; position: relative; display: flex; justify-content: space-between; align-items: flex-start">
+        <span aria-hidden="true" style="position: absolute; left: 12px; right: 12px; top: 11px; height: 2px; background: #D7D6D0"></span>
+        <sc-for list="{{r.steps}}" as="s" hint-placeholder-count="7">
+          <span style="position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; width: 120px">
+            <span style="width: 24px; height: 24px; border-radius: 50%; box-sizing: border-box; background: {{s.bg}}; border: {{s.bd}}"></span>
+            <span style="font-size: 13px; text-align: center; line-height: 1.3">{{s.t}}</span>
+          </span>
+        </sc-for>
+      </span>
+    </a>
+  </sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1600,"height":1000}}'>
+function st(list) {
+  return list.map(function (s) {
+    var m = s[0], t = s.slice(1);
+    if (m === 'K') return { t: t, bg: '#002FA7', bd: '0' };
+    if (m === 'G') return { t: t, bg: '#B5B4AF', bd: '0' };
+    return { t: t, bg: '#FFFFFF', bd: '2px solid #141414' };
+  });
+}
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      rows: [
+        { n: '1', name: 'Primera vez', why: 'De la tienda a tu primera sesión, en 6 toques.', bg: '#002FA7', fg: '#FFFFFF', href: 'K4Store.dc.html', steps: st(['KTienda', 'KArranque', 'KCuenta', 'KEntrenador', 'KPermisos', 'KPalma', 'KHoy']) },
+        { n: '2', name: 'Sesión del día', why: 'Llega del entrenador, entrenas sin leer.', bg: '#FF5A1F', fg: '#141414', href: 'J2Today.dc.html', steps: st(['KAviso', 'KHoy', 'KCalentar', 'KAguantar', 'KHecho', 'KTabata', 'KFin']) },
+        { n: '3', name: 'No sé este ejercicio', why: 'Lo ves en marcha. El tiempo sigue.', bg: '#141414', fg: '#FFFFFF', href: 'J4How.dc.html', steps: st(['KEn marcha', 'KToca ?', 'KCómo se hace', 'KBuscar', 'KGuía animada', 'KVolver']) },
+        { n: '4', name: 'Reservar', why: 'Grupo, solo u online. Sala y qué llevar.', bg: '#FFC93C', fg: '#141414', href: 'KR4Agenda.dc.html', steps: st(['KModalidad', 'KHueco', 'KTu reserva', 'KRecordatorio', 'KLlegada', 'KMover o cancelar', 'KLlena · espera']) },
+        { n: '5', name: 'Entrenar libre', why: 'Sin sesión: un regulador y a tocar.', bg: '#E8E7E2', fg: '#141414', href: 'KR5Time.dc.html', steps: st(['KTiempo', 'K3·2·1', 'KSerie', 'KHecho', 'KTabata']) },
+        { n: '6', name: 'Diario y pago', why: 'Días entrenados y lo que debes.', bg: '#0A7B57', fg: '#FFFFFF', href: 'KR6Diary.dc.html', steps: st(['KMes', 'KDatos', 'KLo que debes', 'KPagar', 'KRecibo']) },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

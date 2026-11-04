@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>¿Cómo se hace?</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+@keyframes kf1{0%,33%{opacity:1}33.01%,100%{opacity:0}}@keyframes kf2{0%,33%{opacity:0}33.01%,66%{opacity:1}66.01%,100%{opacity:0}}@keyframes kf3{0%,66%{opacity:0}66.01%,100%{opacity:1}}
+@keyframes kr1{0%,33%{box-shadow:inset 0 0 0 2px #002FA7}33.01%,100%{box-shadow:none}}@keyframes kr2{0%,33%{box-shadow:none}33.01%,66%{box-shadow:inset 0 0 0 2px #002FA7}66.01%,100%{box-shadow:none}}@keyframes kr3{0%,66%{box-shadow:none}66.01%,100%{box-shadow:inset 0 0 0 2px #002FA7}}
+.f{position:absolute;inset:0;margin:auto}.f1{animation:kf1 2.4s infinite}.f2{animation:kf2 2.4s infinite}.f3{animation:kf3 2.4s infinite}.r1{animation:kr1 2.4s infinite}.r2{animation:kr2 2.4s infinite}.r3{animation:kr3 2.4s infinite}
+@media (prefers-reduced-motion: reduce){.f1,.f2,.f3,.r1,.r2,.r3{animation:none}.f2,.f3{opacity:0}}
+body{margin:0}
+a:focus-visible{outline:3px solid #002FA7;outline-offset:3px}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding-top: 56px; background: #002FA7; color: #141414; font-family: 'Roboto Mono', ui-monospace, monospace; display: flex; flex-direction: column">
+  <div style="padding: 0 24px 16px; display: flex; justify-content: space-between; align-items: center; color: #FFFFFF">
+    <span style="display: flex; gap: 4px" aria-label="El tiempo sigue"><span style="width: 10px; height: 10px; border-radius: 50%; background: #FF5A1F"></span><span style="width: 10px; height: 10px; border-radius: 50%; background: #FFFFFF"></span><span style="width: 10px; height: 10px; border-radius: 50%; background: #FFFFFF"></span></span>
+    <span style="font-size: 34px; font-weight: 300; letter-spacing: -0.03em">0:16</span>
+  </div>
+
+  <section style="flex: 1; background: #FFFFFF; border-radius: 32px 32px 0 0; padding: 24px 16px 16px; display: flex; flex-direction: column; gap: 16px">
+    <h1 style="margin: 0; padding: 0 8px; font-weight: 400; font-size: 34px; letter-spacing: -0.03em">Plancha</h1>
+    <div style="flex: 1; background: #F2F1ED; border-radius: 16px; display: flex; align-items: center; justify-content: center">
+      <span role="img" aria-label="Plancha sobre antebrazos: codos bajo los hombros, cuerpo en línea recta, en 3 fases" style="position: relative; width: 300px; height: 300px; display: block"><img class="f f1" src="/_blob/21b6b4c06d3cc8b2a3ae47237b4e704d" alt="" style="width: 300px; height: 300px; object-fit: contain"><img class="f f2" src="/_blob/2153543676c8d34477e7231bc6655455" alt="" style="width: 300px; height: 300px; object-fit: contain"><img class="f f3" src="/_blob/8f320d653b052c03bab6e6da87123b64" alt="" style="width: 300px; height: 300px; object-fit: contain"></span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+      <span class="r1" style="height: 80px; border-radius: 16px; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><img src="/_blob/21b6b4c06d3cc8b2a3ae47237b4e704d" alt="Fase 1" style="width: 72px; height: 72px; object-fit: contain"></span>
+      <span class="r2" style="height: 80px; border-radius: 16px; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><img src="/_blob/2153543676c8d34477e7231bc6655455" alt="Fase 2" style="width: 72px; height: 72px; object-fit: contain"></span>
+      <span class="r3" style="height: 80px; border-radius: 16px; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><img src="/_blob/8f320d653b052c03bab6e6da87123b64" alt="Fase 3" style="width: 72px; height: 72px; object-fit: contain"></span>
+    </div>
+    <div style="display: flex; gap: 8px; font-size: 13px">
+      <span style="height: 40px; padding: 0 16px; border-radius: 999px; background: #D9E0F5; color: #002FA7; display: flex; align-items: center">Codos bajo hombros</span>
+      <span style="height: 40px; padding: 0 16px; border-radius: 999px; background: #D9E0F5; color: #002FA7; display: flex; align-items: center">Cadera recta</span>
+    </div>
+  </section>
+
+  <a href="J4Hold.dc.html" aria-label="Volver" style="height: 112px; background: #FF5A1F; display: flex; align-items: center; justify-content: center"><svg width="40" height="32" viewBox="0 0 40 32" aria-hidden="true"><path d="M30 16 H10 M18 7 L9 16 L18 25" fill="none" stroke="#141414" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path></svg></a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic { renderVals() { return {}; } }
+</script>
+</body>
+</html>

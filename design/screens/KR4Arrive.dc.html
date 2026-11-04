@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Llegada</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit;text-decoration:none}
+a:focus-visible,button:focus-visible{outline:3px solid #FF5A1F;outline-offset:3px}
+.k{font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.ctr{display:flex;align-items:center;justify-content:center}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 64px 16px 16px; background: {{bg}}; color: #FFFFFF; font-family: 'Roboto Mono', ui-monospace, monospace; display: flex; flex-direction: column; gap: 8px; transition: background-color .24s ease">
+  <div style="padding: 0 8px; display: flex; justify-content: space-between; align-items: flex-start">
+    <span style="display: flex; flex-direction: column; gap: 8px"><span style="font-size: 13px; opacity: 1">Funcional · 18:00</span><span style="font-size: 89px; font-weight: 300; letter-spacing: -0.04em; line-height: .85">Sala 2</span></span>
+    <span class="ctr" style="width: 48px; height: 48px; border-radius: 50%; background: #141414; font-size: 15px">E</span>
+  </div>
+  <div style="padding: 16px 8px; display: flex; gap: 4px; flex-wrap: wrap" aria-label="{{capAria}}">
+    <sc-for list="{{seats}}" as="s" hint-placeholder-count="12"><span style="width: 20px; height: 20px; border-radius: 50%; background: {{s.bg}}"></span></sc-for>
+  </div>
+  <div style="flex: 1; display: flex; align-items: center; justify-content: center">
+    <button type="button" onClick="{{tap}}" class="ctr" aria-label="{{label}}" style="width: 280px; height: 280px; border-radius: 50%; border: 0; background: #FFFFFF; color: {{fg}}; cursor: pointer; flex-direction: column; gap: 16px; font-family: 'Roboto Mono', monospace; font-size: 15px; letter-spacing: .08em; text-transform: uppercase">
+      <sc-if value="{{inside}}"><span class="ctr" style="width: 64px; height: 64px; border-radius: 50%; background: #0A7B57"><svg width="32" height="32" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 L6.5 12 L13 4.5" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></sc-if>
+      <span>{{label}}</span>
+    </button>
+  </div>
+  <sc-if value="{{inside}}">
+    <a href="J2Today.dc.html" style="height: 104px; flex: none; border-radius: 24px; background: #FFFFFF; color: #141414; padding: 0 16px 0 24px; display: flex; align-items: center; justify-content: space-between; font-size: 22px">Tu sesión<span class="ctr" style="width: 72px; height: 72px; border-radius: 50%; background: #FF5A1F"><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><path d="M10 7.5C10 5.6 12.1 4.4 13.8 5.4L26.3 13.4C27.9 14.4 27.9 16.6 26.3 17.6L13.8 25.6C12.1 26.6 10 25.4 10 23.5Z" fill="#141414"></path></svg></span></a>
+  </sc-if>
+  <sc-if value="{{outside}}"><span style="height: 104px; flex: none; display: flex; align-items: center; justify-content: center; font-size: 13px; opacity: 1">Toalla · agua · zapatillas</span></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { inside: false }; }
+  renderVals() {
+    const v = this.state.inside;
+    return {
+      inside: v, outside: !v,
+      bg: v ? '#0A7B57' : '#002FA7', fg: v ? '#0A7B57' : '#002FA7',
+      label: v ? 'Dentro' : 'Estoy aquí',
+      capAria: v ? '8 de 12 · tú dentro' : '7 de 12 dentro',
+      seats: Array.from({ length: 12 }, (_, i) => ({ bg: i < 7 ? '#FFFFFF' : (i === 7 && v ? '#FF5A1F' : 'rgba(255,255,255,0.25)') })),
+      tap: () => this.setState({ inside: !v }),
+    };
+  }
+}
+</script>
+</body>
+</html>

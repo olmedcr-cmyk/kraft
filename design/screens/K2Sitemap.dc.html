@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>KRAFT · mapa</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.k{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5F5E59}
+</style>
+</helmet>
+<div style="width: 1600px; height: 1000px; box-sizing: border-box; padding: 32px; background: #F2F1ED; color: #141414; font-family: 'Roboto Mono', ui-monospace, monospace; display: flex; flex-direction: column; gap: 16px">
+
+  <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 8px">
+    <span class="k">Mapa de KRAFT · atleta</span>
+    <span style="display: flex; gap: 24px; font-size: 13px; color: #5F5E59">
+      <span style="display: flex; align-items: center; gap: 8px"><span style="width: 12px; height: 12px; border-radius: 50%; background: #141414"></span>Diseñada</span>
+      <span style="display: flex; align-items: center; gap: 8px"><span style="width: 12px; height: 12px; border-radius: 50%; box-sizing: border-box; border: 2px solid #141414"></span>Pendiente</span>
+      <span style="display: flex; align-items: center; gap: 8px"><span style="width: 24px; height: 2px; background: #141414"></span>Pestaña fija</span>
+    </span>
+  </div>
+
+  <div aria-hidden="true" style="height: 2px; background: #141414; margin: 0 382px"></div>
+
+  <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; flex: 1; align-items: start">
+    <sc-for list="{{cols}}" as="c" hint-placeholder-count="6">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <div style="height: 104px; border-radius: 24px; background: {{c.bg}}; color: {{c.fg}}; padding: 16px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between">
+          <span style="font-size: 11px; letter-spacing: .08em; text-transform: uppercase; opacity: .8">{{c.tag}}</span>
+          <span style="font-size: 22px">{{c.name}}</span>
+        </div>
+        <sc-for list="{{c.items}}" as="i" hint-placeholder-count="6">
+          <div style="height: 48px; border-radius: 16px; background: #FFFFFF; padding: 0 16px; display: flex; align-items: center; gap: 12px; font-size: 13px">
+            <span style="width: 12px; height: 12px; border-radius: 50%; box-sizing: border-box; flex: none; border: 2px solid #141414; background: {{i.dot}}"></span>
+            <span style="flex: 1">{{i.t}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="background: #FFFFFF; border-radius: 24px; padding: 16px; display: flex; align-items: center; gap: 8px">
+    <span class="k" style="width: 200px; padding-left: 8px">Capas del sistema</span>
+    <sc-for list="{{layers}}" as="l" hint-placeholder-count="6">
+      <span style="height: 48px; padding: 0 16px; border-radius: 999px; background: #F2F1ED; display: flex; align-items: center; gap: 8px; font-size: 13px"><span style="width: 12px; height: 12px; border-radius: 50%; box-sizing: border-box; border: 2px solid #141414; background: {{l.dot}}"></span>{{l.t}}</span>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1600,"height":1000}}'>
+var ON = '#141414', OFF = 'transparent';
+function it(list) { return list.map(function (s) { var p = s[0] === '+'; return { t: p ? s.slice(1) : s, dot: p ? ON : OFF }; }); }
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      cols: [
+        { tag: 'R1 · una vez', name: 'Entrada', bg: '#002FA7', fg: '#FFFFFF', items: it(['+Ficha de la tienda', '+Arranque', '+Bienvenida + cuenta', '+Vincular entrenador', '+Permisos', '+Prueba de la palma']) },
+        { tag: 'R2 · R3 · pestaña', name: 'Hoy', bg: '#FF5A1F', fg: '#141414', items: it(['+Sesión del día', '+Bloque en marcha', '+¿Cómo se hace?', '+Hecho · siguiente', '+Tabata en pareja', '+Escalera con peso', '+Fin + nota', '+Sin sesión hoy', '+Sesión cambiada', '+Retomar a medias', '+Cambiar el peso']) },
+        { tag: 'R5 · pestaña', name: 'Tiempo', bg: '#141414', fg: '#FFFFFF', items: it(['+Temporizador', '+Cuenta atrás 3·2·1', '+Tabata · radio', '+Mis tiempos guardados']) },
+        { tag: 'R4 · pestaña', name: 'Agenda', bg: '#FFFFFF', fg: '#141414', items: it(['+Grupo · solo · online', '+Semana y huecos', '+Tu reserva · sala', '+Recordatorio', '+Llegada · check-in', '+Mover o cancelar', '+Llena · lista de espera']) },
+        { tag: 'R6 · pestaña', name: 'Diario', bg: '#0A7B57', fg: '#FFFFFF', items: it(['+Mes · días', '+Datos · puntos', '+Lo que debes', '+Pagar', '+Recibo']) },
+        { tag: 'avatar', name: 'Tú', bg: '#E8E7E2', fg: '#141414', items: it(['+Perfil', '+Mi entrenador', '+Avisos', '+Sonido · voz · vibra', '+Entreno: 3·2·1, descanso', '+kg · idioma · tema', '+Métodos de pago', '+Salud', '+Privacidad', '+Créditos', '+Salir · borrar cuenta']) },
+      ],
+      layers: it(['+Pantalla de bloqueo · Live Activity', '+Avisos push', 'Widget', '+Sin conexión', '+Llamada · segundo plano']),
+    };
+  }
+}
+</script>
+</body>
+</html>

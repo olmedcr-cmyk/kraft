@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Bienvenida</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit;text-decoration:none}
+a:focus-visible,button:focus-visible{outline:3px solid #FF5A1F;outline-offset:3px}
+.k{font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.ctr{display:flex;align-items:center;justify-content:center}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 64px 16px 16px; background: #F2F1ED; color: #141414; font-family: 'Roboto Mono', ui-monospace, monospace; display: flex; flex-direction: column; gap: 8px">
+  <div style="position: relative; height: 340px; border-radius: 24px; background: #002FA7; overflow: hidden; flex: none">
+    <sc-for list="{{dots}}" as="d" hint-placeholder-count="60"><span style="position: absolute; left: {{d.x}}px; top: {{d.y}}px; width: 10px; height: 10px; border-radius: 50%; background: {{d.bg}}"></span></sc-for>
+    <span style="position: absolute; left: 89px; top: 80px; width: 180px; height: 180px; border-radius: 50%; background: #FF5A1F"></span>
+  </div>
+  <div style="padding: 16px 8px; display: flex; flex-direction: column; gap: 8px">
+    <span style="font-size: 34px; font-weight: 300; letter-spacing: -0.03em; line-height: 1.1">Tu entrenador manda.<br>Tú solo tocas.</span>
+  </div>
+  <div style="flex: 1"></div>
+  <a href="K7Coach.dc.html" class="ctr" style="height: 64px; flex: none; border-radius: 16px; background: #141414; color: #FFFFFF; font-size: 15px">Seguir con Apple</a>
+  <a href="K7Coach.dc.html" class="ctr" style="height: 64px; flex: none; border-radius: 16px; background: #FFFFFF; font-size: 15px">Seguir con Google</a>
+  <a href="K7Coach.dc.html" class="ctr" style="height: 48px; flex: none; font-size: 13px; color: #5F5E59">Con email</a>
+  <span style="padding: 0 8px; font-size: 13px; line-height: 1.5; color: #5F5E59; text-align: center">Al seguir aceptas los <a href="KL5Doc.dc.html" style="text-decoration: underline">términos</a> y la <a href="KL5Doc.dc.html" style="text-decoration: underline">privacidad</a>, y confirmas que tienes 14 años o más.</span>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { dots: Array.from({ length: 60 }, (_, i) => {
+      const a = (2 * Math.PI * i) / 60;
+      return { x: (179 + 140 * Math.sin(a) - 5).toFixed(1), y: (170 - 140 * Math.cos(a) - 5).toFixed(1), bg: i < 45 ? '#FFFFFF' : 'rgba(255,255,255,0.25)' };
+    }) };
+  }
+}
+</script>
+</body>
+</html>

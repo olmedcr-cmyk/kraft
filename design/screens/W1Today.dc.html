@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Hoy</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a:focus-visible{outline:3px solid #FF5A1F;outline-offset:-6px}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F2F1ED; color: #141414; font-family: 'Roboto Mono', ui-monospace, monospace; display: flex; flex-direction: column">
+
+  <div style="padding: 64px 24px 24px; display: flex; justify-content: space-between; align-items: flex-end">
+    <span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 34px; font-weight: 300; letter-spacing: -0.04em; line-height: 1">Martes</span><span style="font-size: 13px; color: #5F5E59">50'</span></span>
+    <span aria-label="Sesión de tu entrenador" style="width: 48px; height: 48px; border-radius: 50%; background: #141414; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 15px">E</span>
+  </div>
+
+  <a href="J3Warmup.dc.html" style="flex: 8; background: #002FA7; color: #FFFFFF; text-decoration: none; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center">
+    <span style="font-size: 22px">Calentar</span>
+    <span style="display: flex; gap: 4px; align-items: center" aria-label="5 minutos y 3 ejercicios de 30 segundos"><span style="width: 40px; height: 14px; border-radius: 999px; background: #FFFFFF"></span><span style="width: 14px; height: 14px; border-radius: 50%; background: #FFFFFF"></span><span style="width: 14px; height: 14px; border-radius: 50%; background: #FFFFFF"></span><span style="width: 14px; height: 14px; border-radius: 50%; background: #FFFFFF"></span></span>
+  </a>
+  <a href="J6Tabata.dc.html" style="flex: 24; background: #FF5A1F; color: #141414; text-decoration: none; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center">
+    <span style="font-size: 22px">Tabata</span>
+    <span style="display: grid; grid-template-columns: repeat(3, 20px); gap: 4px" aria-label="6 tabatas"><span style="width: 20px; height: 20px; border-radius: 6px; background: #141414"></span><span style="width: 20px; height: 20px; border-radius: 6px; background: #141414"></span><span style="width: 20px; height: 20px; border-radius: 6px; background: #141414"></span><span style="width: 20px; height: 20px; border-radius: 6px; background: #141414"></span><span style="width: 20px; height: 20px; border-radius: 6px; background: #141414"></span><span style="width: 20px; height: 20px; border-radius: 6px; background: #141414"></span></span>
+  </a>
+  <a href="J6Tabata.dc.html" style="flex: 5; background: #FFE0D2; color: #141414; text-decoration: none; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center">
+    <span style="font-size: 22px">Bici</span>
+    <span style="display: flex; gap: 4px" aria-label="4 rondas"><span style="width: 14px; height: 14px; border-radius: 4px; background: #141414"></span><span style="width: 14px; height: 14px; border-radius: 4px; background: #141414"></span><span style="width: 14px; height: 14px; border-radius: 4px; background: #141414"></span><span style="width: 14px; height: 14px; border-radius: 4px; background: #141414"></span></span>
+  </a>
+  <a href="J8Finish.dc.html" style="flex: 8; background: #0A7B57; color: #FFFFFF; text-decoration: none; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center">
+    <span style="font-size: 22px">Estirar</span>
+    <span style="width: 40px; height: 14px; border-radius: 999px; background: #FFFFFF" aria-label="libre"></span>
+  </a>
+
+  <a href="J3Warmup.dc.html" aria-label="Empezar" style="height: 120px; background: #FF5A1F; display: flex; align-items: center; justify-content: center">
+    <span style="width: 80px; height: 80px; border-radius: 50%; background: #141414; display: flex; align-items: center; justify-content: center"><svg width="36" height="36" viewBox="0 0 32 32" aria-hidden="true"><path d="M10 7.5C10 5.6 12.1 4.4 13.8 5.4L26.3 13.4C27.9 14.4 27.9 16.6 26.3 17.6L13.8 25.6C12.1 26.6 10 25.4 10 23.5Z" fill="#FFFFFF"></path></svg></span>
+  </a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic { renderVals() { return {}; } }
+</script>
+</body>
+</html>

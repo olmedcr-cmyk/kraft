@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Tiempo</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#141414}a:hover{color:#000000}
+button:focus-visible,a:focus-visible{outline:2px solid #141414;outline-offset:3px}
+.dot{transition:background-color .35s ease,border-color .35s ease,transform .4s ease,width .9s linear}
+.palm:active{transform:scale(.97)}
+@media (prefers-reduced-motion: reduce){.dot,.palm{transition:none}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 48px 16px 16px; background: {{bg}}; color: {{fg}}; transition: background-color .24s ease, color .24s ease; font-family: 'Roboto Mono', ui-monospace, monospace; display: flex; flex-direction: column; gap: 12px">
+  <sc-if value="{{isSelect}}" hint-placeholder-val="{{ true }}"><div role="tablist" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; padding: 4px; background: #E8E7E2; border-radius: 999px; font-size: 13px; flex: none"><a href="KR5Time.dc.html" role="tab" aria-selected="true" style="height: 40px; border-radius: 999px; display: flex; align-items: center; justify-content: center; text-decoration: none; background: #FFFFFF; color: #141414">Series</a><a href="KR5Tabata.dc.html" role="tab" aria-selected="false" style="height: 40px; border-radius: 999px; display: flex; align-items: center; justify-content: center; text-decoration: none; background: transparent; color: #141414">Tabata</a><a href="KR5Saved.dc.html" role="tab" aria-selected="false" style="height: 40px; border-radius: 999px; display: flex; align-items: center; justify-content: center; text-decoration: none; background: transparent; color: #141414">Míos</a></div></sc-if>
+
+  <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 8px; font-size: 13px">
+    <span style="display: flex; align-items: center; gap: 8px"><span style="width: 8px; height: 8px; border-radius: 50%; background: {{markDot}}"></span>{{exercise}}</span>
+    <span>{{serieLabel}}</span>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; align-items: flex-end; padding: 0 8px">
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <h1 style="margin: 0; font-weight: 300; font-size: 34px; line-height: 1; letter-spacing: -0.04em">{{title}}</h1>
+      <span style="font-size: 13px">{{unit}}</span>
+    </div>
+    <span style="font-weight: 300; font-size: 34px; line-height: 0.9; font-variant-numeric: tabular-nums">{{corner}}</span>
+  </div>
+
+  <sc-if value="{{isSelect}}" hint-placeholder-val="{{ true }}">
+    <div style="display: flex; flex-direction: column; gap: 8px; flex: 1">
+      <div style="background: #FFFFFF; border-radius: 24px; padding: 16px; display: flex; justify-content: center">
+        <button type="button" onClick="{{nextWork}}" aria-label="{{knobAria}}" style="width: 300px; height: 300px; border: 0; padding: 0; background: transparent; position: relative; cursor: pointer; font-family: 'Roboto Mono', monospace; color: #141414">
+          <sc-for list="{{ticks}}" as="t" hint-placeholder-count="48">
+            <span aria-hidden="true" style="position: absolute; left: 149px; top: 30px; width: 2px; height: {{t.h}}px; border-radius: 999px; background: {{t.c}}; transform-origin: 1px 120px; transform: rotate({{t.a}}deg)"></span>
+          </sc-for>
+          <sc-for list="{{opts}}" as="o" hint-placeholder-count="4">
+            <span style="position: absolute; left: {{o.x}}px; top: {{o.y}}px; width: 32px; text-align: center; font-size: 13px; color: {{o.c}}">{{o.v}}</span>
+          </sc-for>
+          <span style="position: absolute; left: 60px; top: 60px; width: 180px; height: 180px; border-radius: 50%; background: #141414; color: #FFFFFF; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px">
+            <span style="font-size: 89px; font-weight: 300; line-height: 1">{{work}}</span>
+            <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #C9C9C5">seg · toca</span>
+          </span>
+          <span class="dot" style="position: absolute; left: 60px; top: 60px; width: 180px; height: 180px; border-radius: 50%; transform: rotate({{angle}}deg)">
+            <span style="position: absolute; left: 83px; top: 10px; width: 14px; height: 14px; border-radius: 50%; background: #FF5A1F"></span>
+          </span>
+        </button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+        <button type="button" onClick="{{nextRest}}" aria-label="{{restAria}}" style="height: 88px; border: 0; border-radius: 32px; background: #FFFFFF; padding: 16px; box-sizing: border-box; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; font-family: 'Roboto Mono', monospace; color: #141414; text-align: left">
+          <span style="display: flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #5F5E59"><span style="width: 8px; height: 8px; border-radius: 50%; background: #0A7B57"></span>Descanso</span>
+          <span style="display: flex; align-items: baseline; gap: 4px"><span style="font-size: 22px; font-weight: 300">{{restLabel}}</span><span style="font-size: 11px; color: #5F5E59">{{restUnit}}</span></span>
+        </button>
+        <a href="J2Today.dc.html" style="height: 88px; border-radius: 32px; background: #FFFFFF; padding: 16px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; text-decoration: none; color: #141414">
+          <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #5F5E59">Series · de tu sesión</span>
+          <span style="display: flex; gap: 4px" aria-label="{{series}} series">
+            <sc-for list="{{seriesDots}}" as="sd" hint-placeholder-count="4">
+              <span style="width: 16px; height: 16px; border-radius: 50%; background: #141414"></span>
+            </sc-for>
+          </span>
+        </a>
+      </div>
+
+      <div style="flex: 1"></div>
+
+      <button type="button" class="palm" onClick="{{start}}" style="height: 104px; border: 0; border-radius: 24px; background: #141414; color: #FFFFFF; padding: 0 16px 0 24px; font-family: 'Roboto Mono', monospace; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: space-between">
+        Empezar<span style="width: 72px; height: 72px; border-radius: 50%; background: #FF5A1F; display: flex; align-items: center; justify-content: center"><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><path d="M10 7.5C10 5.6 12.1 4.4 13.8 5.4L26.3 13.4C27.9 14.4 27.9 16.6 26.3 17.6L13.8 25.6C12.1 26.6 10 25.4 10 23.5Z" fill="#141414"></path></svg></span>
+      </button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{isTraining}}" hint-placeholder-val="{{ false }}">
+    <div style="display: flex; flex-direction: column; gap: 16px; flex: 1">
+      <div role="img" aria-label="Progreso de la sesión" style="display: flex; gap: 4px; height: 8px; padding: 0 8px">
+        <sc-for list="{{segs}}" as="g" hint-placeholder-count="7">
+          <span style="flex: {{g.grow}} 1 0; min-width: 8px; height: 8px; border-radius: 999px; background: {{segBase}}; overflow: hidden; display: flex">
+            <span class="dot" style="width: {{g.pct}}%; height: 8px; border-radius: 999px; background: {{g.fill}}"></span>
+          </span>
+        </sc-for>
+      </div>
+
+      <div style="position: relative; width: 358px; height: 358px">
+        <sc-for list="{{ring}}" as="d" hint-placeholder-count="60">
+          <span class="dot" aria-hidden="true" style="position: absolute; left: {{d.x}}px; top: {{d.y}}px; width: {{d.s}}px; height: {{d.s}}px; border-radius: 50%; box-sizing: border-box; background: {{d.bg}}; border: 2px solid {{d.bd}}"></span>
+        </sc-for>
+        <button type="button" class="dot palm" onClick="{{palm}}" aria-label="{{palmAria}}" style="position: absolute; left: 39px; top: 39px; width: 280px; height: 280px; border-radius: 50%; box-sizing: border-box; border: 0; background: {{palmBg}}; color: {{palmFg}}; font-family: 'Roboto Mono', monospace; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px">
+          <sc-if value="{{showDigit}}" hint-placeholder-val="{{ false }}">
+            <span style="font-size: 233px; font-weight: 300; line-height: 1">{{n}}</span>
+          </sc-if>
+          <sc-if value="{{showNum}}" hint-placeholder-val="{{ true }}">
+            <span style="font-size: 144px; font-weight: 300; line-height: 1; font-variant-numeric: tabular-nums">{{n}}</span>
+            <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase">{{palmHint}}</span>
+          </sc-if>
+          <sc-if value="{{showNext}}" hint-placeholder-val="{{ false }}">
+            <svg width="72" height="72" viewBox="0 0 32 32" aria-hidden="true"><path d="M10 7.5C10 5.6 12.1 4.4 13.8 5.4L26.3 13.4C27.9 14.4 27.9 16.6 26.3 17.6L13.8 25.6C12.1 26.6 10 25.4 10 23.5Z" fill="#141414"></path></svg>
+            <span style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase">{{palmHint}}</span>
+            <span style="font-size: 11px; color: #5F5E59">{{waitedLabel}}</span>
+          </sc-if>
+          <sc-if value="{{showPlay}}" hint-placeholder-val="{{ false }}">
+            <svg width="64" height="64" viewBox="0 0 32 32" aria-hidden="true"><path d="M10 7.5C10 5.6 12.1 4.4 13.8 5.4L26.3 13.4C27.9 14.4 27.9 16.6 26.3 17.6L13.8 25.6C12.1 26.6 10 25.4 10 23.5Z" fill="#141414"></path></svg>
+            <span style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase">{{palmHint}}</span>
+          </sc-if>
+        </button>
+      </div>
+
+      <div style="flex: 1"></div>
+
+      <nav aria-label="Mando" style="height: 144px; flex: none; margin: 0 -16px -16px; background: #141414; display: grid; grid-template-columns: 1fr 120px 1fr; align-items: center">
+        <button type="button" onClick="{{leftKey}}" aria-label="{{leftAria}}" style="height: 100%; border: 0; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center"><sc-if value="{{leftStop}}" hint-placeholder-val="{{ false }}"><span style="width: 24px; height: 24px; border-radius: 6px; background: {{keyFg}}"></span></sc-if><sc-if value="{{leftPrev}}" hint-placeholder-val="{{ true }}"><svg width="36" height="32" viewBox="0 0 36 32" aria-hidden="true"><g transform="translate(36 0) scale(-1 1)"><path d="M4 7.5C4 5.6 6.1 4.4 7.8 5.4L20.3 13.4C21.9 14.4 21.9 16.6 20.3 17.6L7.8 25.6C6.1 26.6 4 25.4 4 23.5Z" fill="{{keyFg}}"></path><rect x="25" y="5" width="6" height="22" rx="3" fill="{{keyFg}}"></rect></g></svg></sc-if></button>
+        <button type="button" class="palm" onClick="{{palm}}" aria-label="{{palmAria}}" style="width: 104px; height: 104px; justify-self: center; border: 0; border-radius: 50%; background: #FF5A1F; color: #141414; cursor: pointer; display: flex; align-items: center; justify-content: center">
+          <sc-if value="{{mainPause}}" hint-placeholder-val="{{ true }}"><span style="display: flex; gap: 8px" aria-hidden="true"><span style="width: 10px; height: 36px; border-radius: 999px; background: #141414"></span><span style="width: 10px; height: 36px; border-radius: 999px; background: #141414"></span></span></sc-if>
+          <sc-if value="{{mainPlay}}" hint-placeholder-val="{{ false }}"><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><path d="M10 7.5C10 5.6 12.1 4.4 13.8 5.4L26.3 13.4C27.9 14.4 27.9 16.6 26.3 17.6L13.8 25.6C12.1 26.6 10 25.4 10 23.5Z" fill="#141414"></path></svg></sc-if>
+        </button>
+        <button type="button" onClick="{{skip}}" aria-label="Siguiente tramo" style="height: 100%; border: 0; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="36" height="32" viewBox="0 0 36 32" aria-hidden="true"><path d="M4 7.5C4 5.6 6.1 4.4 7.8 5.4L20.3 13.4C21.9 14.4 21.9 16.6 20.3 17.6L7.8 25.6C6.1 26.6 4 25.4 4 23.5Z" fill="{{keyFg}}"></path><rect x="25" y="5" width="6" height="22" rx="3" fill="{{keyFg}}"></rect></svg></button>
+      </nav>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{isSelect}}" hint-placeholder-val="{{ true }}">
+    <div style="display: flex; flex-direction: column; gap: 4px; flex: none"><nav aria-label="Secciones" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 4px; background: #E8E7E2; border-radius: 24px; flex: none"><a href="J2Today.dc.html" style="height: 64px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-size: 11px; background: transparent; color: #141414"><span style="width: 12px; height: 12px; border-radius: 4px; background: #141414"></span>Hoy</a><a href="KR5Time.dc.html" aria-current="page" style="height: 64px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-size: 11px; background: #141414; color: #FFFFFF"><span style="width: 12px; height: 12px; border-radius: 50%; box-sizing: border-box; border: 2px solid #FFFFFF"></span>Tiempo</a><a href="KR4Agenda.dc.html" style="height: 64px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-size: 11px; background: transparent; color: #141414"><span style="width: 18px; height: 8px; border-radius: 999px; box-sizing: border-box; border: 2px solid #141414"></span>Agenda</a><a href="KR6Diary.dc.html" style="height: 64px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-size: 11px; background: transparent; color: #141414"><span style="display: grid; grid-template-columns: 4px 4px 4px; gap: 2px"><span style="height: 4px; border-radius: 50%; background: #141414"></span><span style="height: 4px; border-radius: 50%; background: #141414"></span><span style="height: 4px; border-radius: 50%; background: #141414"></span><span style="height: 4px; border-radius: 50%; background: #141414"></span><span style="height: 4px; border-radius: 50%; background: #141414"></span><span style="height: 4px; border-radius: 50%; background: #141414"></span></span>Diario</a></nav></div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"series":{"editor":"int","default":4,"min":1,"max":10,"section":"Viene de la sesión"},"$preview":{"width":390,"height":844}}'>
+var WORK = [30, 45, 60, 90];
+var REST = [0, 10, 15, 30];
+var ANG = [-135, -45, 45, 135];
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { wi: 2, ri: 0, phase: 'select', n: 0, serie: 1, paused: false, waited: 0 };
+    this._t = null;
+  }
+  componentWillUnmount() { this.stop(); }
+  stop() { if (this._t) { clearInterval(this._t); this._t = null; } }
+  series() { return this.props.series ?? 4; }
+  work() { return WORK[this.state.wi]; }
+  rest() { return REST[this.state.ri]; }
+  begin() {
+    this.stop();
+    this.setState({ phase: 'countdown', n: 3, serie: 1, paused: false });
+    this._t = setInterval(() => this.tick(), 1000);
+  }
+  tick() {
+    const s = this.state;
+    if (s.phase === 'wait') { this.setState({ waited: s.waited + 1 }); return; }
+    if (s.paused) return;
+    if (s.n > 1) { this.setState({ n: s.n - 1 }); return; }
+    this.advance();
+  }
+  nextSerie() { this.setState({ phase: 'countdown', n: 3, serie: this.state.serie + 1, paused: false }); }
+  advance() {
+    const s = this.state, w = this.work(), r = this.rest();
+    if (s.phase === 'countdown') this.setState({ phase: 'work', n: w });
+    else if (s.phase === 'work') {
+      if (s.serie >= this.series()) { this.stop(); this.setState({ phase: 'done', n: 0, paused: false }); }
+      else if (r > 0) this.setState({ phase: 'rest', n: r });
+      else this.setState({ phase: 'wait', n: 0, waited: 0 });
+    } else if (s.phase === 'rest') this.setState({ phase: 'countdown', n: 3, serie: s.serie + 1 });
+  }
+  renderVals() {
+    const s = this.state, w = this.work(), r = this.rest(), total = this.series();
+    const INK = '#141414', DIM = '#E8E7E2', RED = '#FF5A1F', GREEN = '#0A7B57', NONE = 'transparent', W = '#FFFFFF';
+    const pad = (v) => String(v).padStart(2, '0');
+    const running = s.phase === 'countdown' || s.phase === 'work' || s.phase === 'rest';
+    let title = 'Tiempo', unit = 'Un círculo = un segundo';
+    if (s.phase === 'countdown') { title = 'Preparado'; unit = 'Deja el teléfono en el suelo'; }
+    else if (s.phase === 'work') { title = s.paused ? 'En pausa' : 'Trabajo'; unit = 'Palma = pausa'; }
+    else if (s.phase === 'rest') { title = s.paused ? 'En pausa' : 'Descanso'; unit = 'Respira'; }
+    else if (s.phase === 'wait') { title = 'Hecho'; unit = 'Toca para la serie ' + (s.serie + 1) + ' de ' + total; }
+    else if (s.phase === 'done') { title = 'Hecho'; unit = total + ' series completadas'; }
+
+    const len = s.phase === 'rest' ? r : w;
+    const C = 179, R = 168, sz = len > 45 ? 9 : (len > 20 ? 11 : 16);
+    const ring = Array.from({ length: len }, (_, i) => {
+      const a = (2 * Math.PI * i) / len;
+      const LIVE = s.phase === 'countdown' ? INK : W, GONE = s.phase === 'countdown' ? 'rgba(20,20,20,0.18)' : 'rgba(255,255,255,0.25)';
+      let st = { bg: LIVE, bd: LIVE };
+      const el = (s.phase === 'work' ? w : r) - s.n;
+      if (s.phase === 'work' || s.phase === 'rest') st = i < el ? { bg: GONE, bd: GONE } : (i === el ? { bg: RED, bd: RED } : st);
+      else if (s.phase === 'done' || s.phase === 'wait') st = { bg: GONE, bd: GONE };
+      return { x: (C + R * Math.sin(a) - sz / 2).toFixed(1), y: (C - R * Math.cos(a) - sz / 2).toFixed(1), s: sz, bg: st.bg, bd: st.bd };
+    });
+
+    let palmBg = INK, palmFg = W, palmBd = INK, palmHint = 'Palma · pausa', palmAria = 'Pausar';
+    if (s.phase === 'countdown') { palmBg = RED; palmBd = RED; palmAria = 'Cuenta atrás ' + s.n; }
+    else if (s.phase === 'rest') { palmBg = GREEN; palmBd = GREEN; palmHint = 'Descanso'; }
+    else if (s.phase === 'done') { palmHint = 'Otra vez'; palmAria = 'Empezar otra vez'; }
+    else if (s.phase === 'wait') { palmHint = 'Siguiente serie'; palmAria = 'Empezar la siguiente serie'; }
+    if (s.paused && running) { palmHint = 'Palma · seguir'; palmAria = 'Seguir'; }
+    const K = '#002FA7';
+    let bg = '#F2F1ED', fg = INK;
+    if (s.phase === 'countdown') bg = INK;
+    else if (s.phase === 'work') bg = K;
+    else if (s.phase === 'rest' || s.phase === 'done') bg = GREEN;
+    else if (s.phase === 'wait') bg = INK;
+    if (s.paused && running) bg = INK;
+    if (s.phase !== 'select') fg = W;
+    palmBg = s.phase === 'countdown' ? RED : W;
+    palmFg = s.phase === 'countdown' ? INK : (s.paused ? INK : bg);
+    const onOrange = false;
+
+    const segs = [];
+    const cur = s.serie - 1;
+    for (let i = 0; i < total; i++) {
+      let wp = 0;
+      if (s.phase === 'done' || i < cur) wp = 100;
+      else if (i === cur && s.phase === 'work') wp = ((w - s.n) / w) * 100;
+      else if (i === cur && (s.phase === 'rest' || s.phase === 'wait')) wp = 100;
+      segs.push({ grow: w, pct: wp, fill: i === cur && s.phase === 'work' ? RED : (onOrange ? INK : W) });
+      if (i < total - 1 && r > 0) {
+        let rp = 0;
+        if (s.phase === 'done' || i < cur) rp = 100;
+        else if (i === cur && s.phase === 'rest') rp = ((r - s.n) / r) * 100;
+        segs.push({ grow: r, pct: rp, fill: s.phase === 'rest' ? RED : (onOrange ? INK : W) });
+      }
+    }
+    const opts = WORK.map((v, i) => {
+      const a = (ANG[i] * Math.PI) / 180;
+      return { v: String(v), x: (150 + 136 * Math.sin(a) - 16).toFixed(0), y: (150 - 136 * Math.cos(a) - 9).toFixed(0), c: i === s.wi ? INK : '#9A9995' };
+    });
+    return {
+      title, unit, ring, segs, opts, bg, fg,
+      markDot: s.phase === 'select' || s.phase === 'work' ? RED : (onOrange ? INK : W),
+      segBase: onOrange ? 'rgba(20,20,20,0.18)' : 'rgba(255,255,255,0.25)',
+      keyBg: 'transparent', keyFg: W,
+      leftStop: s.paused || s.phase === 'done', leftPrev: !(s.paused || s.phase === 'done'),
+      leftAria: s.paused || s.phase === 'done' ? 'Parar' : 'Repetir tramo',
+      leftKey: () => { const t = this.state; if (t.paused || t.phase === 'done') { this.stop(); this.setState({ phase: 'select', n: 0, serie: 1, paused: false }); } else if (t.phase === 'work') this.setState({ n: w }); else if (t.phase === 'rest') this.setState({ n: r }); else if (t.phase === 'countdown') this.setState({ n: 3 }); else if (t.phase === 'wait') this.setState({ phase: 'countdown', n: 3 }); },
+      mainBg: RED,
+      mainPause: running && !s.paused,
+      mainPlay: !(running && !s.paused),
+      mainLabel: s.phase === 'wait' ? 'Siguiente' : (s.phase === 'done' ? 'Otra vez' : 'Seguir'),
+      exercise: 'Sentadilla',
+      n: String(s.n),
+      work: String(w), angle: ANG[s.wi],
+      restLabel: r === 0 ? 'Manual' : String(r),
+      restUnit: r === 0 ? 'tocas tú ›' : 's ›',
+      waitedLabel: 'Descansas ' + Math.floor(s.waited / 60) + ':' + pad(s.waited % 60),
+      showNext: s.phase === 'wait',
+      corner: s.phase === 'select' ? '' : (s.phase === 'done' || s.phase === 'wait' ? '✓' : pad(s.n)),
+      knobAria: 'Trabajo: ' + w + ' segundos. Toca para cambiar',
+      restAria: 'Descanso: ' + (r === 0 ? 'manual, tocas tú para seguir' : r + ' segundos') + '. Toca para cambiar',
+      serieLabel: 'Serie ' + pad(Math.min(s.serie, total)) + ' / ' + pad(total),
+      series: String(total),
+      seriesDots: Array.from({ length: total }, () => ({})),
+      ticks: Array.from({ length: 48 }, (_, i) => ({ a: i * 7.5, h: i % 6 === 0 ? 12 : 6, c: i % 6 === 0 ? '#6B6B67' : '#D7D6D0' })),
+      isSelect: s.phase === 'select',
+      isTraining: s.phase !== 'select',
+      showDigit: s.phase === 'countdown',
+      showNum: (s.phase === 'work' || s.phase === 'rest' || s.phase === 'done') && !s.paused,
+      showPlay: s.paused && running,
+      palmBg, palmFg, palmBd, palmHint, palmAria,
+      nextWork: () => this.setState({ wi: (this.state.wi + 1) % WORK.length }),
+      nextRest: () => this.setState({ ri: (this.state.ri + 1) % REST.length }),
+      start: () => this.begin(),
+      palm: () => { const p = this.state.phase; if (p === 'done') this.begin(); else if (p === 'wait') this.nextSerie(); else this.setState({ paused: !this.state.paused }); },
+      restartPhase: () => { const t = this.state; if (t.phase === 'work') this.setState({ n: w }); else if (t.phase === 'rest') this.setState({ n: r }); else if (t.phase === 'countdown') this.setState({ n: 3 }); else if (t.phase === 'wait') this.setState({ phase: 'countdown', n: 3 }); },
+      skip: () => { if (this.state.phase === 'wait') this.nextSerie(); else if (running) this.advance(); },
+      reset: () => { this.stop(); this.setState({ phase: 'select', n: 0, serie: 1, paused: false }); },
+    };
+  }
+}
+</script>
+</body>
+</html>

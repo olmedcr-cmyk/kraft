@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Pausa por llamada</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit;text-decoration:none}
+a:focus-visible,button:focus-visible{outline:3px solid #FF5A1F;outline-offset:3px}
+.k{font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.ctr{display:flex;align-items:center;justify-content:center}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 64px 16px 16px; background: #141414; color: #FFFFFF; font-family: 'Roboto Mono', ui-monospace, monospace; display: flex; flex-direction: column; gap: 8px">
+  <div style="padding: 0 8px; display: flex; flex-direction: column; gap: 8px"><span class="k" style="color: #A3A29E">Plancha · tramo 1</span><span style="font-size: 34px; font-weight: 300; letter-spacing: -0.04em; line-height: 1">En pausa</span><span style="font-size: 13px; color: #A3A29E">Llamada · 2:14</span></div>
+  <div style="flex: 1; display: flex; align-items: center; justify-content: center">
+    <div style="position: relative; width: 280px; height: 280px"><sc-for list="{{ring}}" as="d" hint-placeholder-count="24"><span style="position: absolute; left: {{d.x}}px; top: {{d.y}}px; width: 16px; height: 16px; border-radius: 50%; background: {{d.bg}}"></span></sc-for>
+      <a href="J4Hold.dc.html" aria-label="Seguir" class="ctr" style="position: absolute; left: 30px; top: 30px; width: 220px; height: 220px; border-radius: 50%; background: #002FA7; color: #FFFFFF; flex-direction: column; gap: 8px"><span style="font-size: 89px; font-weight: 300; line-height: 1">18</span><span class="k">Toca y sigue</span></a>
+    </div>
+  </div>
+  <span style="padding: 0 8px 8px; font-size: 13px; color: #A3A29E; text-align: center">Al volver: 3·2·1 y sigues donde estabas</span>
+  <nav aria-label="Mando" style="height: 144px; flex: none; background: #141414; display: grid; grid-template-columns: 1fr 120px 1fr; align-items: center; margin: 8px -16px -16px"><a href="J8Finish.dc.html" aria-label="Parar y guardar" style="height: 100%; display: flex; align-items: center; justify-content: center"><span style="width: 28px; height: 28px; border-radius: 8px; background: #FFFFFF"></span></a><a href="J4Hold.dc.html" aria-label="Seguir" style="width: 104px; height: 104px; justify-self: center; border-radius: 50%; background: #FF5A1F; display: flex; align-items: center; justify-content: center"><svg width="44" height="44" viewBox="0 0 32 32" aria-hidden="true"><path d="M10 7.5C10 5.6 12.1 4.4 13.8 5.4L26.3 13.4C27.9 14.4 27.9 16.6 26.3 17.6L13.8 25.6C12.1 26.6 10 25.4 10 23.5Z" fill="#141414"></path></svg></a><a href="J5Next.dc.html" aria-label="Siguiente" style="height: 100%; display: flex; align-items: center; justify-content: center"><svg width="36" height="32" viewBox="0 0 36 32" aria-hidden="true"><path d="M4 7.5C4 5.6 6.1 4.4 7.8 5.4L20.3 13.4C21.9 14.4 21.9 16.6 20.3 17.6L7.8 25.6C6.1 26.6 4 25.4 4 23.5Z" fill="#FFFFFF"></path><rect x="25" y="5" width="6" height="22" rx="3" fill="#FFFFFF"></rect></svg></a></nav>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const N = 30, done = 12, C = 140, R = 128;
+    return { ring: Array.from({ length: N }, (_, i) => { const a = (2 * Math.PI * i) / N; return { x: (C + R * Math.sin(a) - 8).toFixed(1), y: (C - R * Math.cos(a) - 8).toFixed(1), bg: i < done ? 'rgba(255,255,255,0.2)' : (i === done ? '#FF5A1F' : '#FFFFFF') }; }) };
+  }
+}
+</script>
+</body>
+</html>

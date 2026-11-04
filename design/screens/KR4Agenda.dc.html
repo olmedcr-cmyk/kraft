@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Reservar</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#141414}a:hover{color:#000000}
+button:focus-visible,a:focus-visible{outline:2px solid #141414;outline-offset:3px}
+button:disabled{cursor:default}
+.dot{transition:background-color .3s ease,border-color .3s ease,color .3s ease}
+@media (prefers-reduced-motion: reduce){.dot{transition:none}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 64px 16px 16px; background: #F2F1ED; color: #141414; font-family: 'Roboto Mono', ui-monospace, monospace; display: flex; flex-direction: column; gap: 8px">
+
+  <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 8px; font-size: 13px; color: #5F5E59">
+    <span style="display: flex; align-items: center; gap: 8px"><span style="width: 8px; height: 8px; border-radius: 50%; background: #FF5A1F"></span>Agenda</span>
+    <a href="KR4Change.dc.html" style="min-height: 24px; display: flex; align-items: center; color: #5F5E59; text-decoration: none">Mover o cancelar →</a>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 8px; padding: 8px 8px 8px">
+    <h1 style="margin: 0; font-weight: 300; font-size: 34px; line-height: 1; letter-spacing: -0.04em">Reservar</h1>
+    <span style="font-size: 13px; color: #5F5E59">¿Cómo entrenas hoy?</span>
+  </div>
+
+  <div role="radiogroup" aria-label="Modalidad" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+    <sc-for list="{{mods}}" as="m" hint-placeholder-count="3">
+      <button type="button" role="radio" aria-checked="{{m.on}}" onClick="{{m.pick}}" class="dot" style="aspect-ratio: 1; border: 0; border-radius: 24px; padding: 16px; box-sizing: border-box; background: {{m.bg}}; color: {{m.fg}}; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; font-family: 'Roboto Mono', monospace; text-align: left">
+        <span style="position: relative; width: 40px; height: 28px" aria-hidden="true">
+          <sc-for list="{{m.icon}}" as="i" hint-placeholder-count="3">
+            <span style="position: absolute; left: {{i.x}}px; top: {{i.y}}px; width: {{i.w}}px; height: {{i.h}}px; border-radius: {{i.r}}; box-sizing: border-box; background: {{i.bg}}; border: 2px solid {{i.bd}}"></span>
+          </sc-for>
+        </span>
+        <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 500">{{m.label}}</span><span style="font-size: 11px; letter-spacing: 0.04em; opacity: 0.8">{{m.sub}}</span></span>
+      </button>
+    </sc-for>
+  </div>
+
+  <div role="group" aria-label="Día" style="background: #FFFFFF; border-radius: 24px; padding: 8px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px">
+    <sc-for list="{{week}}" as="w" hint-placeholder-count="7">
+      <button type="button" class="dot" onClick="{{w.pick}}" disabled="{{w.dis}}" aria-label="{{w.aria}}" aria-pressed="{{w.on}}" style="height: 56px; border: 0; border-radius: 16px; padding: 0; background: {{w.bg}}; color: {{w.fg}}; font-family: 'Roboto Mono', monospace; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; position: relative">
+        <span style="font-size: 11px; letter-spacing: 0.04em">{{w.l}}</span>
+        <span style="font-size: 15px">{{w.n}}</span>
+        <span style="position: absolute; bottom: 6px; width: 4px; height: 4px; border-radius: 50%; background: {{w.mark}}"></span>
+      </button>
+    </sc-for>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 8px">
+    <sc-for list="{{slots}}" as="s" hint-placeholder-count="3">
+      <div style="height: 64px; box-sizing: border-box; padding: 8px 8px 8px 24px; border-radius: 999px; background: #FFFFFF; display: flex; align-items: center; gap: 12px">
+        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">
+          <span style="font-size: 15px; font-weight: 500">{{s.t}}</span>
+          <span style="font-size: 11px; color: #5F5E59; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{s.name}}</span>
+        </div>
+        <div role="img" aria-label="{{s.occ}}" style="display: grid; grid-template-columns: repeat({{s.cols}}, {{s.ds}}px); gap: 4px">
+          <sc-for list="{{s.dots}}" as="d" hint-placeholder-count="12">
+            <span style="width: {{s.ds}}px; height: {{s.ds}}px; border-radius: 50%; box-sizing: border-box; background: {{d.bg}}; border: 1.5px solid {{d.bd}}"></span>
+          </sc-for>
+        </div>
+        <button type="button" class="dot" onClick="{{s.act}}" disabled="{{s.full}}" aria-label="{{s.aria}}" style="width: 48px; height: 48px; flex: none; border-radius: 50%; box-sizing: border-box; padding: 0; border: 2px solid {{s.bd}}; background: {{s.bg}}; cursor: pointer; display: flex; align-items: center; justify-content: center">
+          <sc-if value="{{s.mine}}" hint-placeholder-val="{{ false }}">
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 L6.5 12 L13 4.5" fill="none" stroke="{{s.ic}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </sc-if>
+          <sc-if value="{{s.open}}" hint-placeholder-val="{{ true }}">
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3 V13 M3 8 H13" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round"></path></svg>
+          </sc-if>
+        </button>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="flex: 1"></div>
+
+  <sc-if value="{{hasMine}}" hint-placeholder-val="{{ true }}">
+    <a href="KR4Booking.dc.html" class="dot" style="height: 56px; border-radius: 999px; background: {{mineBg}}; color: {{mineFg}}; text-decoration: none; font-size: 13px; display: flex; align-items: center; justify-content: space-between; padding: 0 8px 0 24px"><span>{{mineLabel}}</span><span style="width: 40px; height: 40px; border-radius: 50%; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M5 2 L10 7 L5 12" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></a>
+  </sc-if>
+
+  <nav aria-label="Secciones" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 4px; background: #E8E7E2; border-radius: 24px; flex: none"><a href="J2Today.dc.html" style="height: 64px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-size: 11px; background: transparent; color: #141414"><span style="width: 12px; height: 12px; border-radius: 4px; background: #141414"></span>Hoy</a><a href="KR5Time.dc.html" style="height: 64px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-size: 11px; background: transparent; color: #141414"><span style="width: 12px; height: 12px; border-radius: 50%; box-sizing: border-box; border: 2px solid #141414"></span>Tiempo</a><a href="KR4Agenda.dc.html" aria-current="page" style="height: 64px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-size: 11px; background: #141414; color: #FFFFFF"><span style="width: 18px; height: 8px; border-radius: 999px; box-sizing: border-box; border: 2px solid #FFFFFF"></span>Agenda</a><a href="KR6Diary.dc.html" style="height: 64px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-size: 11px; background: transparent; color: #141414"><span style="display: grid; grid-template-columns: 4px 4px 4px; gap: 2px"><span style="height: 4px; border-radius: 50%; background: #141414"></span><span style="height: 4px; border-radius: 50%; background: #141414"></span><span style="height: 4px; border-radius: 50%; background: #141414"></span><span style="height: 4px; border-radius: 50%; background: #141414"></span><span style="height: 4px; border-radius: 50%; background: #141414"></span><span style="height: 4px; border-radius: 50%; background: #141414"></span></span>Diario</a></nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+var Y = '#FFC93C', B = '#002FA7', INK = '#141414', W = '#FFFFFF', DIM = '#E8E7E2', RED = '#FF5A1F', NONE = 'transparent';
+var MODS = {
+  grupo: { label: 'Grupo', sub: 'Sala · hasta 12', color: Y, fg: INK, slots: [
+    { t: '07:00', name: 'Fuerza · Sala 1', cap: 12, taken: 7 },
+    { t: '09:30', name: 'Funcional · Sala 2', cap: 12, taken: 11 },
+    { t: '18:00', name: 'Movilidad · Sala 4', cap: 12, taken: 4 } ] },
+  solo: { label: 'Solo', sub: 'Con tu coach', color: INK, fg: W, slots: [
+    { t: '08:00', name: 'Personal · 50 min · Sala 3', cap: 1, taken: 0 },
+    { t: '12:00', name: 'Personal · 50 min · Sala 3', cap: 1, taken: 1 },
+    { t: '19:00', name: 'Personal · 50 min · Sala 1', cap: 1, taken: 0 } ] },
+  online: { label: 'Online', sub: 'En directo', color: B, fg: W, slots: [
+    { t: '07:30', name: 'Tabata en directo · 20 min', cap: 0, taken: 18 },
+    { t: '13:00', name: 'Movilidad · 30 min', cap: 0, taken: 9 },
+    { t: '20:00', name: 'Core · 20 min', cap: 0, taken: 24 } ] },
+};
+var DAYS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+var NAMES = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
+var TODAY = 3;
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { mod: 'grupo', day: 5, mine: { 'grupo-5-1': true, 'online-3-0': true } };
+  }
+  toggle(key) {
+    const mine = Object.assign({}, this.state.mine);
+    if (mine[key]) delete mine[key]; else mine[key] = true;
+    this.setState({ mine });
+  }
+  icon(id, on) {
+    const c = on ? (id === 'grupo' ? INK : W) : (id === 'grupo' ? Y : id === 'online' ? B : INK);
+    if (id === 'grupo') return [{ x: 0, y: 6, w: 16, h: 16, r: '50%', bg: c, bd: c }, { x: 12, y: 6, w: 16, h: 16, r: '50%', bg: c, bd: c }, { x: 24, y: 6, w: 16, h: 16, r: '50%', bg: c, bd: c }];
+    if (id === 'solo') return [{ x: 0, y: 2, w: 24, h: 24, r: '50%', bg: c, bd: c }];
+    return [{ x: 0, y: 0, w: 40, h: 28, r: '8px', bg: NONE, bd: c }, { x: 14, y: 8, w: 12, h: 12, r: '50%', bg: c, bd: c }];
+  }
+  renderVals() {
+    const s = this.state, m = MODS[s.mod];
+    const mods = Object.keys(MODS).map((id) => {
+      const d = MODS[id], on = id === s.mod;
+      return { label: d.label, sub: d.sub, on: on ? 'true' : 'false', bg: on ? d.color : W, fg: on ? d.fg : INK, icon: this.icon(id, on), pick: () => this.setState({ mod: id }) };
+    });
+    const week = DAYS.map((l, i) => {
+      const n = 2 + i, on = n === s.day, closed = i === 6, past = n < TODAY;
+      const has = Object.keys(s.mine).some((k) => k.split('-')[1] === String(n));
+      return {
+        l, n: String(n), on: on ? 'true' : 'false', dis: closed || past,
+        bg: on ? INK : (closed ? '#F4F3F0' : W), fg: on ? W : (closed || past ? '#9A9995' : INK),
+        mark: n === TODAY ? RED : (has ? (on ? W : INK) : NONE),
+        aria: NAMES[i] + ' ' + n + (n === TODAY ? ', hoy' : '') + (has ? ', con reserva' : '') + (closed ? ', cerrado' : ''),
+        pick: () => this.setState({ day: n }),
+      };
+    });
+    const slots = m.slots.map((b, i) => {
+      const key = s.mod + '-' + s.day + '-' + i;
+      const mine = !!s.mine[key];
+      const full = !mine && b.cap > 0 && b.taken >= b.cap;
+      let dots, cols, ds, occ;
+      if (s.mod === 'grupo') {
+        const used = Math.min(b.cap, b.taken + (mine ? 1 : 0));
+        dots = Array.from({ length: b.cap }, (_, j) => (j < used ? { bg: mine && j === used - 1 ? RED : INK, bd: mine && j === used - 1 ? RED : INK } : { bg: DIM, bd: DIM }));
+        cols = 6; ds = 7; occ = used + ' de ' + b.cap + ' plazas';
+      } else if (s.mod === 'solo') {
+        dots = [{ bg: full ? INK : (mine ? RED : NONE), bd: full ? INK : (mine ? RED : INK) }];
+        cols = 1; ds = 16; occ = full ? 'Ocupado' : 'Libre';
+      } else {
+        dots = [{ bg: B, bd: B }];
+        cols = 1; ds = 10; occ = (b.taken + (mine ? 1 : 0)) + ' conectados';
+      }
+      return {
+        t: b.t, name: s.mod === 'online' ? b.name + ' · ' + (b.taken + (mine ? 1 : 0)) + ' en línea' : b.name,
+        dots, cols, ds, occ, mine, open: !mine && !full, full,
+        bg: mine ? '#0A7B57' : (full ? DIM : W), bd: mine ? '#0A7B57' : (full ? DIM : INK), ic: mine ? W : m.fg,
+        aria: mine ? 'Cancelar ' + b.t : (full ? 'Completo' : 'Reservar ' + b.t),
+        act: () => this.toggle(key),
+      };
+    });
+    const idx = m.slots.findIndex((_, i) => s.mine[s.mod + '-' + s.day + '-' + i]);
+    return {
+      mods, week, slots,
+      hasMine: idx >= 0,
+      mineBg: '#0A7B57', mineFg: W,
+      mineLabel: idx >= 0 ? 'Tu reserva · ' + m.label + ' · ' + m.slots[idx].t : '',
+    };
+  }
+}
+</script>
+</body>
+</html>
