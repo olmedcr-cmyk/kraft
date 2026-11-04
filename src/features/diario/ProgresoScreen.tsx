@@ -9,7 +9,8 @@ import { KText } from '@/components/KText';
 import { Pulsable } from '@/components/Pulsable';
 import { CIRCLE_MIN, COL_ROWS, streakWeeks, totals, trend, weekColumns, weekDays, weeksMinutes } from '@/diario/model';
 import { useDiary } from '@/diario/store';
-import { alpha, cifra, color, layout, motion, ms, radius, space, texto, transicionPunto } from '@/theme';
+import { Fundido } from '@/components/Fundido';
+import { alpha, cifra, color, fundido, layout, motion, ms, radius, space, texto, transicionPunto } from '@/theme';
 import { CabeceraDiario } from './piezas';
 
 const LETTERS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
@@ -35,9 +36,10 @@ export function ProgresoScreen() {
   const dots = Math.min(STREAK_DOTS, Math.max(1, streak));
 
   return (
+    <View style={{ flex: 1, backgroundColor: color.fondo }}>
     <ScrollView
-      style={{ flex: 1, backgroundColor: color.fondo }}
-      contentContainerStyle={{ paddingTop: Math.max(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s8, gap: space.s16 }}
+      style={{ flex: 1 }}
+      contentContainerStyle={{ paddingTop: Math.max(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: fundido, gap: space.s16 }}
     >
       <CabeceraDiario
         label="Datos"
@@ -169,6 +171,9 @@ export function ProgresoScreen() {
         </Cifra>
       </View>
     </ScrollView>
+    <Fundido lado="arriba" alto={insets.top + fundido} />
+    <Fundido lado="abajo" />
+    </View>
   );
 }
 

@@ -90,3 +90,15 @@ export const alpha = {
   /** Tarjetas sobre fondo de estado (J8Finish). */
   tarjetaSobreColor: 'rgba(255,255,255,0.14)',
 };
+
+/**
+ * Sombra (propuesta: no está en tokens.json). Solo para lo que flota sobre el contenido
+ * (menú, acción principal). Las tarjetas siguen planas: blanco sobre fondo.
+ */
+export const sombra = {
+  flotante: '0 8px 24px rgba(20,20,20,0.08), 0 1px 2px rgba(20,20,20,0.06)',
+} as const;
+
+/** Alto del fundido donde el contenido se desvanece bajo los bordes al desplazar. */
+export const fundido = 24;
+

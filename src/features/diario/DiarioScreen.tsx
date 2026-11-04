@@ -26,7 +26,8 @@ import {
   type MonthStatus,
 } from '@/diario/model';
 import { useDiary } from '@/diario/store';
-import { cifra, color, layout, radius, space, texto, transicionFondo, transicionPunto } from '@/theme';
+import { Fundido } from '@/components/Fundido';
+import { cifra, color, fundido, layout, radius, space, texto, transicionFondo, transicionPunto } from '@/theme';
 import { CabeceraDiario, MODE_TINT, PuntoModo, modeLabel } from './piezas';
 
 const LETTERS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
@@ -66,9 +67,10 @@ export function DiarioScreen() {
   const selIso = isoDay(new Date(base).setDate(sel));
 
   return (
+    <View style={{ flex: 1, backgroundColor: color.fondo }}>
     <ScrollView
-      style={{ flex: 1, backgroundColor: color.fondo }}
-      contentContainerStyle={{ paddingTop: Math.max(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, gap: layout.entreTarjetas, paddingBottom: space.s8 }}
+      style={{ flex: 1 }}
+      contentContainerStyle={{ paddingTop: Math.max(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, gap: layout.entreTarjetas, paddingBottom: fundido }}
     >
       <View style={{ paddingHorizontal: space.s8 }}>
         <CabeceraDiario
@@ -155,6 +157,9 @@ export function DiarioScreen() {
 
       <Pago month={month} status={monthStatus(diary, month, now)} />
     </ScrollView>
+    <Fundido lado="arriba" alto={insets.top + fundido} />
+    <Fundido lado="abajo" />
+    </View>
   );
 }
 

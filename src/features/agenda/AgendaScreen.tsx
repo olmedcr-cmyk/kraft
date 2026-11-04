@@ -26,7 +26,8 @@ import {
   type Slot,
 } from '@/agenda/model';
 import { book, useAgenda } from '@/agenda/store';
-import { cifra, color, inner, layout, radius, space, texto, touch, transicionPunto } from '@/theme';
+import { Fundido } from '@/components/Fundido';
+import { cifra, color, fundido, inner, layout, radius, space, texto, touch, transicionPunto } from '@/theme';
 import { CabeceraAgenda, Flecha, IconoModo, MODE_TINT, Mas, Ocupacion } from './piezas';
 
 const LETTERS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
@@ -48,8 +49,9 @@ export function AgendaScreen() {
   const mineHere = slots.find((s) => state.bookings[s.id]?.status === 'confirmed');
 
   return (
-    <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: Math.max(insets.top, layout.pantallaArriba) }}>
-      <ScrollView contentContainerStyle={{ paddingHorizontal: layout.pantallaLado, gap: layout.entreTarjetas, paddingBottom: space.s8 }}>
+    <View style={{ flex: 1, backgroundColor: color.fondo }}>
+      <View style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={{ paddingTop: Math.max(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, gap: layout.entreTarjetas, paddingBottom: fundido }}>
         <CabeceraAgenda
           right={
             next ? (
@@ -122,6 +124,9 @@ export function AgendaScreen() {
           slots.map((s) => <Fila key={s.id} slot={s} state={state} now={now} />)
         )}
       </ScrollView>
+      <Fundido lado="arriba" alto={insets.top + fundido} />
+      <Fundido lado="abajo" />
+      </View>
 
       {mineHere && (
         <View style={{ paddingHorizontal: layout.pantallaLado, paddingBottom: space.s8 }}>
