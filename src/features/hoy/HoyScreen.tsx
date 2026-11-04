@@ -1,6 +1,8 @@
 /** Hoy (J2Today): la sesión que mandó el entrenador, por bloques. Un toque y a entrenar. */
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { ScrollView, View } from 'react-native';
+import Animated, { useReducedMotion } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BarraAccion } from '@/components/BarraAccion';
@@ -8,11 +10,14 @@ import { FilaBloque, Marcas } from '@/components/FilaBloque';
 import { KText } from '@/components/KText';
 import { compiled, session, sessionRunner, useSession } from '@/session/store';
 import type { Block } from '@/session/types';
-import { cifra, color, layout, radius, space, texto, touch } from '@/theme';
+import { cifra, color, layout, motion, ms, radius, space, texto, touch } from '@/theme';
 import { Pulsable } from '@/components/Pulsable';
 
 const WEEKDAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 const USER_INITIAL = 'C';
+/** En pantallas bajas las filas encogen hasta aquí antes de dejar desplazar. */
+const ROW_MIN = touch.tecla;
+const ENTRA = { from: { opacity: 0, transform: [{ translateY: 8 }] }, to: { opacity: 1, transform: [{ translateY: 0 }] } };
 
 const tintOf = (b: Block) => color[b.tint];
 const markTint = (b: Block) => (b.tint === 'tinteNaranja' ? color.naranja : color[b.tint]);
@@ -47,46 +52,73 @@ export function HoyScreen() {
     router.push('/sesion');
   };
 
+  // Alto disponible para los bloques: las filas se reparten el sitio (88 → 64) para que todo quepa quieto.
+  const [listH, setListH] = useState(0);
+  const reduced = useReducedMotion();
+  const n = session.blocks.length;
+  const gaps = layout.entreTarjetas * (n - 1);
+  const rowH = listH ? Math.max(ROW_MIN, Math.min(touch.fila, Math.floor((listH - gaps) / n))) : touch.fila;
+  const fits = !listH || n * rowH + gaps <= listH;
+
   return (
     <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: Math.max(insets.top, layout.pantallaArriba) }}>
-      <ScrollView contentContainerStyle={{ paddingHorizontal: layout.pantallaLado, gap: layout.entreTarjetas, paddingBottom: space.s8 }}>
-        <View style={{ paddingHorizontal: space.s8, paddingBottom: space.s16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-          <View style={{ gap: space.s4 }}>
-            <KText size={cifra.c34} weight={300} title lineHeight={cifra.c34} accessibilityRole="header">
-              {day}
-            </KText>
-            <KText size={texto.texto} tint={color.texto2}>{`${session.minutes}' · de ${session.coach.name}`}</KText>
-          </View>
-          <Pulsable
-            onPress={() => router.push('/tu')}
-            accessibilityRole="button"
-            accessibilityLabel="Tú"
-            style={{ width: touch.dedo, height: touch.dedo, borderRadius: touch.dedo / 2, backgroundColor: color.tinta, alignItems: 'center', justifyContent: 'center' }}
-          >
-            <KText size={texto.lista} tint={color.tarjeta}>
-              {USER_INITIAL}
-            </KText>
-          </Pulsable>
+      <View style={{ paddingHorizontal: layout.pantallaLado + space.s8, paddingBottom: space.s16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <View style={{ gap: space.s4 }}>
+          <KText size={cifra.c34} weight={300} title lineHeight={cifra.c34} accessibilityRole="header">
+            {day}
+          </KText>
+          <KText size={texto.texto} tint={color.texto2}>{`${session.minutes}' · de ${session.coach.name}`}</KText>
         </View>
+        <Pulsable
+          onPress={() => router.push('/tu')}
+          accessibilityRole="button"
+          accessibilityLabel="Tú"
+          style={{ width: touch.dedo, height: touch.dedo, borderRadius: touch.dedo / 2, backgroundColor: color.tinta, alignItems: 'center', justifyContent: 'center' }}
+        >
+          <KText size={texto.lista} tint={color.tarjeta}>
+            {USER_INITIAL}
+          </KText>
+        </Pulsable>
+      </View>
 
-        {session.blocks.map((b, i) => (
-          <FilaBloque
-            key={b.id}
-            title={b.name}
-            tint={tintOf(b)}
-            onPress={() => go(i)}
-            badge={b.isNew}
-            marks={marcas(b)}
-            aside={
-              <KText size={texto.texto} tint={color.texto2}>
-                {`${b.minutes}'`}
-              </KText>
-            }
-          />
-        ))}
-      </ScrollView>
-      <View style={{ paddingHorizontal: layout.pantallaLado, paddingBottom: space.s12, paddingTop: space.s8 }}>
-        <BarraAccion label={running ? 'Seguir' : 'Empezar'} onPress={() => go(0)} />
+      <View style={{ flex: 1 }} onLayout={(e) => setListH(Math.floor(e.nativeEvent.layout.height))}>
+        {/* Solo se desplaza si ni encogidas caben, y nunca rebota. */}
+        <ScrollView
+          scrollEnabled={!fits}
+          bounces={false}
+          alwaysBounceVertical={false}
+          overScrollMode="never"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: layout.pantallaLado, gap: layout.entreTarjetas }}
+        >
+          {session.blocks.map((b, i) => (
+            <Animated.View
+              key={b.id}
+              style={
+                reduced
+                  ? undefined
+                  : { animationName: ENTRA, animationDuration: ms(motion.pantalla), animationDelay: ms(i * 40), animationTimingFunction: motion.salida, animationFillMode: 'backwards' }
+              }
+            >
+              <FilaBloque
+                title={b.name}
+                tint={tintOf(b)}
+                onPress={() => go(i)}
+                badge={b.isNew}
+                height={rowH}
+                marks={marcas(b)}
+                aside={
+                  <KText size={texto.texto} tint={color.texto2}>
+                    {`${b.minutes}'`}
+                  </KText>
+                }
+              />
+            </Animated.View>
+          ))}
+        </ScrollView>
+      </View>
+      <View style={{ paddingHorizontal: layout.pantallaLado, paddingTop: space.s16 }}>
+        <BarraAccion compacta label={running ? 'Seguir' : 'Empezar'} onPress={() => go(0)} />
       </View>
     </View>
   );

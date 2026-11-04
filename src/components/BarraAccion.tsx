@@ -18,12 +18,15 @@ type Props = {
   fg?: string;
   icon?: ReactNode;
   disabled?: boolean;
+  /** Fuera de marcha (Hoy): píldora de 88 en vez de bloque de 104. Más ligera, mismo gesto. */
+  compacta?: boolean;
 };
 
 /** Barra de acción 104: frase a la izquierda, círculo naranja a la derecha. */
-export function BarraAccion({ label, onPress, light, knob: knobColor = color.naranja, icon, disabled, bg, fg }: Props) {
-  const pad = space.s16;
-  const knob = inner(touch.accion, pad * 2); // 104 − 2·16 = 72
+export function BarraAccion({ label, onPress, light, knob: knobColor = color.naranja, icon, disabled, bg, fg, compacta }: Props) {
+  const h = compacta ? touch.fila : touch.accion;
+  const pad = compacta ? space.s12 : space.s16;
+  const knob = inner(h, pad * 2); // 104 − 2·16 = 72 · 88 − 2·12 = 64
   return (
     <Pulsable
       onPress={onPress}
@@ -33,10 +36,10 @@ export function BarraAccion({ label, onPress, light, knob: knobColor = color.nar
       accessibilityRole="button"
       accessibilityLabel={label}
       style={{
-        height: touch.accion,
-        borderRadius: radius.lg,
+        height: h,
+        borderRadius: compacta ? radius.pill : radius.lg,
         backgroundColor: bg ?? (light ? color.tarjeta : color.tinta),
-        paddingLeft: space.s24,
+        paddingLeft: compacta ? space.s32 : space.s24,
         paddingRight: pad,
         flexDirection: 'row',
         alignItems: 'center',

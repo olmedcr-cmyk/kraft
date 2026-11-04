@@ -17,12 +17,14 @@ type Props = {
   aside?: ReactNode;
   /** «?»: trae un ejercicio nuevo para ti. */
   badge?: boolean;
+  /** Alto de la fila: 88 por defecto; en pantallas bajas se encoge (mínimo 64) para que todo quepa sin desplazar. */
+  height?: number;
 };
 
 /** Fila de bloque 88 · radio 32. Interior = exterior − padding: cuadro de radio 16. */
-export function FilaBloque({ title, tint, marks, onPress, play, aside, badge }: Props) {
-  const pad = space.s16;
-  const square = touch.fila - pad * 2; // 56
+export function FilaBloque({ title, tint, marks, onPress, play, aside, badge, height = touch.fila }: Props) {
+  const pad = height < touch.fila ? space.s12 : space.s16;
+  const square = height - pad * 2; // 88 − 2·16 = 56
   return (
     <Pulsable
       onPress={onPress}
@@ -30,7 +32,7 @@ export function FilaBloque({ title, tint, marks, onPress, play, aside, badge }: 
       accessibilityRole="button"
       accessibilityLabel={title}
       style={{
-        height: touch.fila,
+        height,
         borderRadius: radius.xl,
         backgroundColor: color.tarjeta,
         padding: pad,
