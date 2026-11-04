@@ -3,9 +3,10 @@ import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { FilaBloque, Marcas } from '@/components/FilaBloque';
+import { Fundido } from '@/components/Fundido';
 import { KText } from '@/components/KText';
 import { describe, saveCurrent, useSaved, type SavedTimer } from '@/state/saved';
-import { cifra, color, layout, radius, space, texto, touch } from '@/theme';
+import { cifra, color, fundido, layout, radius, space, texto, touch } from '@/theme';
 import { MODES } from './TabataScreen';
 import { ModoTiempo } from './ModoTiempo';
 import { Pulsable } from '@/components/Pulsable';
@@ -24,12 +25,13 @@ export function MiosScreen() {
   const insets = useSafeAreaInsets();
   const items = useSaved();
   return (
+    <View style={{ flex: 1, backgroundColor: color.fondo }}>
     <ScrollView
-      style={{ flex: 1, backgroundColor: color.fondo }}
+      style={{ flex: 1 }}
       contentContainerStyle={{
         paddingTop: Math.max(insets.top, space.s48),
         paddingHorizontal: layout.pantallaLado,
-        paddingBottom: space.s12,
+        paddingBottom: fundido,
         gap: layout.entreTarjetas,
       }}
     >
@@ -74,5 +76,8 @@ export function MiosScreen() {
         </KText>
       </Pulsable>
     </ScrollView>
+    <Fundido lado="arriba" alto={insets.top + fundido} />
+    <Fundido lado="abajo" />
+    </View>
   );
 }

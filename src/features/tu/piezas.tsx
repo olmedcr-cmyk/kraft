@@ -4,10 +4,11 @@ import { Children, Fragment, useEffect, useRef, useState, type ReactNode } from 
 import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Fundido } from '@/components/Fundido';
 import { Interruptor } from '@/components/Interruptor';
 import { KText } from '@/components/KText';
 import { Pulsable } from '@/components/Pulsable';
-import { cifra, color, layout, radius, space, texto, touch } from '@/theme';
+import { cifra, color, fundido, layout, radius, space, texto, touch } from '@/theme';
 
 /** Alto de fila de ajustes (KT*: min-height 64). */
 const ROW = touch.tecla;
@@ -30,7 +31,8 @@ export function PantallaTu({ back, title, sub, children, footer }: { back: 'Hoy'
   return (
     // La vuelta (48) ocupa de 40 a 88: sube 24 sobre el margen de 64 (KT*).
     <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: Math.max(insets.top, layout.pantallaArriba - space.s24) }}>
-      <ScrollView contentContainerStyle={{ paddingHorizontal: layout.pantallaLado, gap: layout.entreTarjetas, paddingBottom: space.s16 + (footer ? 0 : insets.bottom), flexGrow: 1 }}>
+      <View style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={{ paddingHorizontal: layout.pantallaLado, gap: layout.entreTarjetas, paddingBottom: fundido + (footer ? 0 : insets.bottom), flexGrow: 1 }}>
         <Volver to={back} />
         {title && (
           <View style={{ paddingHorizontal: space.s8, paddingBottom: space.s16, gap: space.s8 }}>
@@ -46,6 +48,10 @@ export function PantallaTu({ back, title, sub, children, footer }: { back: 'Hoy'
         )}
         {children}
       </ScrollView>
+      {/* Al desplazar, el contenido se desvanece en los bordes en vez de cortarse. */}
+      <Fundido lado="arriba" />
+      <Fundido lado="abajo" />
+      </View>
       {footer && <View style={{ paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom }}>{footer}</View>}
     </View>
   );
