@@ -12,7 +12,7 @@ import { weekDays } from '@/diario/model';
 import { queueWorkout } from '@/backend/sync';
 import { logOwn, useDiary } from '@/diario/store';
 import { compiled, markSent, resetExtra, resetSession, session, sessionRunner, setRpe, useSession, useSessionExtra } from '@/session/store';
-import { alpha, cifra, color, layout, motion, radius, space, texto, touch } from '@/theme';
+import { alpha, cifra, color, layout, motion, radius, space, texto, touch, arriba } from '@/theme';
 import { Pulsable } from '@/components/Pulsable';
 
 const DAYS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
@@ -60,7 +60,7 @@ export function HechoScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: color.verde, paddingTop: Math.max(insets.top, layout.pantallaArriba) }}>
+    <View style={{ flex: 1, backgroundColor: color.verde, paddingTop: arriba(insets.top, layout.pantallaArriba) }}>
       <View style={{ paddingHorizontal: space.s24, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
         <KText size={cifra.c34} weight={300} title tint={color.tarjeta} accessibilityRole="header">
           Hecho

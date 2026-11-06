@@ -10,7 +10,7 @@ import { Pulsable } from '@/components/Pulsable';
 import type { Settings } from '@/alta/model';
 import { requestNotifications } from '@/platform/reminders';
 import { updateSettings, useSettings } from '@/state/settings';
-import { cifra, color, layout, radius, space, texto, touch } from '@/theme';
+import { cifra, color, layout, radius, space, texto, touch, arriba } from '@/theme';
 
 const ROWS: { key: 'avisos' | 'silencio' | 'pantalla'; title: string; note: string }[] = [
   { key: 'avisos', title: 'Avisos', note: 'Cuando llega tu sesión' },
@@ -33,7 +33,7 @@ export function PermisosScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: Math.max(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
+    <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: arriba(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
       <View style={{ paddingHorizontal: space.s8, paddingBottom: space.s16, gap: space.s8 }}>
         <KText size={cifra.c34} weight={300} title lineHeight={cifra.c34} accessibilityRole="header">
           Tres cosas

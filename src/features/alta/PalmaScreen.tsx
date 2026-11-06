@@ -11,7 +11,7 @@ import { PlayIcon } from '@/components/icons';
 import { KText } from '@/components/KText';
 import { Palma } from '@/components/Palma';
 import { updateSettings } from '@/state/settings';
-import { cifra, color, layout, motion, radius, space, texto, touch, transicionFondo } from '@/theme';
+import { cifra, color, layout, motion, radius, space, texto, touch, transicionFondo, arriba } from '@/theme';
 
 export function PalmaScreen() {
   const insets = useSafeAreaInsets();
@@ -26,7 +26,7 @@ export function PalmaScreen() {
   };
 
   return (
-    <Animated.View style={{ ...transicionFondo, flex: 1, backgroundColor: bg, paddingTop: Math.max(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
+    <Animated.View style={{ ...transicionFondo, flex: 1, backgroundColor: bg, paddingTop: arriba(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
       <StatusBar style="light" />
       <View style={{ paddingHorizontal: space.s8, gap: space.s8 }}>
         <KText size={cifra.c34} weight={300} title lineHeight={cifra.c34} tint={color.tarjeta} accessibilityRole="header" accessibilityLiveRegion="polite">

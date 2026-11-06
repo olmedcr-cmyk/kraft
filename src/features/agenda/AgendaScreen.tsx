@@ -27,7 +27,7 @@ import {
 } from '@/agenda/model';
 import { book, useAgenda } from '@/agenda/store';
 import { Fundido } from '@/components/Fundido';
-import { cifra, color, fundido, inner, layout, radius, space, texto, touch, transicionPunto } from '@/theme';
+import { cifra, color, fundido, inner, layout, radius, space, texto, touch, transicionPunto, arriba } from '@/theme';
 import { CabeceraAgenda, Flecha, IconoModo, MODE_TINT, Mas, Ocupacion } from './piezas';
 
 const LETTERS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
@@ -52,7 +52,7 @@ export function AgendaScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: color.fondo }}>
       <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={{ paddingTop: Math.max(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, gap: layout.entreTarjetas, paddingBottom: fundido }}>
+      <ScrollView contentContainerStyle={{ paddingTop: arriba(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, gap: layout.entreTarjetas, paddingBottom: fundido }}>
         <CabeceraAgenda
           right={
             next ? (

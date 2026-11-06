@@ -8,7 +8,7 @@ import { Fundido } from '@/components/Fundido';
 import { Interruptor } from '@/components/Interruptor';
 import { KText } from '@/components/KText';
 import { Pulsable } from '@/components/Pulsable';
-import { cifra, color, fundido, layout, radius, space, texto, touch } from '@/theme';
+import { cifra, color, fundido, layout, radius, space, texto, touch, arriba } from '@/theme';
 
 /** Alto de fila de ajustes (KT*: min-height 64). */
 const ROW = touch.tecla;
@@ -30,7 +30,7 @@ export function PantallaTu({ back, backHref, title, sub, children, footer }: { b
   const insets = useSafeAreaInsets();
   return (
     // La vuelta (48) ocupa de 40 a 88: sube 24 sobre el margen de 64 (KT*).
-    <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: Math.max(insets.top, layout.pantallaArriba - space.s24) }}>
+    <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: arriba(insets.top, layout.pantallaArriba - space.s24) }}>
       <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ paddingHorizontal: layout.pantallaLado, gap: layout.entreTarjetas, paddingBottom: fundido + (footer ? 0 : insets.bottom), flexGrow: 1 }}>
         <Volver to={back} href={backHref} />

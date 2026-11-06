@@ -6,7 +6,7 @@ import { FilaBloque, Marcas } from '@/components/FilaBloque';
 import { Fundido } from '@/components/Fundido';
 import { KText } from '@/components/KText';
 import { describe, saveCurrent, useSaved, type SavedTimer } from '@/state/saved';
-import { cifra, color, fundido, layout, radius, space, texto, touch } from '@/theme';
+import { cifra, color, fundido, layout, radius, space, texto, touch, arriba } from '@/theme';
 import { MODES } from './TabataScreen';
 import { ModoTiempo } from './ModoTiempo';
 import { Pulsable } from '@/components/Pulsable';
@@ -29,7 +29,7 @@ export function MiosScreen() {
     <ScrollView
       style={{ flex: 1 }}
       contentContainerStyle={{
-        paddingTop: Math.max(insets.top, space.s48),
+        paddingTop: arriba(insets.top, space.s48),
         paddingHorizontal: layout.pantallaLado,
         paddingBottom: fundido,
         gap: layout.entreTarjetas,

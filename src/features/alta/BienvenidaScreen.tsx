@@ -8,7 +8,7 @@ import { Pulsable } from '@/components/Pulsable';
 import { getAuthSession } from '@/backend/auth';
 import { hasBackend } from '@/backend/client';
 import { getSettings, updateSettings } from '@/state/settings';
-import { alpha, cifra, color, layout, radius, space, texto, touch } from '@/theme';
+import { alpha, cifra, color, layout, radius, space, texto, touch, arriba } from '@/theme';
 
 const HERO_H = 340;
 const RING_R = 140;
@@ -42,7 +42,7 @@ export function BienvenidaScreen() {
   const onlyEmail = !offers('apple') && !offers('google');
 
   return (
-    <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: Math.max(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
+    <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: arriba(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
       <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ height: HERO_H, borderRadius: radius.lg, backgroundColor: color.klein, overflow: 'hidden' }}>
         {Array.from({ length: DOTS }, (_, i) => {
           const a = (2 * Math.PI * i) / DOTS;

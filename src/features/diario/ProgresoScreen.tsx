@@ -10,7 +10,7 @@ import { Pulsable } from '@/components/Pulsable';
 import { CIRCLE_MIN, COL_ROWS, streakWeeks, totals, trend, weekColumns, weekDays, weeksMinutes } from '@/diario/model';
 import { useDiary } from '@/diario/store';
 import { Fundido } from '@/components/Fundido';
-import { alpha, cifra, color, fundido, layout, motion, ms, radius, space, texto, transicionPunto } from '@/theme';
+import { alpha, cifra, color, fundido, layout, motion, ms, radius, space, texto, transicionPunto, arriba } from '@/theme';
 import { CabeceraDiario } from './piezas';
 
 const LETTERS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
@@ -39,7 +39,7 @@ export function ProgresoScreen() {
     <View style={{ flex: 1, backgroundColor: color.fondo }}>
     <ScrollView
       style={{ flex: 1 }}
-      contentContainerStyle={{ paddingTop: Math.max(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: fundido, gap: space.s16 }}
+      contentContainerStyle={{ paddingTop: arriba(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: fundido, gap: space.s16 }}
     >
       <CabeceraDiario
         label="Datos"

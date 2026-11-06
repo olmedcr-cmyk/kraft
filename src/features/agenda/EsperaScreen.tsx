@@ -11,7 +11,7 @@ import { Pulsable } from '@/components/Pulsable';
 import { Vacio } from '@/components/Vacio';
 import { getSlot, hhmm, weekday } from '@/agenda/model';
 import { cancel, joinWaitlist, setAutoJoin, useAgenda } from '@/agenda/store';
-import { cifra, color, layout, radius, space, texto, touch } from '@/theme';
+import { cifra, color, layout, radius, space, texto, touch, arriba } from '@/theme';
 
 /** Volver si hay a dónde; si se llegó por enlace directo, a la agenda. */
 const back = () => (router.canDismiss() ? router.dismiss() : router.replace('/agenda'));
@@ -33,7 +33,7 @@ export function EsperaScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: Math.max(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
+    <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: arriba(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
       <View style={{ paddingHorizontal: space.s8, paddingBottom: space.s16, gap: space.s8 }}>
         <KText size={cifra.c34} weight={300} title lineHeight={cifra.c34} accessibilityRole="header">
           Llena

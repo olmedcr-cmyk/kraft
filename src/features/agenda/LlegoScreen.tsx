@@ -12,7 +12,7 @@ import { Vacio } from '@/components/Vacio';
 import { getSlot, hhmm } from '@/agenda/model';
 import { arrive, useAgenda } from '@/agenda/store';
 import { session } from '@/session/store';
-import { alpha, cifra, color, layout, motion, space, texto, touch, transicionFondo, transicionPunto } from '@/theme';
+import { alpha, cifra, color, layout, motion, space, texto, touch, transicionFondo, transicionPunto, arriba } from '@/theme';
 
 /** Cuántos han llegado ya (de ejemplo, hasta tener backend). */
 const ALREADY_IN = 7;
@@ -31,7 +31,7 @@ export function LlegoScreen() {
   const bring = slot.bring.filter((x) => !x.provided).map((x) => x.label.toLowerCase());
 
   return (
-    <Animated.View style={{ ...transicionFondo, flex: 1, backgroundColor: bg, paddingTop: Math.max(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: space.s8 }}>
+    <Animated.View style={{ ...transicionFondo, flex: 1, backgroundColor: bg, paddingTop: arriba(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: space.s8 }}>
       <View style={{ paddingHorizontal: space.s8, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <View style={{ gap: space.s8, flexShrink: 1 }}>
           <KText size={texto.texto} tint={color.tarjeta}>{`${slot.name} · ${hhmm(slot.start)}`}</KText>

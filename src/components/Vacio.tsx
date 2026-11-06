@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { color, layout, radius, space, texto, cifra } from '@/theme';
+import { color, layout, radius, space, texto, cifra, arriba } from '@/theme';
 import { KText } from './KText';
 
 /** Pantalla aún sin construir: título y estado vacío de K1Components (H). */
@@ -12,7 +12,7 @@ export function Vacio({ title, note }: { title: string; note: string }) {
       style={{
         flex: 1,
         backgroundColor: color.fondo,
-        paddingTop: Math.max(insets.top, layout.pantallaArriba),
+        paddingTop: arriba(insets.top, layout.pantallaArriba),
         paddingHorizontal: layout.pantallaLado,
         paddingBottom: space.s12,
         gap: space.s16,

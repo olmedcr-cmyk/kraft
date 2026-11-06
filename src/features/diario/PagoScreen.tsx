@@ -12,7 +12,7 @@ import { Vacio } from '@/components/Vacio';
 import { bill, monthName, monthStatus, type Method } from '@/diario/model';
 import { pay, useDiary } from '@/diario/store';
 import { session } from '@/session/store';
-import { cifra, color, layout, radius, space, texto, transicionPunto } from '@/theme';
+import { cifra, color, layout, radius, space, texto, transicionPunto, arriba } from '@/theme';
 import { CabeceraDiario, PuntoModo, modeLabel } from './piezas';
 
 /** Tarjeta guardada de ejemplo: la pondrá la pasarela de pago. */
@@ -33,7 +33,7 @@ export function PagoScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: Math.max(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
+    <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: arriba(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
       <View style={{ paddingHorizontal: space.s8, paddingBottom: space.s16, gap: space.s8 }}>
         <CabeceraDiario label={`${name[0].toUpperCase()}${name.slice(1)} · a ${session.coach.name}`} back />
         <View style={{ flexDirection: 'row', alignItems: 'baseline' }} accessibilityRole="header" accessibilityLabel={`${b.amount} euros`}>

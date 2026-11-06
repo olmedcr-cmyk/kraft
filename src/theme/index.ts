@@ -76,6 +76,14 @@ export const motion = {
 } as const;
 export const ms = (n: number) => `${n}ms`;
 
+/** Barra de estado del lienzo de diseño (390×844): los márgenes de arriba de los PNG la incluyen. */
+const BARRA_DISENO = 47;
+/**
+ * Margen de arriba de una pantalla. Respeta lo que hay en el diseño entre la barra de estado y el
+ * contenido: en un iPhone como el de los PNG queda igual; con Dynamic Island (barra más alta) baja lo justo.
+ */
+export const arriba = (insetTop: number, base: number = layout.pantallaArriba) => Math.max(insetTop + base - BARRA_DISENO, base);
+
 /** Cambio de estado de fondo (trabajo ↔ descanso ↔ pausa): color, a ritmo de pantalla. */
 export const transicionFondo = {
   transitionProperty: 'backgroundColor',

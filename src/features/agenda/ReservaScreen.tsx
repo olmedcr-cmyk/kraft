@@ -13,7 +13,7 @@ import { MODES, cancelDeadline, getSlot, hhmm, isLate, longDay, relativeDay, tak
 import { useAgenda } from '@/agenda/store';
 import { addToCalendar } from '@/platform/calendar';
 import { session } from '@/session/store';
-import { cifra, color, inner, layout, radius, space, texto } from '@/theme';
+import { cifra, color, inner, layout, radius, space, texto, arriba } from '@/theme';
 import { CabeceraAgenda, Cruz, Flecha, IconoModo, MODE_TINT, Ocupacion } from './piezas';
 
 /** «Llego» aparece desde 1 h antes hasta que acaba la clase. */
@@ -39,7 +39,7 @@ export function ReservaScreen() {
   const bring = slot.bring;
 
   return (
-    <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: Math.max(insets.top, layout.pantallaArriba), paddingBottom: space.s16 + insets.bottom }}>
+    <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: arriba(insets.top, layout.pantallaArriba), paddingBottom: space.s16 + insets.bottom }}>
       <ScrollView contentContainerStyle={{ paddingHorizontal: layout.pantallaLado, gap: layout.entreTarjetas, paddingBottom: space.s8 }}>
         <CabeceraAgenda
           back

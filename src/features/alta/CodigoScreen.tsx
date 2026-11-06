@@ -13,7 +13,7 @@ import { sendEmailCode, verifyEmailCode } from '@/backend/auth';
 import { OTP_LEN, RESEND_S, maskEmail } from '@/backend/email';
 import { updateSettings } from '@/state/settings';
 import { Volver } from '@/features/tu/piezas';
-import { cifra, color, layout, space, texto, touch } from '@/theme';
+import { cifra, color, layout, space, texto, touch, arriba } from '@/theme';
 
 export function CodigoScreen() {
   const insets = useSafeAreaInsets();
@@ -66,7 +66,7 @@ export function CodigoScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: Math.max(insets.top, layout.pantallaArriba - space.s24), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
+    <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: arriba(insets.top, layout.pantallaArriba - space.s24), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
       <Volver to="Email" href="/alta/correo" />
       <View style={{ paddingHorizontal: space.s8, paddingBottom: space.s16, gap: space.s8 }}>
         <KText size={cifra.c34} weight={300} title lineHeight={cifra.c34} accessibilityRole="header">

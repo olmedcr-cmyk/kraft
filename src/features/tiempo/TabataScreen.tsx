@@ -9,7 +9,7 @@ import { PildoraFase } from '@/components/PildoraFase';
 import { Segmentado } from '@/components/Segmentado';
 import { useHideNav } from '@/state/chrome';
 import { setCurrent } from '@/state/saved';
-import { cifra, color, radius, space, texto, transicionFondo, transicionPunto } from '@/theme';
+import { cifra, color, radius, space, texto, transicionFondo, transicionPunto, arriba } from '@/theme';
 import { useSettings } from '@/state/settings';
 import { tabataPlan, type Snapshot } from '@/timer/engine';
 import { useTimer } from '@/timer/useTimer';
@@ -99,7 +99,7 @@ export function TabataScreen() {
         ...transicionFondo,
         flex: 1,
         backgroundColor: bg,
-        paddingTop: Math.max(insets.top, space.s48),
+        paddingTop: arriba(insets.top, space.s48),
         paddingHorizontal: space.s16,
         paddingBottom: idle ? space.s12 : 0,
         gap: space.s12,

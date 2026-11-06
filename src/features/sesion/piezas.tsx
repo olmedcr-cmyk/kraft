@@ -6,7 +6,7 @@ import Svg, { Circle, Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { KText } from '@/components/KText';
-import { alpha, cifra, color, layout, radius, space, texto, touch, transicionFondo, transicionPunto } from '@/theme';
+import { alpha, cifra, color, layout, radius, space, texto, touch, transicionFondo, transicionPunto, arriba } from '@/theme';
 import { Pulsable } from '@/components/Pulsable';
 import Animated from 'react-native-reanimated';
 
@@ -20,7 +20,7 @@ export const mmss = (sec: number) => `${Math.floor(sec / 60)}:${pad2(sec % 60)}`
 export function Lienzo({ bg, children }: { bg: string; children: ReactNode }) {
   const insets = useSafeAreaInsets();
   return (
-    <Animated.View style={{ ...transicionFondo, flex: 1, backgroundColor: bg, paddingTop: Math.max(insets.top, layout.pantallaArriba) }}>{children}</Animated.View>
+    <Animated.View style={{ ...transicionFondo, flex: 1, backgroundColor: bg, paddingTop: arriba(insets.top, layout.pantallaArriba) }}>{children}</Animated.View>
   );
 }
 

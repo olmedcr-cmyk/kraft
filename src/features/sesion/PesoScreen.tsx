@@ -11,7 +11,7 @@ import { Vacio } from '@/components/Vacio';
 import { Volver } from '@/features/tu/piezas';
 import { addNote, compiled, session, sessionRunner, setWeight, useSessionExtra } from '@/session/store';
 import { useSettings } from '@/state/settings';
-import { cifra, color, layout, radius, space, texto, touch } from '@/theme';
+import { cifra, color, layout, radius, space, texto, touch, arriba } from '@/theme';
 import { STEP_KG, kgLabel } from './Escalera';
 
 export function PesoScreen() {
@@ -51,7 +51,7 @@ export function PesoScreen() {
   const options = [base - STEP_KG, base, base + STEP_KG].filter((w) => w > 0);
 
   return (
-    <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: Math.max(insets.top, layout.pantallaArriba - space.s24), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
+    <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: arriba(insets.top, layout.pantallaArriba - space.s24), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
       <Volver to="Escalera" href="/sesion" />
       <View style={{ paddingHorizontal: space.s8, paddingBottom: space.s16, gap: space.s8 }}>
         <KText size={cifra.c34} weight={300} title lineHeight={cifra.c34} accessibilityRole="header">

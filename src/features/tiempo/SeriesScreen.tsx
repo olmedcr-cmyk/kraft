@@ -12,7 +12,7 @@ import { Palma } from '@/components/Palma';
 import { PildoraFase } from '@/components/PildoraFase';
 import { useHideNav } from '@/state/chrome';
 import { setCurrent } from '@/state/saved';
-import { alpha, cifra, color, motion, ms, radius, space, texto, touch, transicionFondo } from '@/theme';
+import { alpha, cifra, color, motion, ms, radius, space, texto, touch, transicionFondo, arriba } from '@/theme';
 import { useSettings } from '@/state/settings';
 import { seriesPlan, type Snapshot } from '@/timer/engine';
 import { useTimer } from '@/timer/useTimer';
@@ -121,7 +121,7 @@ export function SeriesScreen() {
         ...transicionFondo,
         flex: 1,
         backgroundColor: bg,
-        paddingTop: Math.max(insets.top, space.s48),
+        paddingTop: arriba(insets.top, space.s48),
         paddingHorizontal: space.s16,
         paddingBottom: selecting ? space.s12 : 0,
         gap: space.s12,

@@ -13,7 +13,7 @@ import { hhmm } from '@/agenda/model';
 import { compileSession } from '@/session/compile';
 import { discardUnfinished, finishUnfinished, resumeUnfinished, useUnfinished } from '@/session/marcha';
 import { compiled, resetSession, sessionRunner } from '@/session/store';
-import { alpha, cifra, color, layout, radius, space, texto, touch } from '@/theme';
+import { alpha, cifra, color, layout, radius, space, texto, touch, arriba } from '@/theme';
 
 const RING = 280;
 const SUN = 180;
@@ -70,7 +70,7 @@ export function RetomarScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: color.tinta, paddingTop: Math.max(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
+    <View style={{ flex: 1, backgroundColor: color.tinta, paddingTop: arriba(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
       <View style={{ paddingHorizontal: space.s8, gap: space.s8 }}>
         <KText size={texto.texto} tint={color.linea}>
           {when(u.savedAt)}

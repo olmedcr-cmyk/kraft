@@ -13,7 +13,7 @@ import { Vacio } from '@/components/Vacio';
 import { bill, monthName } from '@/diario/model';
 import { resendReceipt, useDiary } from '@/diario/store';
 import { session } from '@/session/store';
-import { alpha, cifra, color, layout, motion, ms, radius, space, texto, touch } from '@/theme';
+import { alpha, cifra, color, layout, motion, ms, radius, space, texto, touch, arriba } from '@/theme';
 import { PuntoModo, modeLabel } from './piezas';
 
 const APARECE = { from: { opacity: 0 }, to: { opacity: 1 } };
@@ -32,7 +32,7 @@ export function ReciboScreen() {
   const toDiary = () => (router.canDismiss() ? router.dismissAll() : router.replace('/diario'));
 
   return (
-    <View style={{ flex: 1, backgroundColor: color.verde, paddingTop: Math.max(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
+    <View style={{ flex: 1, backgroundColor: color.verde, paddingTop: arriba(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
       {/* El ✓ es el momento: entra una vez, sin rebote (animación CSS: no saca el círculo del flujo). */}
       <Animated.View
         style={{

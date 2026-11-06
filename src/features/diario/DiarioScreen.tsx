@@ -27,7 +27,7 @@ import {
 } from '@/diario/model';
 import { useDiary } from '@/diario/store';
 import { Fundido } from '@/components/Fundido';
-import { cifra, color, fundido, layout, radius, space, texto, transicionFondo, transicionPunto } from '@/theme';
+import { cifra, color, fundido, layout, radius, space, texto, transicionFondo, transicionPunto, arriba } from '@/theme';
 import { CabeceraDiario, MODE_TINT, PuntoModo, modeLabel } from './piezas';
 
 const LETTERS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
@@ -70,7 +70,7 @@ export function DiarioScreen() {
     <View style={{ flex: 1, backgroundColor: color.fondo }}>
     <ScrollView
       style={{ flex: 1 }}
-      contentContainerStyle={{ paddingTop: Math.max(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, gap: layout.entreTarjetas, paddingBottom: fundido }}
+      contentContainerStyle={{ paddingTop: arriba(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, gap: layout.entreTarjetas, paddingBottom: fundido }}
     >
       <View style={{ paddingHorizontal: space.s8 }}>
         <CabeceraDiario

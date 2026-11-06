@@ -20,7 +20,7 @@ import { hhmm, longDay, upcomingBookings } from '@/agenda/model';
 import { useAgenda } from '@/agenda/store';
 import { MODE_TINT } from '@/features/agenda/piezas';
 import type { Block } from '@/session/types';
-import { cifra, color, layout, motion, ms, radius, space, texto, touch } from '@/theme';
+import { cifra, color, layout, motion, ms, radius, space, texto, touch, arriba } from '@/theme';
 import { Pulsable } from '@/components/Pulsable';
 
 const WEEKDAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
@@ -104,7 +104,7 @@ export function HoyScreen() {
   if (unfinished && !running) return <Redirect href="/sesion/retomar" />;
 
   return (
-    <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: Math.max(insets.top, layout.pantallaArriba) }}>
+    <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: arriba(insets.top, layout.pantallaArriba) }}>
       {offline && <SinConexion />}
       <View style={{ paddingHorizontal: layout.pantallaLado + space.s8, paddingBottom: space.s16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <View style={{ gap: space.s4 }}>
