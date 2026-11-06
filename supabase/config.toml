@@ -175,7 +175,8 @@ password_requirements = ""
 
 [auth.rate_limit]
 # Number of emails that can be sent per hour. Requires auth.email.smtp to be enabled.
-email_sent = 2
+# KRAFT: con Resend; por persona ya hay un código cada 60 s.
+email_sent = 100
 # Number of SMS messages that can be sent per hour. Requires auth.sms to be enabled.
 sms_sent = 30
 # Number of anonymous sign-ins that can be made per hour per IP address. Requires enable_anonymous_sign_ins = true.
@@ -214,25 +215,25 @@ otp_length = 6
 otp_expiry = 600
 
 # KRAFT: el email lleva el código de 6 cifras (no un enlace), en español.
-# Supabase solo deja cambiar la plantilla con un servidor de correo propio (SMTP, p. ej. Resend):
-# al configurarlo abajo, descomentar estas dos plantillas y hacer `supabase config push`.
-# [auth.email.template.magic_link]
-# subject = "Tu código de KRAFT"
-# content_path = "./supabase/templates/codigo.html"
-#
-# [auth.email.template.confirmation]
-# subject = "Tu código de KRAFT"
-# content_path = "./supabase/templates/codigo.html"
+# (Supabase solo deja cambiar la plantilla con un servidor de correo propio: el SMTP de abajo.)
+[auth.email.template.magic_link]
+subject = "Tu código de KRAFT"
+content_path = "./supabase/templates/codigo.html"
 
-# Use a production-ready SMTP server
-# [auth.email.smtp]
-# enabled = true
-# host = "smtp.sendgrid.net"
-# port = 587
-# user = "apikey"
-# pass = "env(SENDGRID_API_KEY)"
-# admin_email = "admin@email.com"
-# sender_name = "Admin"
+[auth.email.template.confirmation]
+subject = "Tu código de KRAFT"
+content_path = "./supabase/templates/codigo.html"
+
+# KRAFT: correo por Resend con dominio propio. La clave y el remitente salen de .env.local:
+#   set -a; . ./.env.local; set +a; supabase config push
+[auth.email.smtp]
+enabled = true
+host = "smtp.resend.com"
+port = 465
+user = "resend"
+pass = "env(RESEND_API_KEY)"
+admin_email = "env(SMTP_FROM)"
+sender_name = "KRAFT"
 
 # Uncomment to customize email template
 # [auth.email.template.invite]
