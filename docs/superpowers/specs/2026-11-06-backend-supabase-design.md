@@ -48,7 +48,7 @@ Importes en céntimos. Fechas en `timestamptz`; el día de entreno en `date` (d�
 | `profiles` | id (= usuario), nombre, rol `athlete`/`coach`, aceptado el, compartir, analítica, emails, salud, borrado pedido el | Cada uno el suyo. El entrenador lee nombre de sus atletas |
 | `coaches` | id, código de 6 cifras (único), nombre, modos, precios por modo | Todos leen nombre y modos solo vía `link_coach`; el entrenador, el suyo |
 | `coach_athletes` | entrenador, atleta, vinculado el, desvinculado el | Ambos leen; escribe solo `link_coach` / `unlink_coach` |
-| `sessions` | id, entrenador, atleta, fecha, minutos, `body` (JSON, formato de abajo), versión del formato, versión, creada/editada | Atleta: lee las suyas. Entrenador: todo sobre las de sus atletas |
+| `sessions` | id, entrenador, atleta (vacío = para todo su grupo; la propia manda sobre la de grupo), fecha, minutos, `body` (JSON, formato de abajo), versión del formato, versión, creada/editada | Atleta: lee las suyas. Entrenador: todo sobre las de sus atletas |
 | `workouts` | id, atleta, día, minutos, tabatas, sesión, esfuerzo (1–10), nota, `client_id` | Atleta: todo. Entrenador: lee; esfuerzo y nota solo si `compartir` |
 | `slots` | id, entrenador, modo, empieza, minutos, nombre, sala, planta, cómo llegar, aforo, qué traer | Atletas vinculados leen; entrenador escribe |
 | `bookings` | id, clase, atleta, estado (`confirmed`, `waitlist`, `cancelled`, `late_cancel`), puesto, entrar solo, llegó el, reservada el | Atleta lee las suyas; escribe solo por funciones. Entrenador lee las de sus clases |
@@ -95,7 +95,7 @@ Decisiones dentro del formato:
 
 Sin app de entrenador (fuera de v1), las sesiones se cargan con un script `scripts/subir-sesion.ts` que lee un JSON y lo sube con la clave de servicio **desde el ordenador**, nunca desde la app. Mientras, la de ejemplo (Elena, martes 50') se sube como semilla.
 
-**Semilla** (también por script con la clave de servicio, porque Elena necesita usuario en Auth): la entrenadora Elena con el código `472913`, sus precios (grupo 8 €, solo 30 €, online 5 €), las clases de las próximas dos semanas (las mismas plantillas que `src/agenda/model.ts`) y la sesión de ejemplo asignada a cada atleta que se vincule.
+**Semilla** (también por script con la clave de servicio, porque Elena necesita usuario en Auth): la entrenadora Elena con el código `472913`, sus precios (grupo 8 €, solo 30 €, online 5 €), las clases de las próximas dos semanas (las mismas plantillas que `src/agenda/model.ts`) y la sesión de ejemplo como sesión de grupo (sin atleta) para cada día de esas dos semanas.
 
 ## Cuentas
 
@@ -113,7 +113,7 @@ Sin app de entrenador (fuera de v1), las sesiones se cargan con un script `scrip
 
 ## Cómo se comprueba
 
-- Tests de RLS en SQL (`supabase test db`, pgTAP): un atleta no ve a otro; un entrenador no ve atletas ajenos ni notas sin «compartir»; nadie inserta pagos.
+- Tests de RLS en SQL (`scripts/db/test.sh`: un Postgres temporal que imita a Supabase, sin Docker): un atleta no ve a otro; un entrenador no ve atletas ajenos ni notas sin «compartir»; nadie inserta pagos.
 - Tests de las funciones: última plaza con dos reservas a la vez, plazo de 2 h, subida desde la lista de espera.
 - Tests en la app (Jest): `validateSession`, la cola de envíos (reintentos, sin duplicados) y el paso de datos del servidor a los stores.
 - A mano, en la web de Vercel: entrar con email en dos navegadores y ver los mismos datos.
