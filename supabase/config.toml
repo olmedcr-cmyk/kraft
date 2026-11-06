@@ -214,13 +214,15 @@ otp_length = 6
 otp_expiry = 600
 
 # KRAFT: el email lleva el código de 6 cifras (no un enlace), en español.
-[auth.email.template.magic_link]
-subject = "Tu código de KRAFT"
-content_path = "./supabase/templates/codigo.html"
-
-[auth.email.template.confirmation]
-subject = "Tu código de KRAFT"
-content_path = "./supabase/templates/codigo.html"
+# Supabase solo deja cambiar la plantilla con un servidor de correo propio (SMTP, p. ej. Resend):
+# al configurarlo abajo, descomentar estas dos plantillas y hacer `supabase config push`.
+# [auth.email.template.magic_link]
+# subject = "Tu código de KRAFT"
+# content_path = "./supabase/templates/codigo.html"
+#
+# [auth.email.template.confirmation]
+# subject = "Tu código de KRAFT"
+# content_path = "./supabase/templates/codigo.html"
 
 # Use a production-ready SMTP server
 # [auth.email.smtp]
@@ -289,8 +291,8 @@ max_enrolled_factors = 10
 
 # Control MFA via App Authenticator (TOTP)
 [auth.mfa.totp]
-enroll_enabled = false
-verify_enabled = false
+enroll_enabled = true
+verify_enabled = true
 
 # Configure MFA via Phone Messaging
 [auth.mfa.phone]
