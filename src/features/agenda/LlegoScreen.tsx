@@ -35,7 +35,8 @@ export function LlegoScreen() {
       <View style={{ paddingHorizontal: space.s8, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <View style={{ gap: space.s8, flexShrink: 1 }}>
           <KText size={texto.texto} tint={color.tarjeta}>{`${slot.name} · ${hhmm(slot.start)}`}</KText>
-          <KText size={cifra.c89} weight={300} title tint={color.tarjeta} lineHeight={Math.round(cifra.c89 * 0.85)} accessibilityRole="header">
+          {/* Línea = tamaño: con 0,85 iOS recorta la parte de arriba de la letra (puede ocupar dos líneas). */}
+          <KText size={cifra.c89} weight={300} title tint={color.tarjeta} lineHeight={cifra.c89} accessibilityRole="header">
             {slot.room ? `Sala ${slot.room}` : 'Online'}
           </KText>
         </View>

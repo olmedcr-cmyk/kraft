@@ -278,7 +278,7 @@ function Pago({ month, status }: { month: string; status: MonthStatus }) {
           {head[1]}
         </KText>
       </View>
-      <KText size={cifra.c55} weight={300} tint={st.fg} lineHeight={cifra.c55}>{`${b.amount} €`}</KText>
+      <KText size={cifra.c55} weight={300} tint={st.fg} lineHeight={cifra.c55} tabular>{`${b.amount} €`}</KText>
       {b.lines.length > 0 && (
         <View style={{ gap: space.s4 }}>
           {b.lines.map((l) => (
