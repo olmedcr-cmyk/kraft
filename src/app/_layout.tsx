@@ -40,7 +40,10 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <StatusBar style="auto" />
         {/* Transiciones nativas del sistema; con «reducir movimiento», fundido. */}
-        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: color.fondo }, animation: reduced ? 'fade' : 'default' }} />
+        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: color.fondo }, animation: reduced ? 'fade' : 'default' }}>
+          {/* Salud (KL2): hoja sobre tinta; el fondo funde y la hoja sube. */}
+          <Stack.Screen name="legal/salud" options={{ presentation: 'transparentModal', animation: 'fade', contentStyle: { backgroundColor: 'transparent' } }} />
+        </Stack>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

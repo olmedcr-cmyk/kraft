@@ -11,21 +11,21 @@ const CARD_LAST4 = '4242';
 export function CuentaScreen() {
   const s = useSettings();
   const salir = useConfirmar();
-  const doc = (d: string) => router.push({ pathname: '/legal/[doc]', params: { doc: d } });
 
   return (
     <PantallaTu back="Tú" title="Cuenta">
       <Grupo>
         <Fila label="Pago" value={`···· ${CARD_LAST4}`} onPress={() => router.push('/diario')} />
         {/* Salud: consentimiento propio y explícito (RGPD). Solo escribe entrenos y calorías. */}
-        <FilaSi label="Salud" on={s.salud} onChange={(v) => updateSettings({ salud: v })} />
+        {/* Encender pasa por su propia hoja (KL2); apagar es inmediato. */}
+        <FilaSi label="Salud" on={s.salud} onChange={(v) => (v ? router.push('/legal/salud') : updateSettings({ salud: false }))} />
         <Fila label="Idioma" value="Español" />
         {/* Solo hay tema claro diseñado. */}
         <Fila label="Tema" value="Claro" />
       </Grupo>
       <Grupo>
-        <Fila label="Mis datos · descargar" onPress={() => doc('datos')} />
-        <Fila label="Privacidad" onPress={() => doc('privacidad')} />
+        <Fila label="Mis datos · descargar" onPress={() => router.push('/legal/datos')} />
+        <Fila label="Privacidad" onPress={() => router.push('/legal')} />
         <Fila label="Créditos de ilustración" value="CC BY-SA" onPress={() => router.push('/tu/creditos')} />
       </Grupo>
       <Grupo>
@@ -41,7 +41,7 @@ export function CuentaScreen() {
             })
           }
         />
-        <Fila label="Borrar cuenta" onPress={() => doc('borrar')} />
+        <Fila label="Borrar cuenta" onPress={() => router.push('/legal/borrar')} />
       </Grupo>
     </PantallaTu>
   );

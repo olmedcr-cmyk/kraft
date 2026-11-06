@@ -19,7 +19,8 @@ export function PalmaScreen() {
   const bg = paused ? color.tinta : color.klein;
 
   const done = () => {
-    updateSettings({ onboarded: true });
+    // Volver antes de 30 días anula el borrado pedido.
+    updateSettings({ onboarded: true, borradoPedido: undefined });
     router.dismissAll();
     router.replace('/');
   };

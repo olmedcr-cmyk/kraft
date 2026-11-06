@@ -1,5 +1,5 @@
 /** Piezas de «Tú» (KT1–KT6): cabecera con vuelta, grupos de filas, selector pequeño, confirmar con doble toque. */
-import { router } from 'expo-router';
+import { router, type Href } from 'expo-router';
 import { Children, Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
 import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,9 +15,9 @@ const ROW = touch.tecla;
 /** Selector pequeño: 36 de alto dentro de un carril de 2 (40 en total); el toque se amplía a 48. */
 const OPT_H = 36;
 
-/** «‹ Tú» que vuelve; si se entró por enlace, a donde toca. */
-export function Volver({ to }: { to: 'Hoy' | 'Tú' }) {
-  const go = () => (router.canGoBack() ? router.back() : router.replace(to === 'Hoy' ? '/' : '/tu'));
+/** «‹ Tú» que vuelve; si se entró por enlace (sin historial), a `href`. */
+export function Volver({ to, href }: { to: string; href?: Href }) {
+  const go = () => (router.canGoBack() ? router.back() : router.replace(href ?? (to === 'Hoy' ? '/' : '/tu')));
   return (
     <Pulsable onPress={go} accessibilityRole="link" accessibilityLabel={`Volver a ${to}`} scaleTo={0.98} style={{ height: touch.dedo, paddingHorizontal: space.s8, justifyContent: 'center', alignSelf: 'flex-start' }}>
       <KText size={texto.texto} tint={color.texto2}>{`‹ ${to}`}</KText>
@@ -26,14 +26,14 @@ export function Volver({ to }: { to: 'Hoy' | 'Tú' }) {
 }
 
 /** Pantalla de Tú: vuelta, título, subtítulo, contenido que se desplaza y pie fijo opcional. */
-export function PantallaTu({ back, title, sub, children, footer }: { back: 'Hoy' | 'Tú'; title?: string; sub?: string; children: ReactNode; footer?: ReactNode }) {
+export function PantallaTu({ back, backHref, title, sub, children, footer }: { back: string; backHref?: Href; title?: string; sub?: string; children: ReactNode; footer?: ReactNode }) {
   const insets = useSafeAreaInsets();
   return (
     // La vuelta (48) ocupa de 40 a 88: sube 24 sobre el margen de 64 (KT*).
     <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: Math.max(insets.top, layout.pantallaArriba - space.s24) }}>
       <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ paddingHorizontal: layout.pantallaLado, gap: layout.entreTarjetas, paddingBottom: fundido + (footer ? 0 : insets.bottom), flexGrow: 1 }}>
-        <Volver to={back} />
+        <Volver to={back} href={backHref} />
         {title && (
           <View style={{ paddingHorizontal: space.s8, paddingBottom: space.s16, gap: space.s8 }}>
             <KText size={cifra.c34} weight={300} title lineHeight={cifra.c34} accessibilityRole="header">
@@ -81,9 +81,10 @@ export function Chevron() {
 }
 
 /** Fila de ajustes: etiqueta, valor y › si lleva a otra pantalla. */
-export function Fila({ label, value, onPress, right, tint = color.tinta, a11y }: { label: string; value?: string; onPress?: () => void; right?: ReactNode; tint?: string; a11y?: string }) {
+export function Fila({ label, value, onPress, right, tint = color.tinta, a11y, alto = ROW, lead }: { label: string; value?: string; onPress?: () => void; right?: ReactNode; tint?: string; a11y?: string; alto?: number; lead?: ReactNode }) {
   const body = (
     <>
+      {lead}
       <KText size={texto.lista} tint={tint} style={{ flex: 1 }}>
         {label}
       </KText>
@@ -97,7 +98,7 @@ export function Fila({ label, value, onPress, right, tint = color.tinta, a11y }:
       </View>
     </>
   );
-  const style = { minHeight: ROW, flexDirection: 'row', alignItems: 'center', gap: space.s16 } as const;
+  const style = { minHeight: alto, flexDirection: 'row', alignItems: 'center', gap: lead ? space.s12 : space.s16 } as const;
   return onPress ? (
     <Pulsable onPress={onPress} accessibilityRole="button" accessibilityLabel={a11y ?? (value ? `${label}, ${value}` : label)} scaleTo={0.99} style={style}>
       {body}
@@ -110,7 +111,7 @@ export function Fila({ label, value, onPress, right, tint = color.tinta, a11y }:
 }
 
 /** Fila con interruptor: toda la fila lo cambia. */
-export function FilaSi({ label, on, onChange }: { label: string; on: boolean; onChange: (v: boolean) => void }) {
+export function FilaSi({ label, on, onChange, alto = ROW }: { label: string; on: boolean; onChange: (v: boolean) => void; alto?: number }) {
   return (
     <Pulsable
       onPress={() => onChange(!on)}
@@ -119,7 +120,7 @@ export function FilaSi({ label, on, onChange }: { label: string; on: boolean; on
       accessibilityRole="switch"
       accessibilityState={{ checked: on }}
       accessibilityLabel={label}
-      style={{ minHeight: ROW, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: space.s16 }}
+      style={{ minHeight: alto, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: space.s16 }}
     >
       <KText size={texto.lista} style={{ flex: 1 }}>
         {label}

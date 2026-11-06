@@ -53,6 +53,10 @@ export interface Settings {
   /** RGPD: apagados por defecto, solo se encienden en Tú. */
   analitica: boolean;
   emails: boolean;
+  /** Esfuerzo y notas al entrenador (KL1). Las sesiones y los pagos los ve siempre: es para lo que está. */
+  compartir: boolean;
+  /** Pidió borrar la cuenta (fecha). Se borra a los 30 días; si vuelve antes, se anula. */
+  borradoPedido?: number;
   /** Nombre del atleta (lo dará la cuenta). */
   nombre: string;
 
@@ -96,6 +100,7 @@ export const DEFAULT_SETTINGS: Settings = {
   pantalla: true,
   analitica: false,
   emails: false,
+  compartir: true,
   nombre: '',
   cuentaAtras: 3,
   descanso: 'manual',
@@ -133,6 +138,7 @@ export function restore(saved: unknown): Settings {
     if (ok) (out as unknown as Record<string, unknown>)[k] = s[k];
   }
   if (typeof s.acceptedAt === 'number') out.acceptedAt = s.acceptedAt;
+  if (typeof s.borradoPedido === 'number') out.borradoPedido = s.borradoPedido;
   if (s.coach && typeof s.coach.code === 'string' && typeof s.coach.name === 'string') out.coach = s.coach;
   return out;
 }
