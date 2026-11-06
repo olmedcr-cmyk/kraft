@@ -1,0 +1,5 @@
+node_modules
+dist
+.expo
+design/png
+design/screens
