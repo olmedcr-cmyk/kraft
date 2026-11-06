@@ -2,6 +2,7 @@ import { Redirect, Tabs } from 'expo-router';
 
 import { useAuthReady, useAuthSession } from '@/backend/auth';
 import { hasBackend } from '@/backend/client';
+import { AvisoRechazo } from '@/components/AvisoRechazo';
 import { Navegacion } from '@/components/Navegacion';
 import { useSettings } from '@/state/settings';
 import { color } from '@/theme';
@@ -16,6 +17,7 @@ export default function TabsLayout() {
   if (hasBackend && !authReady) return null;
   if (hasBackend && !auth) return <Redirect href="/alta/bienvenida" />;
   return (
+    <>
     <Tabs
       tabBar={(props) => <Navegacion {...props} />}
       screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: color.fondo } }}
@@ -25,5 +27,8 @@ export default function TabsLayout() {
       <Tabs.Screen name="agenda" options={{ title: 'Agenda' }} />
       <Tabs.Screen name="diario" options={{ title: 'Diario' }} />
     </Tabs>
+    {/* Lo que el servidor rechazó de lo hecho sin red. */}
+    <AvisoRechazo />
+    </>
   );
 }

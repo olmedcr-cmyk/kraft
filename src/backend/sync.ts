@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppState } from 'react-native';
 
 import type { Settings } from '@/alta/model';
-import { EMPTY, due, enqueue, flush, restoreOutbox, type Job, type JobKind, type Outbox, type SendResult } from '@/sync/outbox';
+import { EMPTY, dismissFailed, due, enqueue, flush, restoreOutbox, type Job, type JobKind, type Outbox, type SendResult } from '@/sync/outbox';
 import { getSettings, subscribeSettings } from '@/state/settings';
 import { useSyncExternalStore } from 'react';
 
@@ -136,6 +136,24 @@ export function queue(kind: JobKind, payload: Record<string, unknown>, id = newI
 
 export const pendingCount = () => box.jobs.length;
 export const failedJobs = () => box.failed;
+
+/** Lo que el servidor rechazó y aún no has visto (para avisar). */
+export const useRejected = () =>
+  useSyncExternalStore(
+    (f) => {
+      boxSubs.add(f);
+      return () => {
+        boxSubs.delete(f);
+      };
+    },
+    () => box.failed,
+    () => box.failed,
+  );
+
+export function dismissRejected(id: string) {
+  box = dismissFailed(box, id);
+  save();
+}
 
 // ─── Qué se manda ───────────────────────────────────────────────────────────
 

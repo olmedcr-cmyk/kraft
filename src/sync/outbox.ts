@@ -62,6 +62,9 @@ export function apply(o: Outbox, id: string, result: SendResult, now: number): O
   return { jobs: rest, failed: [...o.failed, { ...job, error: result.reject }].slice(-MAX_FAILED) };
 }
 
+/** El atleta ya vio el aviso de un trabajo rechazado. */
+export const dismissFailed = (o: Outbox, id: string): Outbox => ({ ...o, failed: o.failed.filter((j) => j.id !== id) });
+
 /** Manda todo lo que pueda salir ya, en orden. Para en el primer reintento. */
 export async function flush(o: Outbox, send: (job: Job) => Promise<SendResult>, now: () => number): Promise<Outbox> {
   let cur = o;
