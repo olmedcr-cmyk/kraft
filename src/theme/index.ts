@@ -54,6 +54,15 @@ export type Weight = keyof typeof fontFamily;
  * Movimiento. punto (300) y pantalla (240) y la curva vienen de tokens.json; sin rebote.
  * `toque` (120) y `marco` (200) no están en tokens.json: propuesta para añadirlos.
  */
+import { cubicBezier } from 'react-native-reanimated';
+
+/**
+ * Curva propia para transiciones CSS de Reanimated. En el móvil solo vale el objeto de `cubicBezier()`
+ * (el texto «cubic-bezier(…)» rompe), pero sus tipos de estilo no lo admiten: se anuncia como curva
+ * predefinida para TypeScript y en ejecución va el objeto, que funciona en iOS, Android y web.
+ */
+const curva = (x1: number, y1: number, x2: number, y2: number) => cubicBezier(x1, y1, x2, y2) as unknown as 'ease-out';
+
 export const motion = {
   ...tokens.motion,
   /** Respuesta al pulsar: casi imperceptible, se toca decenas de veces. */
@@ -61,9 +70,9 @@ export const motion = {
   /** Intervalo del reloj: las barras se deslizan de un marco al siguiente sin saltos. */
   marco: 200,
   /** Curva de salida fuerte para la pulsación. */
-  salida: 'cubic-bezier(0.23, 1, 0.32, 1)',
+  salida: curva(0.23, 1, 0.32, 1),
   /** Movimiento sobre la pantalla (indicador del selector). */
-  mover: 'cubic-bezier(0.77, 0, 0.175, 1)',
+  mover: curva(0.77, 0, 0.175, 1),
 } as const;
 export const ms = (n: number) => `${n}ms`;
 
