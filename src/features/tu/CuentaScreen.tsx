@@ -1,6 +1,7 @@
 /** Cuenta (KT6Account): pago, salud, idioma, tus datos y salir. */
 import { router } from 'expo-router';
 
+import { signOut } from '@/backend/auth';
 import { updateSettings, useSettings } from '@/state/settings';
 import { color } from '@/theme';
 import { Fila, FilaSi, Grupo, PantallaTu, useConfirmar } from './piezas';
@@ -34,8 +35,9 @@ export function CuentaScreen() {
           tint={salir.armed ? color.naranja : color.tinta}
           onPress={() =>
             salir.press(() => {
-              // Sin cuentas aún: salir = volver al alta. Los datos se quedan en el móvil.
+              // Salir = cerrar la sesión y volver al alta. Lo guardado en el móvil se queda.
               updateSettings({ onboarded: false });
+              signOut();
               if (router.canDismiss()) router.dismissAll();
               router.replace('/alta');
             })

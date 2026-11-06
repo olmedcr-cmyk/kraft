@@ -5,6 +5,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { KText } from '@/components/KText';
 import { Pulsable } from '@/components/Pulsable';
+import { getAuthSession } from '@/backend/auth';
+import { hasBackend } from '@/backend/client';
 import { getSettings, updateSettings } from '@/state/settings';
 import { alpha, cifra, color, layout, radius, space, texto, touch } from '@/theme';
 
@@ -17,17 +19,27 @@ const SUN = 180;
 
 type Via = 'apple' | 'google' | 'email';
 
+/** Con servidor, solo se enseñan las formas de entrar que estén activadas en Supabase (EXPO_PUBLIC_AUTH_PROVIDERS). */
+const PROVIDERS = (process.env.EXPO_PUBLIC_AUTH_PROVIDERS ?? 'email').split(',').map((p) => p.trim());
+const offers = (v: Via) => !hasBackend || PROVIDERS.includes(v);
+
 export function BienvenidaScreen() {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const heroW = Math.min(width, 600) - layout.pantallaLado * 2;
 
-  /** Sin backend de cuentas todavía: entrar = aceptar y seguir. */
-  const enter = (_via: Via) => {
-    // El nombre lo dará la cuenta (Apple, Google o email); de momento, el de ejemplo.
-    updateSettings({ acceptedAt: Date.now(), nombre: getSettings().nombre || 'Cris' });
+  const enter = (via: Via) => {
+    // Con servidor y sin sesión: entrar con la cuenta. (Apple y Google, cuando estén activados.)
+    if (hasBackend && !getAuthSession()) {
+      if (via === 'email') router.push('/alta/correo');
+      return;
+    }
+    // Modo demo, o ya dentro: entrar = aceptar y seguir.
+    updateSettings({ acceptedAt: Date.now(), nombre: getSettings().nombre || (hasBackend ? '' : 'Cris') });
     router.push('/alta/entrenador');
   };
+  // Si solo hay email, pasa a ser el botón principal.
+  const onlyEmail = !offers('apple') && !offers('google');
 
   return (
     <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: Math.max(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
@@ -60,13 +72,17 @@ export function BienvenidaScreen() {
 
       <View style={{ flex: 1 }} />
 
-      <Boton label="Seguir con Apple" bg={color.tinta} fg={color.tarjeta} onPress={() => enter('apple')} />
-      <Boton label="Seguir con Google" bg={color.tarjeta} fg={color.tinta} onPress={() => enter('google')} />
-      <Pulsable onPress={() => enter('email')} accessibilityRole="button" style={{ height: touch.dedo, alignItems: 'center', justifyContent: 'center' }}>
-        <KText size={texto.texto} tint={color.texto2}>
-          Con email
-        </KText>
-      </Pulsable>
+      {offers('apple') && <Boton label="Seguir con Apple" bg={color.tinta} fg={color.tarjeta} onPress={() => enter('apple')} />}
+      {offers('google') && <Boton label="Seguir con Google" bg={color.tarjeta} fg={color.tinta} onPress={() => enter('google')} />}
+      {onlyEmail ? (
+        <Boton label="Seguir con email" bg={color.tinta} fg={color.tarjeta} onPress={() => enter('email')} />
+      ) : (
+        <Pulsable onPress={() => enter('email')} accessibilityRole="button" style={{ height: touch.dedo, alignItems: 'center', justifyContent: 'center' }}>
+          <KText size={texto.texto} tint={color.texto2}>
+            Con email
+          </KText>
+        </Pulsable>
+      )}
 
       <KText size={texto.texto} tint={color.texto2} lineHeight={20} style={{ paddingHorizontal: space.s8, textAlign: 'center' }}>
         {'Al seguir aceptas los '}

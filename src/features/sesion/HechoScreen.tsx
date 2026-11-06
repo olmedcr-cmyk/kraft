@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CheckIcon } from '@/components/icons';
 import { KText } from '@/components/KText';
 import { weekDays } from '@/diario/model';
+import { queueWorkout } from '@/backend/sync';
 import { logOwn, useDiary } from '@/diario/store';
 import { compiled, markSent, resetExtra, resetSession, session, sessionRunner, setRpe, useSession, useSessionExtra } from '@/session/store';
 import { alpha, cifra, color, layout, motion, radius, space, texto, touch } from '@/theme';
@@ -49,7 +50,10 @@ export function HechoScreen() {
   const rpe = extra.rpe ?? 4;
 
   const close = () => {
-    logOwn(Date.now(), r.minutes, r.tabatas);
+    const now = Date.now();
+    logOwn(now, r.minutes, r.tabatas);
+    // Al servidor (si lo hay); el esfuerzo solo si lo enviaste al entrenador.
+    queueWorkout({ at: now, minutes: r.minutes, tabatas: r.tabatas, sessionId: session.id, effort: extra.sent ? rpe : null });
     resetSession();
     resetExtra();
     router.replace('/');

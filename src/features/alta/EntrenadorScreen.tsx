@@ -1,7 +1,7 @@
 /** Tu entrenador (K7Coach): su código de 6 cifras (o su enlace) y vincular. */
 import * as Clipboard from 'expo-clipboard';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -9,13 +9,22 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BarraAccion } from '@/components/BarraAccion';
 import { CheckIcon } from '@/components/icons';
 import { KText } from '@/components/KText';
-import { Pulsable } from '@/components/Pulsable';
-import { CODE_LEN, backspace, findCoach, pasteCode, typeDigit } from '@/alta/model';
+import { Casillas, Teclado, type Tecla } from '@/components/Teclado';
+import { CODE_LEN, backspace, findCoach, pasteCode, typeDigit, type Coach } from '@/alta/model';
+import { linkCoach } from '@/backend/coach';
+import { hasBackend } from '@/backend/client';
 import { updateSettings } from '@/state/settings';
 import { MODE_TINT } from '@/features/agenda/piezas';
-import { cifra, color, layout, motion, radius, space, texto, transicionPunto, touch } from '@/theme';
+import { cifra, color, layout, motion, radius, space, texto, touch } from '@/theme';
 
-const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'pegar', '0', 'borrar'] as const;
+type Check = { state: 'idle' | 'checking' } | { state: 'found'; coach: Coach } | { state: 'wrong' | 'limit' | 'offline' };
+
+const NOTE: Record<string, string> = {
+  wrong: 'Ese código no es de ningún entrenador',
+  limit: 'Demasiados intentos. Espera un rato',
+  offline: 'Sin conexión. Prueba otra vez',
+  miss: 'No hay un código para pegar',
+};
 
 export function EntrenadorScreen() {
   const insets = useSafeAreaInsets();
@@ -23,10 +32,24 @@ export function EntrenadorScreen() {
   const { codigo, desde } = useLocalSearchParams<{ codigo?: string; desde?: string }>();
   const [code, setCode] = useState(() => (codigo && pasteCode(codigo)) || '');
   const [miss, setMiss] = useState(false);
-  const coach = findCoach(code);
-  const wrong = code.length === CODE_LEN && !coach;
+  const [check, setCheck] = useState<Check>({ state: 'idle' });
 
-  const press = async (k: (typeof KEYS)[number]) => {
+  // Con 6 cifras se busca: en el servidor (que ya vincula) o en el directorio de ejemplo.
+  useEffect(() => {
+    if (code.length < CODE_LEN) return setCheck({ state: 'idle' });
+    if (!hasBackend) {
+      const c = findCoach(code);
+      return setCheck(c ? { state: 'found', coach: c } : { state: 'wrong' });
+    }
+    let live = true;
+    setCheck({ state: 'checking' });
+    linkCoach(code).then((r) => live && setCheck(r.ok ? { state: 'found', coach: r.coach } : { state: r.reason }));
+    return () => {
+      live = false;
+    };
+  }, [code]);
+
+  const press = async (k: Tecla) => {
     setMiss(false);
     if (k === 'borrar') return setCode(backspace);
     if (k === 'pegar') {
@@ -37,6 +60,9 @@ export function EntrenadorScreen() {
     }
     setCode((c) => typeDigit(c, k));
   };
+
+  const coach = check.state === 'found' ? check.coach : undefined;
+  const bad = check.state === 'wrong' || check.state === 'limit' || check.state === 'offline';
 
   const link = () => {
     if (!coach) return;
@@ -52,31 +78,12 @@ export function EntrenadorScreen() {
         <KText size={cifra.c34} weight={300} title lineHeight={cifra.c34} accessibilityRole="header">
           Tu entrenador
         </KText>
-        <KText size={texto.texto} tint={wrong || miss ? color.naranja : color.texto2} accessibilityLiveRegion="polite">
-          {wrong ? 'Ese código no es de ningún entrenador' : miss ? 'No hay un código para pegar' : 'Su código o su enlace'}
+        <KText size={texto.texto} tint={bad || miss ? color.naranja : color.texto2} accessibilityLiveRegion="polite">
+          {miss ? NOTE.miss : bad ? NOTE[check.state] : check.state === 'checking' ? 'Buscando…' : 'Su código o su enlace'}
         </KText>
       </View>
 
-      <View
-        accessibilityLabel={`Código: ${code.split('').join(' ') || 'vacío'}${code.length < CODE_LEN ? `, faltan ${CODE_LEN - code.length}` : ''}`}
-        style={{ backgroundColor: color.tarjeta, borderRadius: radius.lg, paddingVertical: space.s24, paddingHorizontal: space.s16, flexDirection: 'row', justifyContent: 'space-between' }}
-      >
-        {Array.from({ length: CODE_LEN }, (_, i) => {
-          const d = code[i];
-          return (
-            <Animated.View
-              key={i}
-              style={{ ...transicionPunto, width: touch.dedo, height: touch.dedo, borderRadius: touch.dedo / 2, borderWidth: 2, borderColor: d ? (wrong ? color.naranja : color.klein) : color.linea, backgroundColor: d ? (wrong ? color.naranja : color.klein) : 'transparent', alignItems: 'center', justifyContent: 'center' }}
-            >
-              {d && (
-                <KText size={texto.bloque} tint={wrong ? color.tinta : color.tarjeta}>
-                  {d}
-                </KText>
-              )}
-            </Animated.View>
-          );
-        })}
-      </View>
+      <Casillas value={code} length={CODE_LEN} wrong={bad} />
 
       {coach && (
         <Animated.View entering={FadeIn.duration(motion.pantalla)} style={{ backgroundColor: color.tarjeta, borderRadius: radius.lg, padding: space.s16, flexDirection: 'row', alignItems: 'center', gap: space.s16 }}>
@@ -100,33 +107,7 @@ export function EntrenadorScreen() {
       )}
 
       <View style={{ flex: 1 }} />
-
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.s8 }}>
-        {KEYS.map((k) => {
-          const digit = k !== 'pegar' && k !== 'borrar';
-          return (
-            <Pulsable
-              key={k}
-              onPress={() => press(k)}
-              haptic="selection"
-              accessibilityRole="button"
-              accessibilityLabel={k === 'pegar' ? 'Pegar código o enlace' : k === 'borrar' ? 'Borrar' : k}
-              style={{ width: '31.5%', flexGrow: 1, height: 56, borderRadius: radius.md, backgroundColor: digit ? color.tarjeta : 'transparent', alignItems: 'center', justifyContent: 'center' }}
-            >
-              {k === 'pegar' ? (
-                <KText size={texto.etiqueta} caps tint={color.texto2}>
-                  Pegar
-                </KText>
-              ) : (
-                <KText size={k === 'borrar' ? texto.bloque : texto.boton} weight={k === 'borrar' ? 400 : 300}>
-                  {k === 'borrar' ? '‹' : k}
-                </KText>
-              )}
-            </Pulsable>
-          );
-        })}
-      </View>
-
+      <Teclado onKey={press} disabled={check.state === 'checking'} />
       <BarraAccion label="Vincular" onPress={link} disabled={!coach} />
     </View>
   );
