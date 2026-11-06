@@ -3,3 +3,8 @@ dist
 .expo
 design/png
 design/screens
+# Secretos y configuración local: nunca a Vercel (las claves públicas van en sus variables de entorno).
+.env
+.env*.local
+supabase/.temp
+.mcp.json
