@@ -118,7 +118,29 @@ export const isClosed = (t: number) => new Date(t).getDay() === 0;
 /** Variación estable por día para que la ocupación no sea idéntica todos los días. */
 const wobble = (day: number, i: number) => ((Math.floor(day / DAY) * 7 + i * 3) % 3) - 1;
 
+/**
+ * De dónde salen las clases: las de ejemplo (modo demo) o las del servidor (setSlotSource).
+ * Así las pantallas y las reglas de abajo no saben de dónde vienen.
+ */
+export interface SlotSource {
+  slotsFor(day: number, mode: Mode): Slot[];
+  getSlot(id: string): Slot | undefined;
+}
+let source: SlotSource | null = null;
+export const setSlotSource = (s: SlotSource | null) => {
+  source = s;
+};
+
 export function slotsFor(day: number, mode: Mode): Slot[] {
+  return source ? source.slotsFor(day, mode) : demoSlotsFor(day, mode);
+}
+
+export function getSlot(id: string): Slot | undefined {
+  return source ? source.getSlot(id) : demoGetSlot(id);
+}
+
+/** Clases de ejemplo: las mismas plantillas cada día (domingo cerrado). */
+export function demoSlotsFor(day: number, mode: Mode): Slot[] {
   const d0 = dayStart(day);
   if (isClosed(d0)) return [];
   return TEMPLATE[mode].map((s, i) => {
@@ -143,11 +165,11 @@ export function slotsFor(day: number, mode: Mode): Slot[] {
   });
 }
 
-export function getSlot(id: string): Slot | undefined {
+export function demoGetSlot(id: string): Slot | undefined {
   const m = id.match(/^(grupo|solo|online)-(\d{4})-(\d{2})-(\d{2})-(\d+)$/);
   if (!m) return undefined;
   const day = new Date(Number(m[2]), Number(m[3]) - 1, Number(m[4])).getTime();
-  return slotsFor(day, m[1] as Mode)[Number(m[5])];
+  return demoSlotsFor(day, m[1] as Mode)[Number(m[5])];
 }
 
 export const isFull = (s: Slot) => s.cap > 0 && s.taken >= s.cap;

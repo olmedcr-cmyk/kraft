@@ -7,6 +7,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useReducedMotion } from 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { startData } from '@/backend/data';
 import { startSync } from '@/backend/sync';
 import { listenReminderResponses, setupReminders } from '@/platform/reminders';
 import { hydrateSettings, useHydrated } from '@/state/settings';
@@ -27,7 +28,10 @@ export default function RootLayout() {
   useEffect(() => {
     if (loaded && hydrated) SplashScreen.hideAsync().catch(() => {});
     // Con los ajustes ya cargados: la cola de envíos al servidor (si lo hay).
-    if (hydrated) startSync();
+    if (hydrated) {
+      startSync();
+      startData();
+    }
   }, [loaded, hydrated]);
 
   // Recordatorios de clase: «Mover» y «Llego» abren su pantalla.

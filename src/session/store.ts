@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react';
 
+import { hasBackend } from '@/backend/client';
 import { SAMPLE_SESSION } from '@/data/sampleSession';
 import { getSettings, subscribeSettings } from '@/state/settings';
 import { Runner } from '@/timer/runner';
@@ -7,8 +8,18 @@ import { useRunner } from '@/timer/useTimer';
 import { compileSession } from './compile';
 import type { Session } from './types';
 
-/** Sesión del día: una sola a la vez, y su temporizador vive fuera de las pantallas. */
-export const session: Session = SAMPLE_SESSION;
+/**
+ * Sesión del día: una sola a la vez, y su temporizador vive fuera de las pantallas.
+ * En modo demo es la de ejemplo; con servidor llega de Supabase (setTodaySession).
+ */
+export let session: Session = SAMPLE_SESSION;
+
+/** ¿Hay sesión hoy? `loading` solo la primera vez con servidor, antes de la caché o la red. */
+export type TodayStatus = 'loading' | 'ready' | 'none';
+let today: TodayStatus = hasBackend ? 'loading' : 'ready';
+/** Llegó otra sesión con la de ahora en marcha: se cambia al acabar (resetSession). */
+let pending: { s: Session | null; coach: Session['coach'] } | null = null;
+const todaySubs = new Set<() => void>();
 const options = () => {
   const s = getSettings();
   return { countdown: s.cuentaAtras, descanso: s.descanso };
@@ -33,7 +44,45 @@ subscribeSettings(refreshSessionPlan);
 
 export function resetSession() {
   sessionRunner.reset();
+  if (pending) {
+    const p = pending;
+    pending = null;
+    setTodaySession(p.s, p.coach);
+  }
   refreshSessionPlan();
+}
+
+/** La sesión de hoy (o ninguna). Con una en marcha no se toca: se aplica al acabar. */
+export function setTodaySession(s: Session | null, coach: Session['coach']) {
+  if (sessionRunner.getState().status !== 'select') {
+    pending = { s, coach };
+    return;
+  }
+  const same = s && today === 'ready' && JSON.stringify(s) === JSON.stringify(session);
+  if (!same) {
+    session = s ?? { ...session, coach };
+    if (s) {
+      Object.assign(compiled, compileSession(s, options()));
+      compiledWith = JSON.stringify(options());
+      sessionRunner.setPlan(compiled.plan);
+    }
+  }
+  today = s ? 'ready' : 'none';
+  todaySubs.forEach((f) => f());
+}
+
+export const getTodayStatus = () => today;
+export function useToday() {
+  return useSyncExternalStore(
+    (f) => {
+      todaySubs.add(f);
+      return () => {
+        todaySubs.delete(f);
+      };
+    },
+    () => today,
+    () => today,
+  );
 }
 
 export function useSession() {

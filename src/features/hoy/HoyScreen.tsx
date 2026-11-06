@@ -8,7 +8,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BarraAccion } from '@/components/BarraAccion';
 import { FilaBloque, Marcas } from '@/components/FilaBloque';
 import { KText } from '@/components/KText';
-import { compiled, session, sessionRunner, useSession } from '@/session/store';
+import { compiled, session, sessionRunner, useSession, useToday } from '@/session/store';
+import { hhmm, longDay, upcomingBookings } from '@/agenda/model';
+import { useAgenda } from '@/agenda/store';
+import { MODE_TINT } from '@/features/agenda/piezas';
 import type { Block } from '@/session/types';
 import { cifra, color, layout, motion, ms, radius, space, texto, touch } from '@/theme';
 import { Pulsable } from '@/components/Pulsable';
@@ -44,8 +47,10 @@ function marcas(b: Block) {
 export function HoyScreen() {
   const insets = useSafeAreaInsets();
   const t = useSession();
+  const today = useToday();
   const running = t.running;
-  const day = WEEKDAYS[new Date(session.date + 'T12:00:00').getDay()];
+  // Sin sesión hoy, el día es hoy (no el de la última sesión).
+  const day = WEEKDAYS[today === 'ready' ? new Date(session.date + 'T12:00:00').getDay() : new Date().getDay()];
 
   const go = (block = 0) => {
     if (!running) sessionRunner.startAt(compiled.blockStart[block]);
@@ -67,7 +72,9 @@ export function HoyScreen() {
           <KText size={cifra.c34} weight={300} title lineHeight={cifra.c34} accessibilityRole="header">
             {day}
           </KText>
-          <KText size={texto.texto} tint={color.texto2}>{`${session.minutes}' · de ${session.coach.name}`}</KText>
+          <KText size={texto.texto} tint={color.texto2}>
+            {today === 'ready' ? `${session.minutes}' · de ${session.coach.name}` : today === 'none' ? 'Sin sesión' : ' '}
+          </KText>
         </View>
         <Pulsable
           onPress={() => router.push('/tu')}
@@ -81,6 +88,10 @@ export function HoyScreen() {
         </Pulsable>
       </View>
 
+      {today !== 'ready' ? (
+        <Libre loading={today === 'loading'} coach={session.coach.name} />
+      ) : (
+      <>
       <View style={{ flex: 1 }} onLayout={(e) => setListH(Math.floor(e.nativeEvent.layout.height))}>
         {/* Solo se desplaza si ni encogidas caben, y nunca rebota. */}
         <ScrollView
@@ -119,6 +130,56 @@ export function HoyScreen() {
       </View>
       <View style={{ paddingHorizontal: layout.pantallaLado, paddingTop: space.s16 }}>
         <BarraAccion compacta label={running ? 'Seguir' : 'Empezar'} onPress={() => go(0)} />
+      </View>
+      </>
+      )}
+    </View>
+  );
+}
+
+/** Hoy sin sesión (KC1Empty): el día libre, tu próxima clase y entrenar por tu cuenta. */
+function Libre({ loading, coach }: { loading: boolean; coach: string }) {
+  const agenda = useAgenda();
+  const next = upcomingBookings(agenda, Date.now()).find((x) => x.booking.status === 'confirmed');
+  return (
+    <View style={{ flex: 1, paddingHorizontal: layout.pantallaLado, gap: layout.entreTarjetas }}>
+      <View
+        accessible
+        accessibilityLabel={loading ? 'Cargando la sesión de hoy' : `Hoy, libre. ${coach} aún no ha enviado nada`}
+        style={{ flex: 1, borderRadius: radius.lg, borderWidth: 2, borderStyle: 'dashed', borderColor: color.linea, alignItems: 'center', justifyContent: 'center', gap: space.s16 }}
+      >
+        <View style={{ width: touch.accion, height: touch.accion, borderRadius: touch.accion / 2, borderWidth: 2, borderColor: color.linea }} />
+        {!loading && (
+          <>
+            <KText size={texto.bloque}>Hoy, libre</KText>
+            <KText size={texto.texto} tint={color.texto2}>{`${coach} aún no ha enviado nada`}</KText>
+          </>
+        )}
+      </View>
+      {next && (
+        <Pulsable
+          onPress={() => router.push({ pathname: '/reserva/[id]', params: { id: next.slot.id } })}
+          accessibilityRole="button"
+          accessibilityLabel={`Tu próxima clase: ${longDay(next.slot.start)} a las ${hhmm(next.slot.start)}, ${next.slot.name}`}
+          scaleTo={0.98}
+          style={{ height: touch.fila, backgroundColor: color.tarjeta, borderRadius: radius.xl, padding: space.s16, flexDirection: 'row', alignItems: 'center', gap: space.s16 }}
+        >
+          <View style={{ width: 56, height: 56, borderRadius: radius.md, backgroundColor: MODE_TINT[next.slot.mode].soft, alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ width: space.s16, height: space.s16, borderRadius: space.s8, backgroundColor: MODE_TINT[next.slot.mode].bg }} />
+          </View>
+          <View style={{ flex: 1, gap: space.s4 }}>
+            <KText size={texto.bloque}>{`${longDay(next.slot.start).split(' ')[0]} ${hhmm(next.slot.start)}`}</KText>
+            <KText size={texto.texto} tint={color.texto2}>
+              {next.slot.room ? `${next.slot.name} · Sala ${next.slot.room}` : next.slot.name}
+            </KText>
+          </View>
+          <KText size={texto.bloque} tint={color.texto2}>
+            ›
+          </KText>
+        </Pulsable>
+      )}
+      <View style={{ paddingTop: space.s8 }}>
+        <BarraAccion compacta label="Entrenar libre" onPress={() => router.push('/tiempo')} />
       </View>
     </View>
   );

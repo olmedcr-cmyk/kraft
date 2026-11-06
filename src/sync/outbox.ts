@@ -8,7 +8,7 @@
  * - El servidor dice que no (regla de negocio) → sale de la cola y queda en `failed` para avisar.
  */
 
-export type JobKind = 'workout' | 'profile' | 'book' | 'cancel' | 'move' | 'arrive' | 'pay' | 'deletion';
+export type JobKind = 'workout' | 'profile' | 'book' | 'autojoin' | 'cancel' | 'move' | 'arrive' | 'pay' | 'deletion';
 
 export interface Job {
   id: string;

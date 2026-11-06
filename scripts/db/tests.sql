@@ -253,3 +253,27 @@ insert into public.bookings (slot_id, athlete_id, status, position) values ('000
 do $$ begin
   assert public.close_started_waitlists() = 1, 'cierra la lista de la clase empezada';
 end $$;
+
+-- ─── Funciones por clase (20261106140000) ───────────────────────────────────
+insert into public.slots (id, coach_id, mode, starts_at, minutes, name, capacity) values
+  ('00000000-0000-0000-0000-00000000c006', :elena, 'grupo', now() + interval '3 days', 50, 'Core', 1),
+  ('00000000-0000-0000-0000-00000000c007', :elena, 'grupo', now() + interval '4 days', 50, 'Core', 12);
+insert into auth.users (id, email) values ('00000000-0000-0000-0000-0000000000c1', 'cris@example.com');
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000c1', false);
+set role authenticated;
+do $$ declare b public.bookings; begin
+  perform public.link_coach('472913');
+  begin perform public.cancel_slot('00000000-0000-0000-0000-00000000c006'); raise exception 'FALLO';
+  exception when no_data_found then null; end;
+  b := public.book_slot('00000000-0000-0000-0000-00000000c006');
+  b := public.move_slot('00000000-0000-0000-0000-00000000c006', '00000000-0000-0000-0000-00000000c007');
+  assert b.status = 'confirmed' and b.slot_id = '00000000-0000-0000-0000-00000000c007', 'move_slot: pasa a la nueva clase';
+  assert (select status from public.bookings where slot_id = '00000000-0000-0000-0000-00000000c006') = 'cancelled', 'y la vieja queda cancelada';
+  b := public.cancel_slot('00000000-0000-0000-0000-00000000c007');
+  assert b.status = 'cancelled', 'cancel_slot: cancelada';
+  begin perform public.set_auto_join('00000000-0000-0000-0000-00000000c007', false); raise exception 'FALLO';
+  exception when no_data_found then null; end;
+  begin perform public.my_active_booking('00000000-0000-0000-0000-00000000c007'); raise exception 'FALLO';
+  exception when insufficient_privilege then null; end;
+end $$;
+reset role;

@@ -49,6 +49,25 @@ async function send(job: Job): Promise<SendResult> {
     case 'deletion':
       res = await backend.rpc(p.on ? 'request_deletion' : 'cancel_deletion');
       break;
+    // Reservas: por clase (la reserva puede haberse hecho sin red y aún no tener id en el servidor).
+    case 'book':
+      res = await backend.rpc('book_slot', { p_slot: p.slot, p_auto_join: p.auto_join });
+      break;
+    case 'autojoin':
+      res = await backend.rpc('set_auto_join', { p_slot: p.slot, p_auto: p.auto });
+      break;
+    case 'cancel':
+      res = await backend.rpc('cancel_slot', { p_slot: p.slot });
+      break;
+    case 'move':
+      res = await backend.rpc('move_slot', { p_from: p.from, p_to: p.to });
+      break;
+    case 'arrive':
+      res = await backend.rpc('arrive_slot', { p_slot: p.slot, p_arrived: p.on });
+      break;
+    case 'pay':
+      res = await backend.rpc('simulate_payment', { p_month: p.month, p_method: p.method });
+      break;
     default:
       return { reject: `tipo ${job.kind} aún no se envía` };
   }
@@ -56,11 +75,19 @@ async function send(job: Job): Promise<SendResult> {
   return REJECT.test(res.error.code ?? '') ? { reject: res.error.message } : 'retry';
 }
 
+/** Al quedar la cola vacía (todo enviado): quien lo necesite vuelve a leer del servidor. */
+const drained = new Set<() => void>();
+export const onDrained = (f: () => void) => {
+  drained.add(f);
+  return () => drained.delete(f);
+};
+
 /** Manda lo pendiente; si queda algo, vuelve a probar cuando toque. */
 export async function syncNow() {
   if (!backend || !loaded || running) return;
   running = true;
   if (timer) clearTimeout(timer);
+  const had = box.jobs.length;
   try {
     box = await flush(box, send, Date.now);
     await save();
@@ -69,6 +96,7 @@ export async function syncNow() {
   }
   const next = box.jobs[0];
   if (next) timer = setTimeout(syncNow, Math.max(1000, next.nextAt - Date.now()));
+  else if (had > 0) drained.forEach((f) => f());
 }
 
 export function queue(kind: JobKind, payload: Record<string, unknown>, id = newId()) {
@@ -131,6 +159,14 @@ export async function startSync() {
   });
 
   AppState.addEventListener('change', (s) => s === 'active' && syncNow());
-  backend.auth.onAuthStateChange((_e, s) => s && syncNow());
+  backend.auth.onAuthStateChange((event, s) => {
+    // Al salir, lo pendiente no puede mandarse luego con la cuenta de otra persona.
+    if (event === 'SIGNED_OUT') {
+      box = EMPTY;
+      save();
+      return;
+    }
+    if (s) syncNow();
+  });
   syncNow();
 }

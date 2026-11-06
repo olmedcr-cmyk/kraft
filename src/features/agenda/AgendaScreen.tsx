@@ -44,7 +44,8 @@ export function AgendaScreen() {
     return next ? dayStart(next.slot.start) : isClosed(today) ? addDays(today, 1) : today;
   });
 
-  const slots = useMemo(() => slotsFor(day, mode), [day, mode]);
+  // `state` también: con servidor, cuando llegan las clases se vuelve a pintar.
+  const slots = useMemo(() => slotsFor(day, mode), [day, mode, state]);
   const next = upcomingBookings(state, now).find((x) => x.booking.status === 'confirmed');
   const mineHere = slots.find((s) => state.bookings[s.id]?.status === 'confirmed');
 
