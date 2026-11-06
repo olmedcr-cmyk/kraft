@@ -16,7 +16,9 @@ import { updateSettings, getSettings } from '@/state/settings';
 import { getAuthSession } from './auth';
 import { backend } from './client';
 import { toAgenda, toDiary, toSlot, type AvailabilityRow, type BookingRow, type PaymentRow, type SlotRow, type WorkoutRow } from './mappers';
+import { isNetworkError, isOnline, onOnline, setOnline } from './red';
 import { onDrained, pendingCount } from './sync';
+import { noteSession } from '@/session/vista';
 
 const KEY = 'kraft.server.v1';
 const DAY = 86_400_000;
@@ -64,6 +66,7 @@ function apply(snap: Snapshot) {
   const v = row && row.day === today ? validateSession(row, coach) : null;
   // Una sesión que no pasa la validación se trata como «sin sesión»: mejor eso que romperse a mitad.
   setTodaySession(v && v.ok ? v.session : null, coach);
+  if (v && v.ok) noteSession(v.session);
 }
 
 async function fetchSnapshot(): Promise<Snapshot | null> {
@@ -106,6 +109,7 @@ export function pull(): Promise<void> {
     try {
       const snap = await fetchSnapshot();
       if (!snap) return;
+      setOnline(true);
       apply(snap);
       // El nombre del entrenador también en los ajustes (lo usan Tú y legal).
       if (snap.coach && getSettings().coach?.name !== snap.coach.name) {
@@ -113,8 +117,9 @@ export function pull(): Promise<void> {
         if (c) updateSettings({ coach: { ...c, name: snap.coach.name } });
       }
       await AsyncStorage.setItem(KEY, JSON.stringify(snap)).catch(() => {});
-    } catch {
+    } catch (e) {
       // Sin red o servidor caído: se sigue con lo que hay.
+      if (isNetworkError(e)) setOnline(false);
     } finally {
       pulling = null;
     }
@@ -135,6 +140,11 @@ export async function startData() {
     // Caché rota: se ignora.
   }
   onDrained(pull);
+  onOnline(pull);
+  // Sin red y sin nada que enviar, nadie más lo intentaría: se prueba cada 20 s.
+  setInterval(() => {
+    if (!isOnline()) pull();
+  }, 20_000);
   AppState.addEventListener('change', (s) => s === 'active' && pull());
   backend.auth.onAuthStateChange((event) => {
     if (event === 'SIGNED_IN') pull();

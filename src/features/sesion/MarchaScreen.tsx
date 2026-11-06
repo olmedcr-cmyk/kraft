@@ -168,7 +168,12 @@ function Pausa({ s, step, onPalm }: { s: Snapshot; step: StepInfo; onPalm: () =>
   const timed = s.phase === 'work' || s.phase === 'rest';
   return (
     <>
-      <CabeceraMarcha title={step.label} fg={color.tarjeta} right={<PildoraMarcha label="En pausa" bg={alpha.sobreColor} fg={color.tarjeta} />} />
+      {/* Pausa del sistema (llamada, KC5): cuánto lleva y que al volver hay 3·2·1. */}
+      <CabeceraMarcha
+        title={step.label}
+        fg={color.tarjeta}
+        right={<PildoraMarcha label={s.interrupted ? `Llamada · ${mmss(s.pausedFor)}` : 'En pausa'} bg={alpha.sobreColor} fg={color.tarjeta} />}
+      />
       <Pulsable onPress={onPalm} haptic="light" scaleTo={0.99} accessibilityRole="button" accessibilityLabel="Palma · seguir" style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: space.s32 }}>
         <View style={{ width: touch.palma, height: touch.palma, borderRadius: touch.palma / 2, backgroundColor: color.tarjeta, alignItems: 'center', justifyContent: 'center', gap: space.s8 }}>
           <KText size={cifra.c144} weight={300} tint={color.tinta} lineHeight={cifra.c144} tabular>
@@ -181,7 +186,7 @@ function Pausa({ s, step, onPalm }: { s: Snapshot; step: StepInfo; onPalm: () =>
         {timed && s.duration < LONG && <PuntosSegundos total={s.duration} elapsed={s.duration - s.n} size={14} />}
       </Pulsable>
       <KText size={RUN} tint={color.linea} style={{ textAlign: 'center', paddingHorizontal: space.s24, paddingBottom: space.s16 }}>
-        Parar guarda lo que llevas
+        {s.interrupted ? 'Al volver: 3·2·1 y sigues donde estabas' : 'Parar guarda lo que llevas'}
       </KText>
     </>
   );

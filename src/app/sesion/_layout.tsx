@@ -11,6 +11,8 @@ export default function SesionLayout() {
       <Stack.Screen name="index" options={{ gestureEnabled: false }} />
       <Stack.Screen name="como" options={{ animation: reduced ? 'fade' : 'slide_from_bottom', animationMatchesGesture: true }} />
       <Stack.Screen name="hecho" options={{ gestureEnabled: false }} />
+      <Stack.Screen name="retomar" options={{ gestureEnabled: false }} />
+      <Stack.Screen name="peso" options={{ animation: reduced ? 'fade' : 'slide_from_bottom', contentStyle: { backgroundColor: color.fondo } }} />
     </Stack>
   );
 }

@@ -9,6 +9,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { startData } from '@/backend/data';
 import { startSync } from '@/backend/sync';
+import { loadUnfinished } from '@/session/marcha';
 import { listenReminderResponses, setupReminders } from '@/platform/reminders';
 import { hydrateSettings, useHydrated } from '@/state/settings';
 import { color } from '@/theme';
@@ -31,6 +32,7 @@ export default function RootLayout() {
     if (hydrated) {
       startSync();
       startData();
+      loadUnfinished();
     }
   }, [loaded, hydrated]);
 

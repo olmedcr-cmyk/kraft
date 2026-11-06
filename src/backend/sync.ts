@@ -8,7 +8,10 @@ import { AppState } from 'react-native';
 import type { Settings } from '@/alta/model';
 import { EMPTY, due, enqueue, flush, restoreOutbox, type Job, type JobKind, type Outbox, type SendResult } from '@/sync/outbox';
 import { getSettings, subscribeSettings } from '@/state/settings';
+import { useSyncExternalStore } from 'react';
+
 import { getAuthSession } from './auth';
+import { isNetworkError, onOnline, setOnline } from './red';
 import { backend } from './client';
 
 const KEY = 'kraft.outbox.v1';
@@ -28,7 +31,24 @@ export function newId(): string {
   });
 }
 
-const save = () => AsyncStorage.setItem(KEY, JSON.stringify(box)).catch(() => {});
+const boxSubs = new Set<() => void>();
+const save = () => {
+  boxSubs.forEach((f) => f());
+  return AsyncStorage.setItem(KEY, JSON.stringify(box)).catch(() => {});
+};
+
+/** Lo que queda por enviar (para «sale al volver», KC4). */
+export const usePending = () =>
+  useSyncExternalStore(
+    (f) => {
+      boxSubs.add(f);
+      return () => {
+        boxSubs.delete(f);
+      };
+    },
+    () => box.jobs,
+    () => box.jobs,
+  );
 
 /** Errores de regla de negocio o de permiso: el servidor dice que no, no sirve reintentar. */
 const REJECT = /^(P0001|P0002|22|23|42501|PGRST1)/;
@@ -71,7 +91,15 @@ async function send(job: Job): Promise<SendResult> {
     default:
       return { reject: `tipo ${job.kind} aún no se envía` };
   }
-  if (!res.error) return 'ok';
+  if (!res.error) {
+    setOnline(true);
+    return 'ok';
+  }
+  if (isNetworkError(res.error)) {
+    setOnline(false);
+    return 'retry';
+  }
+  setOnline(true);
   return REJECT.test(res.error.code ?? '') ? { reject: res.error.message } : 'retry';
 }
 
@@ -159,6 +187,7 @@ export async function startSync() {
   });
 
   AppState.addEventListener('change', (s) => s === 'active' && syncNow());
+  onOnline(syncNow);
   backend.auth.onAuthStateChange((event, s) => {
     // Al salir, lo pendiente no puede mandarse luego con la cuenta de otra persona.
     if (event === 'SIGNED_OUT') {

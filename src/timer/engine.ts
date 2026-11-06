@@ -63,6 +63,10 @@ export interface Snapshot {
   central: 'pause' | 'play' | 'check';
   /** Tecla izquierda del mando. */
   left: 'prev' | 'stop';
+  /** La pausa la puso el sistema (llamada): al seguir, 3·2·1 (KC5). */
+  interrupted: boolean;
+  /** Segundos que lleva en pausa. */
+  pausedFor: number;
   ref?: number;
 }
 
@@ -199,6 +203,8 @@ export function primary(state: TimerState, now: number): TimerState {
   const s = tick(state, now);
   if (s.status !== 'running') return s;
   if (s.pausedAt === null && isManual(s.plan[s.index].kind)) return goTo(s, s.index + 1, now);
+  // Tras una llamada (o al retomar una sesión a medias), se sigue con 3·2·1.
+  if (s.pausedAt !== null && s.interrupted) return resume(s, now);
   return pauseToggle(s, now);
 }
 
@@ -256,6 +262,35 @@ export function resume(state: TimerState, now: number): TimerState {
   };
 }
 
+/**
+ * Congela una marcha guardada en el instante `at` (la app se cerró a medias, KC3).
+ * Queda como tras una llamada: al seguir, 3·2·1 y donde estaba.
+ */
+export function freeze(state: TimerState, at: number): TimerState {
+  if (state.status !== 'running') return state;
+  const s = tick(state, at);
+  if (s.status !== 'running') return s;
+  if (s.pausedAt !== null) return { ...s, interrupted: true };
+  // Repeticiones y espera ya esperan al atleta: no hace falta congelar.
+  if (isManual(s.plan[s.index].kind)) return { ...s, segStart: at };
+  return { ...s, pausedAt: at, interrupted: true };
+}
+
+/**
+ * Hacer antes otro tramo de repeticiones (KC8: «no hay ese peso, haz otro ejercicio y vuelve»).
+ * El tramo con `ref` pasa a ser el actual; el que había sigue justo detrás.
+ */
+export function bringForward(state: TimerState, ref: number, now: number): TimerState {
+  const s = tick(state, now);
+  if (s.status !== 'running') return s;
+  const from = s.plan.findIndex((p, i) => i > s.index && p.ref === ref);
+  if (from < 0 || s.plan[from].kind !== 'reps') return s;
+  const plan = [...s.plan];
+  const [seg] = plan.splice(from, 1);
+  plan.splice(s.index, 0, seg);
+  return { ...s, plan, segStart: now, leadUntil: null };
+}
+
 // ─── Lectura ───────────────────────────────────────────────────────────────
 
 function totalRounds(plan: Plan) {
@@ -271,6 +306,8 @@ export function snapshot(state: TimerState, now: number): Snapshot {
     stopped: state.stopped,
     waited: 0,
     paused: false,
+    interrupted: state.interrupted,
+    pausedFor: state.pausedAt === null ? 0 : Math.max(0, Math.floor((now - state.pausedAt) / SEC)),
   };
 
   if (state.status === 'select') {

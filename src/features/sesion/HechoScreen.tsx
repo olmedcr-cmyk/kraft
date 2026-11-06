@@ -53,7 +53,7 @@ export function HechoScreen() {
     const now = Date.now();
     logOwn(now, r.minutes, r.tabatas);
     // Al servidor (si lo hay); el esfuerzo solo si lo enviaste al entrenador.
-    queueWorkout({ at: now, minutes: r.minutes, tabatas: r.tabatas, sessionId: session.id, effort: extra.sent ? rpe : null });
+    queueWorkout({ at: now, minutes: r.minutes, tabatas: r.tabatas, sessionId: session.id, effort: extra.sent ? rpe : null, note: extra.notes.join('. ') || undefined });
     resetSession();
     resetExtra();
     router.replace('/');

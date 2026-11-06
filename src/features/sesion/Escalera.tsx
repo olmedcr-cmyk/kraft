@@ -5,18 +5,20 @@ import Svg, { Path } from 'react-native-svg';
 import { KText } from '@/components/KText';
 import { exercise } from '@/data/exercises';
 import type { StepInfo } from '@/session/compile';
-import { compiled, setWeight, useSessionExtra } from '@/session/store';
+import { router } from 'expo-router';
+
+import { compiled, sessionRunner, setWeight, useSessionExtra } from '@/session/store';
 import { useSettings } from '@/state/settings';
 import { cifra, color, inner, radius, space, texto, touch, transicionPunto } from '@/theme';
 import { BotonComo, RUN } from './piezas';
 import { Pulsable } from '@/components/Pulsable';
 import Animated from 'react-native-reanimated';
 
-const STEP_KG = 2.5;
+export const STEP_KG = 2.5;
 const LB_PER_KG = 2.20462;
 type Unidad = 'kg' | 'lb';
 /** Se guarda siempre en kg; se enseña en la unidad de Tú · Entreno (lb, redondeado a media libra). */
-const kgLabel = (w: number | null, u: Unidad = 'kg') =>
+export const kgLabel = (w: number | null, u: Unidad = 'kg') =>
   w == null ? 'barra' : String(u === 'lb' ? Math.round(w * LB_PER_KG * 2) / 2 : w).replace('.', ',');
 const unitName = (u: Unidad) => (u === 'lb' ? 'libras' : 'kilos');
 
@@ -30,6 +32,10 @@ export function Escalera({ step, refId }: { step: StepInfo; refId: number }) {
   const ex = exercise(ladder[0]?.exercise);
   const weightOf = (ref: number, base: number | null | undefined) => (ref in extra.weights ? extra.weights[ref] : (base ?? null));
   const w = weightOf(refId, step.weight);
+  // Hecho = ya pasó en la marcha (el orden puede cambiar si se adelantó otro ejercicio, KC8).
+  const st = sessionRunner.getState();
+  const posOf = (ref: number) => st.plan.findIndex((p) => p.ref === ref);
+  const isDone = (ref: number) => posOf(ref) < st.index;
 
   return (
     <ScrollView contentContainerStyle={{ paddingHorizontal: space.s16, gap: space.s8, paddingBottom: space.s16 }}>
@@ -45,7 +51,7 @@ export function Escalera({ step, refId }: { step: StepInfo; refId: number }) {
         style={{ backgroundColor: color.tarjeta, borderRadius: radius.lg, paddingVertical: space.s24, paddingHorizontal: space.s16, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-around' }}
       >
         {ladder.map((l) => {
-          const done = l.ref < refId;
+          const done = isDone(l.ref);
           const now = l.ref === refId;
           const d = 40 + 2 * (l.reps ?? 0);
           return (
@@ -91,10 +97,23 @@ export function Escalera({ step, refId }: { step: StepInfo; refId: number }) {
           <Ajuste unit={peso} dir="up" onPress={() => setWeight(refId, (w ?? 20) + STEP_KG)} />
         </View>
       )}
+      {/* Sin ese peso en el gimnasio (KC8): el más cercano, u otro ejercicio antes. */}
+      {inLadder && w != null && (
+        <Pulsable
+          onPress={() => router.push({ pathname: '/sesion/peso', params: { ref: String(refId) } })}
+          accessibilityRole="link"
+          scaleTo={0.98}
+          style={{ height: touch.dedo, alignItems: 'center', justifyContent: 'center' }}
+        >
+          <KText size={RUN} tint={color.texto2} style={{ textDecorationLine: 'underline' }}>
+            {`¿No hay ${kgLabel(w, peso)} ${peso}?`}
+          </KText>
+        </Pulsable>
+      )}
 
       <View accessibilityLabel="Después" style={{ backgroundColor: color.tarjeta, borderRadius: radius.lg, paddingVertical: space.s8, paddingHorizontal: space.s16 }}>
         {after.map((a) => {
-          const done = a.ref < refId;
+          const done = isDone(a.ref);
           const now = a.ref === refId;
           return (
             <View key={a.ref} style={{ height: touch.dedo, flexDirection: 'row', alignItems: 'center', gap: space.s12 }}>

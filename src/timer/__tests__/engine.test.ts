@@ -1,5 +1,7 @@
 import {
+  bringForward,
   createTimer,
+  freeze,
   cues,
   interrupt,
   next,
@@ -222,6 +224,36 @@ describe('llamada', () => {
     expect(v.phase).toBe('work');
     expect(v.n).toBe(20);
   });
+
+  it('el central, tras una llamada, sigue con 3·2·1 (no de golpe)', () => {
+    let s = start(createTimer(seriesPlan({ work: 30, rest: 10, rounds: 1 })), 0);
+    s = interrupt(tick(s, 13 * S), 13 * S);
+    const v0 = snapshot(s, 50 * S);
+    expect(v0.interrupted).toBe(true);
+    expect(v0.pausedFor).toBe(37);
+    s = primary(s, 50 * S);
+    expect(snapshot(tick(s, 50 * S), 50 * S).phase).toBe('countdown');
+    expect(snapshot(tick(s, 53 * S), 53 * S).n).toBe(20);
+  });
+});
+
+describe('retomar (KC3)', () => {
+  it('congela donde se guardó y sigue con 3·2·1', () => {
+    let s = start(createTimer(seriesPlan({ work: 30, rest: 10, rounds: 2 })), 0);
+    s = freeze(s, 13 * S); // se cerró la app con 20 s por delante
+    const v = snapshot(s, 9_000 * S);
+    expect(v.paused && v.interrupted).toBe(true);
+    expect(v.n).toBe(20);
+    s = primary(s, 9_000 * S);
+    expect(snapshot(tick(s, 9_003 * S), 9_003 * S).n).toBe(20);
+  });
+
+  it('en repeticiones no congela: ya espera al atleta', () => {
+    const plan = [{ kind: 'reps' as const, duration: Infinity, round: 1, ref: 1 }];
+    const s = freeze(start(createTimer(plan), 0), 5 * S);
+    expect(s.pausedAt).toBeNull();
+    expect(snapshot(s, 6 * S).central).toBe('check');
+  });
 });
 
 describe('progreso', () => {
@@ -260,6 +292,18 @@ describe('repeticiones', () => {
     { kind: 'reps' as const, duration: Infinity, round: 1, ref: 10 },
     { kind: 'reps' as const, duration: Infinity, round: 2, ref: 11 },
   ];
+
+  it('otro ejercicio antes (KC8): pasa a ser el actual y el de ahora va detrás', () => {
+    const three = [...plan, { kind: 'reps' as const, duration: Infinity, round: 3, ref: 12 }];
+    let s = start(createTimer(three), 0);
+    s = bringForward(s, 12, 5 * S);
+    expect(s.plan.map((p) => p.ref)).toEqual([12, 10, 11]);
+    expect(snapshot(s, 5 * S).ref).toBe(12);
+    s = primary(s, 6 * S);
+    expect(snapshot(s, 6 * S).ref).toBe(10);
+    // Un tramo ya pasado o inexistente no se mueve.
+    expect(bringForward(s, 12, 7 * S).plan.map((p) => p.ref)).toEqual([12, 10, 11]);
+  });
 
   it('no avanzan solas; el central es ✓ y pasa a la siguiente', () => {
     let s = start(createTimer(plan), 0);

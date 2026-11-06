@@ -19,10 +19,14 @@ type Props = {
   badge?: boolean;
   /** Alto de la fila: 88 por defecto; en pantallas bajas se encoge (mínimo 64) para que todo quepa sin desplazar. */
   height?: number;
+  /** Borde de aviso (bloque que cambió el entrenador, KC2). */
+  outline?: string;
+  /** Lo que lee el lector de pantalla, si hay más que el nombre. */
+  a11y?: string;
 };
 
 /** Fila de bloque 88 · radio 32. Interior = exterior − padding: cuadro de radio 16. */
-export function FilaBloque({ title, tint, marks, onPress, play, aside, badge, height = touch.fila }: Props) {
+export function FilaBloque({ title, tint, marks, onPress, play, aside, badge, height = touch.fila, outline, a11y }: Props) {
   const pad = height < touch.fila ? space.s12 : space.s16;
   const square = height - pad * 2; // 88 − 2·16 = 56
   return (
@@ -30,12 +34,14 @@ export function FilaBloque({ title, tint, marks, onPress, play, aside, badge, he
       onPress={onPress}
       scaleTo={0.98}
       accessibilityRole="button"
-      accessibilityLabel={title}
+      accessibilityLabel={a11y ?? title}
       style={{
         height,
         borderRadius: radius.xl,
         backgroundColor: color.tarjeta,
-        padding: pad,
+        padding: pad - (outline ? 2 : 0),
+        borderWidth: outline ? 2 : 0,
+        borderColor: outline,
         flexDirection: 'row',
         alignItems: 'center',
         gap: space.s16,

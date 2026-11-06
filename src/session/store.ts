@@ -19,6 +19,8 @@ export type TodayStatus = 'loading' | 'ready' | 'none';
 let today: TodayStatus = hasBackend ? 'loading' : 'ready';
 /** Llegó otra sesión con la de ahora en marcha: se cambia al acabar (resetSession). */
 let pending: { s: Session | null; coach: Session['coach'] } | null = null;
+/** La de hoy, para volver a ella tras retomar una sesión de otro día (KC3). */
+let todays: { s: Session | null; coach: Session['coach'] } | null = null;
 const todaySubs = new Set<() => void>();
 const options = () => {
   const s = getSettings();
@@ -44,16 +46,15 @@ subscribeSettings(refreshSessionPlan);
 
 export function resetSession() {
   sessionRunner.reset();
-  if (pending) {
-    const p = pending;
-    pending = null;
-    setTodaySession(p.s, p.coach);
-  }
+  const back = pending ?? todays;
+  pending = null;
+  if (back) setTodaySession(back.s, back.coach);
   refreshSessionPlan();
 }
 
 /** La sesión de hoy (o ninguna). Con una en marcha no se toca: se aplica al acabar. */
 export function setTodaySession(s: Session | null, coach: Session['coach']) {
+  todays = { s, coach };
   if (sessionRunner.getState().status !== 'select') {
     pending = { s, coach };
     return;
@@ -72,6 +73,17 @@ export function setTodaySession(s: Session | null, coach: Session['coach']) {
 }
 
 export const getTodayStatus = () => today;
+
+/** Poner una sesión concreta (la que quedó a medias) sin tocar la de hoy guardada. */
+export function useSessionForResume(s: Session) {
+  sessionRunner.reset();
+  session = s;
+  Object.assign(compiled, compileSession(s, options()));
+  compiledWith = JSON.stringify(options());
+  sessionRunner.setPlan(compiled.plan);
+  today = 'ready';
+  todaySubs.forEach((f) => f());
+}
 export function useToday() {
   return useSyncExternalStore(
     (f) => {
@@ -90,8 +102,9 @@ export function useSession() {
 }
 
 /** Pesos cambiados por el atleta en la escalera (ref → kg). Y su esfuerzo al acabar. */
-type Extra = { weights: Record<number, number | null>; rpe: number | null; sent: boolean };
-let extra: Extra = { weights: {}, rpe: null, sent: false };
+/** `notes`: cambios que el entrenador verá en la nota (peso distinto, orden cambiado: KC8). */
+type Extra = { weights: Record<number, number | null>; rpe: number | null; sent: boolean; notes: string[] };
+let extra: Extra = { weights: {}, rpe: null, sent: false, notes: [] };
 const subs = new Set<() => void>();
 const set = (e: Partial<Extra>) => {
   extra = { ...extra, ...e };
@@ -114,4 +127,5 @@ export function useSessionExtra() {
 export const setWeight = (ref: number, kg: number | null) => set({ weights: { ...extra.weights, [ref]: kg } });
 export const setRpe = (rpe: number) => set({ rpe, sent: false });
 export const markSent = () => set({ sent: true });
-export const resetExtra = () => set({ weights: {}, rpe: null, sent: false });
+export const addNote = (n: string) => set({ notes: [...extra.notes.filter((x) => x !== n), n] });
+export const resetExtra = () => set({ weights: {}, rpe: null, sent: false, notes: [] });

@@ -4,6 +4,8 @@ import { setupFeedback, signal } from '@/platform/feedback';
 import {
   createTimer,
   cues,
+  bringForward,
+  freeze,
   interrupt,
   next,
   pauseToggle,
@@ -105,6 +107,15 @@ export class Runner {
   next = () => this.apply(next);
   stop = () => this.apply(stop);
   interrupt = () => this.apply(interrupt);
+  /** Otro ejercicio de repeticiones antes que el actual (KC8). */
+  bringForward = (ref: number) => this.apply((s, now) => bringForward(s, ref, now));
+  /** Marcha guardada al cerrarse la app (KC3): queda congelada donde se guardó; al seguir, 3·2·1. */
+  restore = (state: TimerState, savedAt: number, startedAt: number | null) => {
+    this.state = freeze(state, savedAt);
+    this.startedAt = startedAt;
+    this.endedAt = null;
+    this.publish(Date.now(), false);
+  };
   /** Saltar a un tramo concreto (empezar la sesión por un bloque). */
   startAt = (index: number) => {
     setupFeedback();
