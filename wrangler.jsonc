@@ -1,0 +1,11 @@
+{
+  // Web de KRAFT en Cloudflare: solo archivos estáticos de `expo export -p web`, sin código de servidor.
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "kraft",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    // expo-router en modo "single": cualquier ruta abre index.html.
+    "not_found_handling": "single-page-application"
+  }
+}
