@@ -4,7 +4,7 @@ import Animated, { useReducedMotion } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useNavHidden } from '@/state/chrome';
-import { color, layout, motion, ms, radius, sombra, space, texto } from '@/theme';
+import { color, inner, layout, motion, ms, radius, space, texto, touch } from '@/theme';
 import { KText } from './KText';
 import { Pulsable } from './Pulsable';
 
@@ -40,12 +40,12 @@ type Props = {
   navigateToTab: (routeKey: string) => void;
 };
 
-/** Alto de cada pestaña. */
-const ITEM_H = 56;
+/** Alto de cada pestaña: una tecla (KR5Time, KR4Agenda). */
+const ITEM_H = touch.tecla;
 
 /**
  * 4 pestañas: Hoy, Tiempo, Agenda, Diario. Oculta en marcha.
- * Píldora con los mismos 16 de margen que las tarjetas y sombra suave (flota sobre lo que se desplaza).
+ * Carril hundido de radio 24 con 4 de margen; cada pestaña, radio 20 (24 − 4), como en el diseño.
  * La marca de la pestaña elegida se desliza (240 ms, ease-in-out);
  * el contenido de la pantalla no se anima: cambiar de pestaña es instantáneo.
  */
@@ -66,7 +66,7 @@ export function Navegacion({ state, navigateToTab }: Props) {
         accessibilityRole="tablist"
         accessibilityLabel="Secciones"
         onLayout={(e) => setW(e.nativeEvent.layout.width)}
-        style={{ flexDirection: 'row', gap: pad, padding: pad, backgroundColor: color.tarjeta, borderRadius: radius.pill, boxShadow: sombra.flotante }}
+        style={{ flexDirection: 'row', gap: pad, padding: pad, backgroundColor: color.hundido, borderRadius: radius.lg }}
       >
         {item > 0 && (
         <Animated.View
@@ -77,7 +77,7 @@ export function Navegacion({ state, navigateToTab }: Props) {
             top: pad,
             width: item,
             minHeight: ITEM_H,
-            borderRadius: radius.pill,
+            borderRadius: inner(radius.lg, pad),
             backgroundColor: color.tinta,
             transform: [{ translateX: idx * (item + pad) }],
             transitionProperty: 'transform',
@@ -98,9 +98,9 @@ export function Navegacion({ state, navigateToTab }: Props) {
               accessibilityRole="tab"
               accessibilityState={{ selected: on }}
               accessibilityLabel={t.label}
-              style={{ flex: 1, minHeight: ITEM_H, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', gap: space.s4, backgroundColor: item > 0 || !on ? 'transparent' : color.tinta }}
+              style={{ flex: 1, minHeight: ITEM_H, borderRadius: inner(radius.lg, pad), alignItems: 'center', justifyContent: 'center', gap: space.s4, backgroundColor: item > 0 || !on ? 'transparent' : color.tinta }}
             >
-              <Glyph name={t.name} tint={on && t.name === 'tiempo' ? color.naranja : fg} />
+              <Glyph name={t.name} tint={fg} />
               <KText size={texto.etiqueta} weight={on ? 500 : 400} tint={fg}>
                 {t.label}
               </KText>

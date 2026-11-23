@@ -7,6 +7,7 @@
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio';
 import * as Haptics from 'expo-haptics';
 import * as Speech from 'expo-speech';
+import { Platform } from 'react-native';
 
 import { getSettings } from '@/state/settings';
 import type { Cue } from '@/timer/engine';
@@ -14,23 +15,47 @@ import type { Cue } from '@/timer/engine';
 let corto: AudioPlayer | null = null;
 let largo: AudioPlayer | null = null;
 let ready = false;
+let unlocked = false;
 
-/** Modo de audio según Tú · Sonido: sonar en silencio y bajar la música (o sonar encima). */
-export async function setupFeedback({ playInSilentMode = getSettings().silencio } = {}) {
-  try {
-    await setAudioModeAsync({
-      playsInSilentMode: playInSilentMode,
-      interruptionMode: getSettings().bajarMusica ? 'duckOthers' : 'mixWithOthers',
-      shouldPlayInBackground: true,
-    });
-  } catch {
-    // Web y simuladores sin sesión de audio: seguimos sin modo.
-  }
+/**
+ * Prepara el sonido. Se llama dentro del toque que arranca (Empezar, play), así que:
+ * - los reproductores se crean ya, sin esperar a nada (antes se perdía el primer pitido del 3·2·1);
+ * - en web se «desbloquean» en ese mismo toque (Safari no deja sonar audio que no empezó con un gesto).
+ * El modo de audio (silencio, bajar la música) se aplica después, sin bloquear.
+ */
+export function setupFeedback({ playInSilentMode = getSettings().silencio } = {}): Promise<void> {
   if (!ready) {
     corto = createAudioPlayer(require('../../assets/sounds/corto.wav'));
     largo = createAudioPlayer(require('../../assets/sounds/largo.wav'));
     ready = true;
   }
+  if (Platform.OS === 'web' && !unlocked) {
+    unlocked = true;
+    for (const p of [corto, largo]) {
+      try {
+        if (!p) continue;
+        p.volume = 0;
+        p.play();
+        setTimeout(() => {
+          try {
+            p.pause();
+            p.seekTo(0);
+          } catch {
+            // nada que parar
+          }
+        }, 60);
+      } catch {
+        // sin audio en este navegador
+      }
+    }
+  }
+  return setAudioModeAsync({
+    playsInSilentMode: playInSilentMode,
+    interruptionMode: getSettings().bajarMusica ? 'duckOthers' : 'mixWithOthers',
+    shouldPlayInBackground: true,
+  }).catch(() => {
+    // Web y simuladores sin sesión de audio: seguimos sin modo.
+  });
 }
 
 function play(p: AudioPlayer | null) {
@@ -45,8 +70,16 @@ function play(p: AudioPlayer | null) {
   }
 }
 
+/** Último toque que ya vibró (Pulsable): si la señal del motor cae en el mismo instante, no vibra otra vez. */
+let lastTap = 0;
+export const noteTapHaptic = () => {
+  lastTap = Date.now();
+};
+const SAME_ACTION_MS = 250;
+
 async function vibrate(kind: 'corta' | 'larga' | 'doble') {
   if (!getSettings().vibrar) return;
+  if (Date.now() - lastTap < SAME_ACTION_MS) return;
   try {
     if (kind === 'corta') await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     else if (kind === 'larga') await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);

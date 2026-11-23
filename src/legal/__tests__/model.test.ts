@@ -1,6 +1,6 @@
 import { DEFAULT_SETTINGS } from '@/alta/model';
 import type { DiaryState } from '@/diario/model';
-import { csvField, dataCounts, deletionDate, exportCsv, isDocId, legalDoc, pendingPayments } from '../model';
+import { csvField, dataCounts, deletionDate, exportCsv, isDocId, legalDoc, pendingPayments, serverCsv } from '../model';
 
 const NOW = new Date(2026, 10, 6, 12).getTime(); // 6 nov 2026
 
@@ -54,5 +54,30 @@ describe('legal', () => {
     expect(legalDoc('privacidad').sections).toHaveLength(6);
     expect(isDocId('terminos')).toBe(true);
     expect(isDocId('datos')).toBe(false);
+  });
+});
+
+describe('serverCsv', () => {
+  it('un bloque por tipo con cabecera de campos, y los objetos como campo/valor', () => {
+    const csv = serverCsv(
+      {
+        exported_at: '2026-11-23T10:00:00Z',
+        profile: { email: 'ana@ejemplo.com', name: 'Ana' },
+        bookings: [
+          { class: 'Fuerza', status: 'confirmed' },
+          { class: 'Core, suave', status: 'waitlist', arrived_at: null },
+        ],
+        workouts: [],
+      },
+      Date.UTC(2026, 10, 23),
+    );
+    const lines = csv.split('\n');
+    expect(lines).toContain('# profile');
+    expect(lines).toContain('email,ana@ejemplo.com');
+    expect(lines).toContain('# bookings');
+    expect(lines).toContain('class,status,arrived_at');
+    expect(lines).toContain('"Core, suave",waitlist,');
+    expect(lines).toContain('(vacío)');
+    expect(csv).not.toContain('exported_at');
   });
 });

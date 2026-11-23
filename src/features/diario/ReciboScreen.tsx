@@ -10,7 +10,8 @@ import { CheckIcon } from '@/components/icons';
 import { KText } from '@/components/KText';
 import { Pulsable } from '@/components/Pulsable';
 import { Vacio } from '@/components/Vacio';
-import { bill, monthName } from '@/diario/model';
+import { usePending } from '@/backend/sync';
+import { bill, euros, monthName } from '@/diario/model';
 import { resendReceipt, useDiary } from '@/diario/store';
 import { session } from '@/session/store';
 import { alpha, cifra, color, layout, motion, ms, radius, space, texto, touch, arriba } from '@/theme';
@@ -26,13 +27,15 @@ export function ReciboScreen() {
   const diary = useDiary();
   const [again, setAgain] = useState(false);
   const p = mes ? diary.payments[mes] : undefined;
+  // Pagado sin red: aún no lo ha confirmado el servidor (puede rechazarlo). Tinta = espera, no verde.
+  const pending = usePending().some((j) => j.kind === 'pay' && j.payload.month === mes);
   if (!mes || !p) return <Vacio title="Recibo" note="Este mes aún no está pagado" />;
 
   const lines = bill(diary, mes).lines;
   const toDiary = () => (router.canDismiss() ? router.dismissAll() : router.replace('/diario'));
 
   return (
-    <View style={{ flex: 1, backgroundColor: color.verde, paddingTop: arriba(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
+    <View style={{ flex: 1, backgroundColor: pending ? color.tinta : color.verde, paddingTop: arriba(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
       {/* El ✓ es el momento: entra una vez, sin rebote (animación CSS: no saca el círculo del flujo). */}
       <Animated.View
         style={{
@@ -41,17 +44,17 @@ export function ReciboScreen() {
           animationTimingFunction: motion.salida,
           width: touch.accion, height: touch.accion, borderRadius: touch.accion / 2, backgroundColor: color.tarjeta, marginHorizontal: space.s8, marginBottom: space.s24, alignItems: 'center', justifyContent: 'center' }}
       >
-        <CheckIcon size={48} tint={color.verde} />
+        <CheckIcon size={48} tint={pending ? color.tinta : color.verde} />
       </Animated.View>
 
       <View style={{ paddingHorizontal: space.s8, paddingBottom: space.s16, gap: space.s8 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'baseline' }} accessibilityRole="header" accessibilityLabel={`Pagado: ${p.amount} euros`}>
+        <View style={{ flexDirection: 'row', alignItems: 'baseline' }} accessibilityRole="header" accessibilityLabel={`${pending ? 'Pendiente de confirmar' : 'Pagado'}: ${euros(p.amount)} euros`}>
           <KText size={cifra.c89} weight={300} title tabular tint={color.tarjeta} lineHeight={Math.round(cifra.c89 * 0.9)}>
-            {String(p.amount)}
+            {euros(p.amount)}
           </KText>
           <KText size={cifra.c34} weight={300} tint={color.tarjeta}> €</KText>
         </View>
-        <KText size={texto.texto} tint={color.tarjeta}>{`Pagado a ${session.coach.name} · ${monthName(mes)}`}</KText>
+        <KText size={texto.texto} tint={color.tarjeta}>{pending ? `Pendiente de confirmar · sale al volver la red` : `Pagado a ${session.coach.name} · ${monthName(mes)}`}</KText>
       </View>
 
       <View style={{ borderTopWidth: 1, borderTopColor: alpha.sobreColor, paddingTop: space.s8, paddingHorizontal: space.s8 }}>
@@ -59,7 +62,7 @@ export function ReciboScreen() {
           <View key={l.mode} style={{ height: 40, flexDirection: 'row', alignItems: 'center', gap: space.s12 }}>
             <PuntoModo mode={l.mode} ring={color.tarjeta} size={12} />
             <KText size={texto.texto} tint={color.tarjeta} style={{ flex: 1 }}>{`${l.count} ${modeLabel(l.mode).toLowerCase()}`}</KText>
-            <KText size={texto.texto} tint={color.tarjeta}>{`${l.total} €`}</KText>
+            <KText size={texto.texto} tint={color.tarjeta}>{`${euros(l.total)} €`}</KText>
           </View>
         ))}
       </View>

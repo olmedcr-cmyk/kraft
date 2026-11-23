@@ -189,10 +189,24 @@ describe('anterior y siguiente', () => {
     expect(snapshot(s, 15 * S).phase).toBe('rest');
     s = prev(s, 15 * S);
     s = prev(s, 15 * S + 300);
-    const v = snapshot(s, 15.3 * S);
-    expect(v.phase).toBe('work');
+    // Vuelve al 3·2·1 de ese trabajo (nunca a trabajar sin aviso), y luego el trabajo entero.
+    let v = snapshot(s, 15.3 * S);
+    expect(v.phase).toBe('countdown');
     expect(v.round).toBe(1);
+    v = snapshot(tick(s, 18.3 * S), 18.3 * S);
+    expect(v.phase).toBe('work');
     expect(v.n).toBe(10);
+  });
+
+  it('en Tabata (un solo 3·2·1 al principio) dos toques vuelven al trabajo sin cuenta atrás de por medio', () => {
+    let s = start(createTimer(tabataPlan({ work: 20, rest: 10, rounds: 3 })), 0);
+    s = tick(s, 55 * S); // descanso de la ronda 2 (53–63 s)
+    expect(snapshot(s, 55 * S).phase).toBe('rest');
+    s = prev(s, 55 * S);
+    s = prev(s, 55 * S + 100);
+    const v = snapshot(s, 55.1 * S);
+    expect(v.phase).toBe('work');
+    expect(v.round).toBe(2);
   });
 
   it('dos toques separados más de 400 ms solo reinician', () => {

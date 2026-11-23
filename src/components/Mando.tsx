@@ -41,6 +41,12 @@ export function Mando({ left, central, onLeft, onCentral, onRight, bleed = true,
         onPress={onLeft}
         accessibilityRole="button"
         accessibilityLabel={left === 'stop' ? 'Parar y guardar lo hecho' : 'Anterior · un toque reinicia el tramo, dos van al anterior'}
+        // Dos toques en 400 ms no se pueden hacer con VoiceOver o Switch Control: acción propia.
+        accessibilityActions={left === 'prev' ? [{ name: 'activate' }, { name: 'anterior', label: 'Tramo anterior' }] : undefined}
+        onAccessibilityAction={(e) => {
+          onLeft();
+          if (e.nativeEvent.actionName === 'anterior') onLeft();
+        }}
         style={styles.side}
       >
         {left === 'stop' ? <StopIcon /> : <PrevIcon />}

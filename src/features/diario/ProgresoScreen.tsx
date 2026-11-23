@@ -164,7 +164,7 @@ export function ProgresoScreen() {
           </View>
         </Cifra>
         <Cifra value={sessions} label="Sesiones">
-          <View style={{ width: 16, height: 16, borderRadius: 6, backgroundColor: color.tinta }} />
+          <View style={{ width: 16, height: 16, borderRadius: radius.xs, backgroundColor: color.tinta }} />
         </Cifra>
         <Cifra value={tabatas} label="Tabatas" dark onPress={() => router.push('/tiempo/tabata')}>
           <View style={{ width: 32, height: 16, borderRadius: radius.pill, backgroundColor: color.naranja }} />

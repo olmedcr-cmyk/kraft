@@ -76,7 +76,6 @@ export function TuScreen() {
       </Grupo>
       <Grupo>
         <Fila label="Cuenta y pagos" onPress={() => router.push('/tu/cuenta')} />
-        <Fila label="Ayuda" onPress={() => router.push({ pathname: '/tu/pronto', params: { t: 'Ayuda' } })} />
       </Grupo>
     </PantallaTu>
   );

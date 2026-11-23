@@ -123,7 +123,7 @@ export function ReservaScreen() {
           {slot.directions && (
             <Celda title="Cómo llegar">
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.s12 }}>
-                <View style={{ width: 40, height: 40, borderRadius: inner(radius.lg, space.s12), backgroundColor: color.fondo, alignItems: 'center', justifyContent: 'center' }}>
+                <View style={{ width: 40, height: 40, borderRadius: inner(radius.lg, space.s16), backgroundColor: color.fondo, alignItems: 'center', justifyContent: 'center' }}>
                   <Flecha dir="up-right" />
                 </View>
                 <KText size={texto.texto} style={{ flex: 1 }} lineHeight={18}>

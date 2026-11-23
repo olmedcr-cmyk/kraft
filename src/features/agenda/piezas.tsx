@@ -69,7 +69,8 @@ export function Ocupacion({ slot, state, size = 7, cols = 6 }: { slot: Slot; sta
 export function CabeceraAgenda({ right, back = false }: { right?: ReactNode; back?: boolean }) {
   const label = (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.s8 }}>
-      <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: color.naranja }} />
+      {/* Marca de sección en tinta: el naranja es solo para actuar. */}
+      <View style={{ width: space.s8, height: space.s8, borderRadius: radius.pill, backgroundColor: color.tinta }} />
       <KText size={texto.texto} tint={color.texto2}>
         Agenda
       </KText>

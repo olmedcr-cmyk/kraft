@@ -2,6 +2,8 @@
 import { router } from 'expo-router';
 
 import { signOut } from '@/backend/auth';
+import { hasBackend } from '@/backend/client';
+import { usePending } from '@/backend/sync';
 import { updateSettings, useSettings } from '@/state/settings';
 import { color } from '@/theme';
 import { Fila, FilaSi, Grupo, PantallaTu, useConfirmar } from './piezas';
@@ -11,12 +13,15 @@ const CARD_LAST4 = '4242';
 
 export function CuentaScreen() {
   const s = useSettings();
-  const salir = useConfirmar();
+  const salir = useConfirmar(4000);
+  // Lo hecho sin red aún no ha salido: al cerrar sesión se pierde. Se avisa antes.
+  const pending = usePending().length;
 
   return (
     <PantallaTu back="Tú" title="Cuenta">
       <Grupo>
-        <Fila label="Pago" value={`···· ${CARD_LAST4}`} onPress={() => router.push('/diario')} />
+        {/* La tarjeta es de ejemplo hasta tener pasarela: con servidor no se inventa. */}
+        <Fila label="Pago" value={hasBackend ? undefined : `···· ${CARD_LAST4}`} onPress={() => router.push('/diario')} />
         {/* Salud: consentimiento propio y explícito (RGPD). Solo escribe entrenos y calorías. */}
         {/* Encender pasa por su propia hoja (KL2); apagar es inmediato. */}
         <FilaSi label="Salud" on={s.salud} onChange={(v) => (v ? router.push('/legal/salud') : updateSettings({ salud: false }))} />
@@ -31,7 +36,15 @@ export function CuentaScreen() {
       </Grupo>
       <Grupo>
         <Fila
-          label={salir.armed ? 'Toca otra vez para salir' : 'Cerrar sesión'}
+          label={
+            salir.armed
+              ? pending
+                ? `Toca otra vez: se pierden ${pending} ${pending === 1 ? 'cambio sin enviar' : 'cambios sin enviar'}`
+                : 'Toca otra vez para salir'
+              : pending
+                ? `Cerrar sesión · ${pending} sin enviar`
+                : 'Cerrar sesión'
+          }
           tint={salir.armed ? color.naranja : color.tinta}
           onPress={() =>
             salir.press(() => {

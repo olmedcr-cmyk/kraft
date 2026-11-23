@@ -1,4 +1,5 @@
 /** Borrar cuenta (KL4Delete): qué se borra, qué se guarda, lo pendiente y un botón que pide confirmar. */
+import { euros } from '@/diario/model';
 import { router } from 'expo-router';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
@@ -75,7 +76,7 @@ export function BorrarScreen() {
       {debt.amount > 0 && (
         <Aviso bg={color.tinteNaranja} icon={<Circulo size={40} bg={color.naranja}><KText size={texto.bloque}>!</KText></Circulo>}>
           <KText size={texto.texto} lineHeight={texto.texto * 1.5}>
-            {`Tienes ${debt.amount} € pendientes${coach ? ` con ${coach}` : ''}.`}
+            {`Tienes ${euros(debt.amount)} € pendientes${coach ? ` con ${coach}` : ''}.`}
           </KText>
           <KText
             size={texto.texto}

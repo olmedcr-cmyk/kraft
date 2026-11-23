@@ -1,7 +1,7 @@
 /** Sesión en marcha (R2). Una pantalla por estado; abajo, siempre el mismo mando. */
 import { router } from 'expo-router';
 import { useEffect } from 'react';
-import { Image, View } from 'react-native';
+import { BackHandler, Image, Platform, View } from 'react-native';
 
 import { CheckIcon } from '@/components/icons';
 import { KText } from '@/components/KText';
@@ -11,7 +11,7 @@ import { useSettings } from '@/state/settings';
 import { useAnunciarFase } from '@/timer/useTimer';
 import { exercise } from '@/data/exercises';
 import { stepSeconds, upcoming, type StepInfo } from '@/session/compile';
-import { compiled, session, useSession } from '@/session/store';
+import { compiled, session, sessionRunner, useSession } from '@/session/store';
 import { alpha, cifra, color, radius, space, touch } from '@/theme';
 import type { Snapshot } from '@/timer/engine';
 import { Escalera } from './Escalera';
@@ -44,6 +44,33 @@ export function MarchaScreen() {
   const KeepAwake = t.keepAwake;
   const { palmaPausa } = useSettings();
   useAnunciarFase(s);
+
+  // Android: el botón atrás pausa (no saca de la sesión). Desde la pausa se para con el mando.
+  useEffect(() => {
+    if (Platform.OS !== 'android') return;
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (!s.paused) sessionRunner.pause();
+      return true;
+    });
+    return () => sub.remove();
+  }, [s.paused]);
+
+  // Web: Espacio = central, flechas = anterior / siguiente (anterior no para: parar es siempre con el ratón o el dedo).
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      // Con un botón enfocado, Espacio ya lo pulsa el navegador.
+      if (e.target instanceof HTMLElement && e.target.closest('[role="button"],[role="link"],input')) return;
+      if (e.key === ' ') sessionRunner.primary();
+      else if (e.key === 'ArrowRight') sessionRunner.next();
+      else if (e.key === 'ArrowLeft' && s.left === 'prev') sessionRunner.prev();
+      else return;
+      e.preventDefault();
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [s.left]);
 
   useEffect(() => {
     if (s.phase === 'done') router.replace('/sesion/hecho');
@@ -98,6 +125,7 @@ function Siguiente({ info, fg = color.tarjeta, bg = color.texto2 }: { info?: Ste
   const ex = exercise(info.exercise);
   return (
     <View
+      accessible
       accessibilityLabel={`A continuación: ${nextLabel(info)}`}
       style={{ flexDirection: 'row', alignItems: 'center', gap: space.s16, paddingVertical: space.s8, paddingLeft: space.s8, paddingRight: space.s24, borderRadius: radius.pill, backgroundColor: bg, alignSelf: 'center' }}
     >
@@ -191,7 +219,7 @@ function Pausa({ s, step, onPalm }: { s: Snapshot; step: StepInfo; onPalm: () =>
               {shown}
             </KText>
           )}
-          <KText size={RUN} caps>
+          <KText size={RUN}>
             Toca y sigue
           </KText>
         </View>

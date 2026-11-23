@@ -229,7 +229,8 @@ export function prev(state: TimerState, now: number): TimerState {
   if (double) {
     for (let i = s.index - 1; i >= 0; i--) {
       if (isTramo(s.plan[i].kind)) {
-        index = i;
+        // Si el tramo tenía su 3·2·1 justo antes, se vuelve a él: nunca a trabajar sin aviso.
+        index = i > 0 && s.plan[i - 1].kind === 'countdown' && s.plan[i].kind === 'work' ? i - 1 : i;
         break;
       }
     }

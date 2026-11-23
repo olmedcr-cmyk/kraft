@@ -16,18 +16,20 @@ type Props = { s: Snapshot; step: StepInfo; onPalm?: () => void };
 /** La palma: el centro que pausa. Su etiqueta dice la fase y lo que queda, no solo qué hace. */
 function PalmaTramo({ s, onPalm, gap, children }: { s: Snapshot; onPalm?: () => void; gap: number; children: ReactNode }) {
   const fase = s.phase === 'rest' ? 'Descanso' : 'Trabajo';
-  const style = { flex: 1, alignItems: 'center', justifyContent: 'center', gap } as const;
-  if (!onPalm) {
-    return (
-      <View accessible accessibilityLabel={palmaLabel(fase, s.n)} style={style}>
-        {children}
-      </View>
-    );
-  }
+  // La palma es el centro (el número), no todo el ancho: tocar los bordes no pausa.
+  const style = { alignItems: 'center', justifyContent: 'center', gap, paddingHorizontal: space.s24 } as const;
   return (
-    <Pulsable onPress={onPalm} haptic="light" scaleTo={0.99} accessibilityRole="button" accessibilityLabel={palmaLabel(fase, s.n, 'Toca para pausar')} style={style}>
-      {children}
-    </Pulsable>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      {onPalm ? (
+        <Pulsable onPress={onPalm} haptic="light" scaleTo={0.99} accessibilityRole="button" accessibilityLabel={palmaLabel(fase, s.n, 'Toca para pausar')} style={style}>
+          {children}
+        </Pulsable>
+      ) : (
+        <View accessible accessibilityLabel={palmaLabel(fase, s.n)} style={style}>
+          {children}
+        </View>
+      )}
+    </View>
   );
 }
 

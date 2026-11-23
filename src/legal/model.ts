@@ -73,6 +73,34 @@ export function exportCsv(s: DiaryState, settings: Settings, now: number): strin
   return out.join('\n') + '\n';
 }
 
+/**
+ * Con servidor: lo que guarda el servidor (export_my_data) en el mismo CSV por bloques.
+ * Incluye lo que el móvil no tiene: email y perfil, reservas y listas de espera, notas y esfuerzo enviados.
+ * Cada bloque es una tabla: una fila por elemento, columnas por campo.
+ */
+export function serverCsv(data: Record<string, unknown>, now: number): string {
+  const out: string[] = [row(['# KRAFT · tus datos (servidor)', new Date(now).toISOString()]), ''];
+  const flat = (v: unknown) => (v !== null && typeof v === 'object' ? JSON.stringify(v) : v);
+  for (const [key, value] of Object.entries(data)) {
+    if (key === 'exported_at') continue;
+    if (Array.isArray(value)) {
+      const items = value.filter((x): x is Record<string, unknown> => !!x && typeof x === 'object');
+      const cols = [...new Set(items.flatMap((x) => Object.keys(x)))];
+      out.push(row([`# ${key}`]));
+      out.push(row(cols.length ? cols : ['(vacío)']));
+      for (const x of items) out.push(row(cols.map((c) => flat(x[c]))));
+    } else if (value && typeof value === 'object') {
+      out.push(row([`# ${key}`]));
+      out.push(row(['campo', 'valor']));
+      for (const [k, v] of Object.entries(value)) out.push(row([k, flat(v)]));
+    } else {
+      out.push(row([`# ${key}`, flat(value)]));
+    }
+    out.push('');
+  }
+  return out.join('\n') + '\n';
+}
+
 // ─── Documentos (KL5) ──────────────────────────────────────────────────────
 
 export type DocId = 'privacidad' | 'terminos' | 'aviso';

@@ -45,7 +45,7 @@ export function PalmaScreen() {
               <View style={{ width: space.s16, height: touch.tecla, borderRadius: radius.pill, backgroundColor: color.tarjeta }} />
             </View>
           )}
-          <KText size={texto.lista} caps tint={paused ? color.tarjeta : color.klein}>
+          <KText size={texto.lista} tint={paused ? color.tarjeta : color.klein}>
             {paused ? 'Pausa' : 'Toca'}
           </KText>
         </Palma>

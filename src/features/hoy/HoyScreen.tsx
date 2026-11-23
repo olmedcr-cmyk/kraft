@@ -21,11 +21,11 @@ import { hhmm, longDay, upcomingBookings } from '@/agenda/model';
 import { useAgenda } from '@/agenda/store';
 import { MODE_TINT } from '@/features/agenda/piezas';
 import type { Block } from '@/session/types';
+import { useSettings } from '@/state/settings';
 import { cifra, color, layout, motion, ms, radius, space, texto, touch, arriba } from '@/theme';
 import { Pulsable } from '@/components/Pulsable';
 
 const WEEKDAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-const USER_INITIAL = 'C';
 /** En pantallas bajas las filas encogen hasta aquí antes de dejar desplazar. */
 const ROW_MIN = touch.tecla;
 const ENTRA = { from: { opacity: 0, transform: [{ translateY: 8 }] }, to: { opacity: 1, transform: [{ translateY: 0 }] } };
@@ -75,6 +75,7 @@ export function HoyScreen() {
   const insets = useSafeAreaInsets();
   const t = useSession();
   const today = useToday();
+  const { nombre } = useSettings();
   const data = useDataStatus();
   const running = t.running;
   const unfinished = useUnfinished();
@@ -130,7 +131,7 @@ export function HoyScreen() {
           style={{ width: touch.dedo, height: touch.dedo, borderRadius: touch.dedo / 2, backgroundColor: color.tinta, alignItems: 'center', justifyContent: 'center' }}
         >
           <KText size={texto.lista} tint={color.tarjeta}>
-            {USER_INITIAL}
+            {(nombre || 'Tú')[0].toUpperCase()}
           </KText>
         </Pulsable>
       </View>

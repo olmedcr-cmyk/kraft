@@ -6,7 +6,7 @@ import { View } from 'react-native';
 import { KText } from '@/components/KText';
 import { Pulsable } from '@/components/Pulsable';
 import { MODES, type Mode } from '@/agenda/model';
-import { color, space, texto } from '@/theme';
+import { color, radius, space, texto } from '@/theme';
 import { MODE_TINT } from '@/features/agenda/piezas';
 
 export { MODE_TINT };
@@ -15,7 +15,8 @@ export { MODE_TINT };
 export function CabeceraDiario({ label, back, right }: { label: string; back?: boolean; right?: ReactNode }) {
   const mark = (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.s8 }}>
-      <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: color.naranja }} />
+      {/* Marca de sección en tinta: el naranja es solo para actuar. */}
+      <View style={{ width: space.s8, height: space.s8, borderRadius: radius.pill, backgroundColor: color.tinta }} />
       <KText size={texto.texto} tint={color.texto2}>
         {label}
       </KText>

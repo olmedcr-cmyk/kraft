@@ -24,15 +24,20 @@ import {
   trainedDays,
   type DayLog,
   type MonthStatus,
+  euros,
 } from '@/diario/model';
 import { useDiary } from '@/diario/store';
 import { Fundido } from '@/components/Fundido';
-import { cifra, color, fundido, layout, radius, space, texto, transicionFondo, transicionPunto, arriba } from '@/theme';
+import { cifra, color, fundido, layout, radius, space, texto, touch, transicionFondo, transicionPunto, arriba } from '@/theme';
 import { CabeceraDiario, MODE_TINT, PuntoModo, modeLabel } from './piezas';
 
 const LETTERS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 const CELL = 32;
-const MONTH_SHORT = (key: string) => monthName(key).slice(0, 3);
+/** «Nov»: en frase, como todo lo que se toca. */
+const MONTH_SHORT = (key: string) => {
+  const m = monthName(key).slice(0, 3);
+  return m.charAt(0).toUpperCase() + m.slice(1);
+};
 
 export function DiarioScreen() {
   const insets = useSafeAreaInsets();
@@ -104,7 +109,6 @@ export function DiarioScreen() {
             selected={color.tinta}
             selectedText={color.tarjeta}
             itemHeight={40}
-            caps
           />
         </View>
       </View>
@@ -175,8 +179,8 @@ function defaultDay(days: Record<string, DayLog>, key: string, now: number) {
 
 function detail(d: number, mon: string, log: DayLog | undefined, booked: Mode | undefined) {
   const head = `${d} ${mon} · `;
-  if (log?.class?.late) return `${head}Cancelada tarde · ${PRICES[log.class.mode]} €`;
-  if (log?.class) return `${head}${modeLabel(log.class.mode)} · ${PRICES[log.class.mode]} €`;
+  if (log?.class?.late) return `${head}Cancelada tarde · ${euros(PRICES[log.class.mode])} €`;
+  if (log?.class) return `${head}${modeLabel(log.class.mode)} · ${euros(PRICES[log.class.mode])} €`;
   if (log?.own) return `${head}Por tu cuenta · ${log.own.minutes} min`;
   if (booked) return `${head}Reservado · ${modeLabel(booked)}`;
   return `${head}Sin entreno`;
@@ -208,6 +212,8 @@ function Dia({ n, log, booked, today, on, monthLabel, onPress }: { n: number; lo
       accessibilityRole="button"
       accessibilityLabel={aria}
       accessibilityState={{ selected: on }}
+      // El círculo mide 32; el dedo, 48: se amplía la zona de toque hacia arriba y abajo.
+      hitSlop={{ top: (touch.dedo - CELL) / 2, bottom: (touch.dedo - CELL) / 2 }}
       style={{ width: `${100 / 7}%`, height: CELL + space.s4, marginBottom: -space.s4, alignItems: 'center', justifyContent: 'flex-start' }}
     >
       <Animated.View style={{ ...transicionPunto, width: CELL, height: CELL, borderRadius: CELL / 2, borderWidth: 2, borderColor: bd, backgroundColor: bg, alignItems: 'center', justifyContent: 'center' }}>
@@ -246,7 +252,7 @@ function Pago({ month, status }: { month: string; status: MonthStatus }) {
     pagado: [`Pagado · ${name}`, 'Gracias'],
   }[status];
   const btn = {
-    'a-pagar': `Pagar ${b.amount} €`,
+    'a-pagar': `Pagar ${euros(b.amount)} €`,
     'en-curso': 'Se cobra a fin de mes',
     nada: 'Nada que pagar',
     pagado: 'Recibo enviado',
@@ -278,14 +284,14 @@ function Pago({ month, status }: { month: string; status: MonthStatus }) {
           {head[1]}
         </KText>
       </View>
-      <KText size={cifra.c55} weight={300} tint={st.fg} lineHeight={cifra.c55} tabular>{`${b.amount} €`}</KText>
+      <KText size={cifra.c55} weight={300} tint={st.fg} lineHeight={cifra.c55} tabular>{`${euros(b.amount)} €`}</KText>
       {b.lines.length > 0 && (
         <View style={{ gap: space.s4 }}>
           {b.lines.map((l) => (
             <View key={l.mode} style={{ flexDirection: 'row', alignItems: 'center', gap: space.s8 }}>
               <PuntoModo mode={l.mode} on={st.bg} />
-              <KText size={texto.texto} tint={st.fg} style={{ flex: 1 }}>{`${l.count} × ${modeLabel(l.mode)} · ${l.price} €`}</KText>
-              <KText size={texto.texto} tint={st.fg}>{`${l.total} €`}</KText>
+              <KText size={texto.texto} tint={st.fg} style={{ flex: 1 }}>{`${l.count} × ${modeLabel(l.mode)} · ${euros(l.price)} €`}</KText>
+              <KText size={texto.texto} tint={st.fg}>{`${euros(l.total)} €`}</KText>
             </View>
           ))}
         </View>

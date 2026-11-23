@@ -49,7 +49,7 @@ export function CabeceraMarcha({ title, fg, below, right }: { title: string; fg:
 export function PuntosTramo({ total, current, fg, done = color.naranja, now = color.naranja }: { total: number; current: number; fg: string; done?: string; now?: string }) {
   if (total < 2 || total > 12) return null;
   return (
-    <View style={{ flexDirection: 'row', gap: space.s4 }} accessibilityLabel={`Tramo ${current + 1} de ${total}`}>
+    <View accessible style={{ flexDirection: 'row', gap: space.s4 }} accessibilityLabel={`Tramo ${current + 1} de ${total}`}>
       {Array.from({ length: total }, (_, i) => (
         <Animated.View
           key={i}

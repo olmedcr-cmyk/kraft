@@ -373,7 +373,7 @@ function PalmaSerie({ s, bg, onPress }: { s: Snapshot; bg: string; onPress: () =
     return (
       <Palma bg={color.tarjeta} onPress={onPress} label="Empezar la siguiente serie">
         <PlayIcon size={72} />
-        <KText size={RUN_TEXT} caps>
+        <KText size={RUN_TEXT}>
           Siguiente serie
         </KText>
         <KText size={RUN_TEXT} tint={color.texto2} tabular>{`Descansas ${m}:${pad2(s.waited % 60)}`}</KText>
@@ -384,7 +384,7 @@ function PalmaSerie({ s, bg, onPress }: { s: Snapshot; bg: string; onPress: () =
     return (
       <Palma bg={color.tarjeta} onPress={onPress} label="Empezar otra vez">
         <CheckIcon size={cifra.c89} tint={color.verde} />
-        <KText size={RUN_TEXT} tint={color.verde} caps>
+        <KText size={RUN_TEXT} tint={color.verde}>
           Otra vez
         </KText>
       </Palma>

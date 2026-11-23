@@ -1,4 +1,5 @@
 /** Llego (KR4Arrive): Klein fuera, verde dentro. La palma marca la llegada. */
+import { hasBackend } from '@/backend/client';
 import { router, useLocalSearchParams } from 'expo-router';
 import { View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
@@ -47,7 +48,10 @@ export function LlegoScreen() {
         </View>
       </View>
 
+      {/* Quién está dentro: dato de ejemplo; el servidor no lo comparte, así que con servidor no se pinta. */}
+      {!hasBackend && (
       <View
+        accessible
         accessibilityLabel={inside ? `${ALREADY_IN + 1} de ${seats} · tú dentro` : `${ALREADY_IN} de ${seats} dentro`}
         style={{ paddingVertical: space.s16, paddingHorizontal: space.s8, flexDirection: 'row', flexWrap: 'wrap', gap: space.s4 }}
       >
@@ -58,6 +62,7 @@ export function LlegoScreen() {
           />
         ))}
       </View>
+      )}
 
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Palma bg={color.tarjeta} label={inside ? 'Dentro · toca para deshacer' : 'Estoy aquí'} onPress={() => arrive(slot)}>
@@ -66,7 +71,7 @@ export function LlegoScreen() {
               <CheckIcon size={32} tint={color.tarjeta} />
             </Animated.View>
           )}
-          <KText size={texto.lista} tint={bg} caps>
+          <KText size={texto.lista} tint={bg}>
             {inside ? 'Dentro' : 'Estoy aquí'}
           </KText>
         </Palma>

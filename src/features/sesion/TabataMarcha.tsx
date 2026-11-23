@@ -56,7 +56,7 @@ export function TabataMarcha({ s, step, onPalm }: Props) {
   return (
     <>
       <View style={{ paddingHorizontal: space.s24, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <View style={{ flexDirection: 'row', gap: space.s4 }} accessibilityLabel={`Tabata ${set} de ${sets}`}>
+        <View accessible style={{ flexDirection: 'row', gap: space.s4 }} accessibilityLabel={`Tabata ${set} de ${sets}`}>
           {Array.from({ length: sets }, (_, i) => (
             <Animated.View
               key={i}
@@ -112,7 +112,8 @@ export function TabataMarcha({ s, step, onPalm }: Props) {
 /** Ejercicio A o B. El activo va en tinta y se mueve; el otro, en aro. */
 function Tarjeta({ info, on, fg }: { info: StepInfo; on: boolean; fg: string }) {
   const ex = exercise(info.exercise);
-  const pad = space.s12;
+  // 16 de padding: el cuadro de dentro, radio 24 − 16 = 8 (12 no está en la escala).
+  const pad = space.s16;
   return (
     <Animated.View
       style={{

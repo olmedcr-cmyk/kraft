@@ -37,7 +37,7 @@ export function AvisosScreen() {
 
       {/* Así llega un aviso. */}
       <View accessibilityLabel={`Ejemplo de aviso: ${coach} te ha enviado la sesión`} style={{ backgroundColor: color.tarjeta, borderRadius: radius.lg, padding: space.s16, flexDirection: 'row', alignItems: 'center', gap: space.s12 }}>
-        <View style={{ width: 24, height: 24, borderRadius: 6, backgroundColor: color.klein, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ width: 24, height: 24, borderRadius: radius.sm, backgroundColor: color.klein, alignItems: 'center', justifyContent: 'center' }}>
           <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: color.naranja }} />
         </View>
         <KText size={texto.texto} style={{ flex: 1 }}>{`${coach} te ha enviado la sesión`}</KText>

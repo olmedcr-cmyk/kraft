@@ -50,6 +50,8 @@ export default function RootLayout() {
         <StatusBar style="auto" />
         {/* Transiciones nativas del sistema; con «reducir movimiento», fundido. */}
         <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: color.fondo }, animation: reduced ? 'fade' : 'default' }}>
+          {/* En marcha no se sale con el gesto de atrás: se pausa o se para con el mando. */}
+          <Stack.Screen name="sesion" options={{ gestureEnabled: false }} />
           {/* Salud (KL2): hoja sobre tinta; el fondo funde y la hoja sube. */}
           <Stack.Screen name="legal/salud" options={{ presentation: 'transparentModal', animation: 'fade', contentStyle: { backgroundColor: 'transparent' } }} />
         </Stack>

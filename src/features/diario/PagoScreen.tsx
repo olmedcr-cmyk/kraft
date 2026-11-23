@@ -9,8 +9,9 @@ import { BarraAccion } from '@/components/BarraAccion';
 import { KText } from '@/components/KText';
 import { Pulsable } from '@/components/Pulsable';
 import { Vacio } from '@/components/Vacio';
-import { bill, monthName, monthStatus, type Method } from '@/diario/model';
+import { bill, euros, monthName, monthStatus, type Method } from '@/diario/model';
 import { pay, useDiary } from '@/diario/store';
+import { hasBackend } from '@/backend/client';
 import { session } from '@/session/store';
 import { cifra, color, layout, radius, space, texto, transicionPunto, arriba } from '@/theme';
 import { CabeceraDiario, PuntoModo, modeLabel } from './piezas';
@@ -36,9 +37,9 @@ export function PagoScreen() {
     <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: arriba(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
       <View style={{ paddingHorizontal: space.s8, paddingBottom: space.s16, gap: space.s8 }}>
         <CabeceraDiario label={`${name[0].toUpperCase()}${name.slice(1)} · a ${session.coach.name}`} back />
-        <View style={{ flexDirection: 'row', alignItems: 'baseline' }} accessibilityRole="header" accessibilityLabel={`${b.amount} euros`}>
+        <View style={{ flexDirection: 'row', alignItems: 'baseline' }} accessibilityRole="header" accessibilityLabel={`${euros(b.amount)} euros`}>
           <KText size={cifra.c89} weight={300} title tabular lineHeight={Math.round(cifra.c89 * 0.9)}>
-            {String(b.amount)}
+            {euros(b.amount)}
           </KText>
           <KText size={cifra.c34} weight={300}> €</KText>
         </View>
@@ -51,15 +52,15 @@ export function PagoScreen() {
             <KText size={texto.lista} style={{ flex: 1 }}>
               {modeLabel(l.mode)}
             </KText>
-            <KText size={texto.lista} tint={color.texto2}>{`${l.count} × ${l.price} €`}</KText>
-            <KText size={texto.lista} style={{ width: 56, textAlign: 'right' }}>{`${l.total} €`}</KText>
+            <KText size={texto.lista} tint={color.texto2}>{`${l.count} × ${euros(l.price)} €`}</KText>
+            <KText size={texto.lista} style={{ width: 56, textAlign: 'right' }}>{`${euros(l.total)} €`}</KText>
           </View>
         ))}
       </View>
 
       <View accessibilityRole="radiogroup" accessibilityLabel="Cómo pagas" style={{ flexDirection: 'row', gap: space.s8 }}>
-        <Metodo on={method === 'tarjeta'} onPress={() => setMethod('tarjeta')} label={`Tarjeta ···· ${CARD_LAST4}`} a11y={`Tarjeta acabada en ${CARD_LAST4}`}>
-          <View style={{ width: 40, height: 24, borderRadius: 6, backgroundColor: color.klein }} />
+        <Metodo on={method === 'tarjeta'} onPress={() => setMethod('tarjeta')} label={hasBackend ? 'Tarjeta' : `Tarjeta ···· ${CARD_LAST4}`} a11y={hasBackend ? 'Tarjeta' : `Tarjeta acabada en ${CARD_LAST4}`}>
+          <View style={{ width: 40, height: 24, borderRadius: radius.xs, backgroundColor: color.klein }} />
         </Metodo>
         <Metodo on={method === 'bizum'} onPress={() => setMethod('bizum')} label="Bizum" a11y="Bizum">
           <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: method === 'bizum' ? color.tinta : color.hundido }} />
@@ -67,7 +68,7 @@ export function PagoScreen() {
       </View>
 
       <View style={{ flex: 1 }} />
-      <BarraAccion label={`Pagar ${b.amount} €`} onPress={go} />
+      <BarraAccion label={`Pagar ${euros(b.amount)} €`} onPress={go} />
     </View>
   );
 }

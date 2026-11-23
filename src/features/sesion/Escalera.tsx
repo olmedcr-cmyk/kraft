@@ -47,7 +47,9 @@ export function Escalera({ step, refId }: { step: StepInfo; refId: number }) {
       </View>
 
       <View
-        accessibilityLabel={`Escalera: ${ladder.map((l) => `${l.reps}`).join(', ')}`}
+        accessible
+        // El estado también en palabras, no solo en el relleno: «20 hecha, 15 ahora, 10, 5».
+        accessibilityLabel={`Escalera: ${ladder.map((l) => `${l.reps}${isDone(l.ref) ? ' hecha' : l.ref === refId ? ' ahora' : ''}`).join(', ')}`}
         style={{ backgroundColor: color.tarjeta, borderRadius: radius.lg, paddingVertical: space.s24, paddingHorizontal: space.s16, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-around' }}
       >
         {ladder.map((l) => {

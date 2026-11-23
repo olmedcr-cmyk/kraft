@@ -32,6 +32,9 @@ export interface DiaryState {
 
 /** Precio por clase (de ejemplo; lo fija el centro). */
 export const PRICES: Record<Mode, number> = { grupo: 8, solo: 30, online: 5 };
+/** «42», «42,50»: importes en español (los del servidor pueden traer céntimos). Sin el símbolo. */
+export const euros = (n: number) =>
+  new Intl.NumberFormat('es-ES', { minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 }).format(n);
 /** El mes cerrado vence el día 5 del siguiente. */
 export const DUE_DAY = 5;
 /** Un círculo de la gráfica = 10 minutos; cada semana son 3 columnas de 8. */

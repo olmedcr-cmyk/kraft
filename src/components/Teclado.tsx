@@ -11,6 +11,7 @@ import { color, radius, space, texto, transicionPunto, touch } from '@/theme';
 export function Casillas({ value, length, wrong }: { value: string; length: number; wrong?: boolean }) {
   return (
     <View
+      accessible
       accessibilityLabel={`Código: ${value.split('').join(' ') || 'vacío'}${value.length < length ? `, faltan ${length - value.length}` : ''}`}
       style={{ backgroundColor: color.tarjeta, borderRadius: radius.lg, paddingVertical: space.s24, paddingHorizontal: space.s16, flexDirection: 'row', justifyContent: 'space-between' }}
     >
@@ -54,7 +55,7 @@ export function Teclado({ onKey, disabled }: { onKey: (k: Tecla) => void; disabl
             style={{ width: '31.5%', flexGrow: 1, height: 56, borderRadius: radius.md, backgroundColor: digit ? color.tarjeta : 'transparent', alignItems: 'center', justifyContent: 'center' }}
           >
             {k === 'pegar' ? (
-              <KText size={texto.etiqueta} caps tint={color.texto2}>
+              <KText size={texto.texto} tint={color.texto2}>
                 Pegar
               </KText>
             ) : (

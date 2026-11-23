@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { Platform, Pressable, type PressableProps, type StyleProp, type ViewStyle } from 'react-native';
 import Animated, { useReducedMotion } from 'react-native-reanimated';
 
+import { noteTapHaptic } from '@/platform/feedback';
+import { getSettings } from '@/state/settings';
 import { motion, ms } from '@/theme';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -10,7 +12,9 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 export type Haptic = 'selection' | 'light' | 'medium' | 'success';
 
 function fire(h: Haptic) {
-  if (Platform.OS === 'web') return;
+  // Tú · Sonido «Vibrar» apagado: nada vibra, tampoco los toques.
+  if (Platform.OS === 'web' || !getSettings().vibrar) return;
+  noteTapHaptic();
   const p =
     h === 'selection'
       ? Haptics.selectionAsync()

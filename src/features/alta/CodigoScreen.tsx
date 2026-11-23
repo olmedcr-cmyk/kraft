@@ -11,7 +11,7 @@ import { Pulsable } from '@/components/Pulsable';
 import { Casillas, Teclado, type Tecla } from '@/components/Teclado';
 import { backspace, pasteCode, typeDigit } from '@/alta/model';
 import { sendEmailCode, verifyEmailCode } from '@/backend/auth';
-import { OTP_LEN, RESEND_S, maskEmail } from '@/backend/email';
+import { OTP_LEN, RESEND_S } from '@/backend/email';
 import { getSettings, updateSettings } from '@/state/settings';
 import { myCoach } from '@/backend/coach';
 import { Volver } from '@/features/tu/piezas';
@@ -66,7 +66,8 @@ export function CodigoScreen() {
       if (got) setCode(got.slice(0, OTP_LEN));
       return;
     }
-    setCode((c) => (c.length < OTP_LEN ? typeDigit(c, k) : c));
+    // Tras un código que no vale, la siguiente cifra empieza uno nuevo (antes había que borrar las 6).
+    setCode((c) => (c.length < OTP_LEN ? typeDigit(c, k) : error ? typeDigit('', k) : c));
   };
 
   const resend = async () => {
@@ -83,7 +84,8 @@ export function CodigoScreen() {
         <KText size={cifra.c34} weight={300} title lineHeight={cifra.c34} accessibilityRole="header">
           Tu código
         </KText>
-        <Nota error={!!error} text={error ?? (busy ? 'Comprobando…' : `Lo hemos mandado a ${maskEmail(email)}`)} />
+        {/* El email entero (no enmascarado): así se ve si hay una errata y se puede cambiar. */}
+        <Nota error={!!error} text={error ?? (busy ? 'Comprobando…' : `Lo hemos mandado a ${email}`)} />
       </View>
 
       <Casillas value={code} length={OTP_LEN} wrong={!!error && code.length === OTP_LEN} />
@@ -97,6 +99,16 @@ export function CodigoScreen() {
       >
         <KText size={texto.texto} tint={color.texto2}>
           {wait > 0 ? `Otro código en ${wait} s` : 'Mandar otro código'}
+        </KText>
+      </Pulsable>
+      <Pulsable
+        onPress={() => router.replace({ pathname: '/alta/correo', params: { email } })}
+        accessibilityRole="link"
+        scaleTo={0.98}
+        style={{ height: touch.dedo, alignItems: 'center', justifyContent: 'center' }}
+      >
+        <KText size={texto.texto} tint={color.texto2} style={{ textDecorationLine: 'underline' }}>
+          ¿No es tu email? Cámbialo
         </KText>
       </Pulsable>
 

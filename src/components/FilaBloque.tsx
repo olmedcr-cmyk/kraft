@@ -27,7 +27,11 @@ type Props = {
 
 /** Fila de bloque 88 · radio 32. Interior = exterior − padding: cuadro de radio 16. */
 export function FilaBloque({ title, tint, marks, onPress, play, aside, badge, height = touch.fila, outline, a11y }: Props) {
-  const pad = height < touch.fila ? space.s12 : space.s16;
+  // Compacta (Hoy con muchos bloques): radio 24 y padding 8 → cuadro de radio 16. Con radio 32 y
+  // padding 12 salía 20 (fuera de escala) y el cuadro de 40 se veía redondo.
+  const compact = height < touch.fila;
+  const pad = compact ? space.s8 : space.s16;
+  const outer = compact ? radius.lg : radius.xl;
   const square = height - pad * 2; // 88 − 2·16 = 56
   return (
     <Pulsable
@@ -37,7 +41,7 @@ export function FilaBloque({ title, tint, marks, onPress, play, aside, badge, he
       accessibilityLabel={a11y ?? title}
       style={{
         height,
-        borderRadius: radius.xl,
+        borderRadius: outer,
         backgroundColor: color.tarjeta,
         padding: pad - (outline ? 2 : 0),
         borderWidth: outline ? 2 : 0,
@@ -47,7 +51,7 @@ export function FilaBloque({ title, tint, marks, onPress, play, aside, badge, he
         gap: space.s16,
       }}
     >
-      <View style={{ width: square, height: square, borderRadius: inner(radius.xl, pad), backgroundColor: tint }} />
+      <View style={{ width: square, height: square, borderRadius: inner(outer, pad), backgroundColor: tint }} />
       <View style={{ flex: 1, gap: space.s8 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.s8 }}>
           <KText size={texto.bloque}>{title}</KText>

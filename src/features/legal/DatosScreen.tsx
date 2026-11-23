@@ -7,7 +7,8 @@ import { CheckIcon } from '@/components/icons';
 import { KText } from '@/components/KText';
 import { Pulsable } from '@/components/Pulsable';
 import { getDiary, useDiary } from '@/diario/store';
-import { dataCounts, exportCsv } from '@/legal/model';
+import { backend } from '@/backend/client';
+import { dataCounts, exportCsv, serverCsv } from '@/legal/model';
 import { exportText } from '@/platform/exportar';
 import { getSettings } from '@/state/settings';
 import { cifra, color, space, texto, touch } from '@/theme';
@@ -19,11 +20,19 @@ export function DatosScreen() {
   const n = dataCounts(diary);
   const [done, setDone] = useState<'ok' | 'fallo' | null>(null);
 
-  // Sin servidor aún: el CSV se hace aquí mismo, al momento y sin red.
+  // Con servidor, todo lo que guarda (también reservas, notas y perfil). Sin servidor o sin red, lo del móvil.
   const download = async () => {
     const now = Date.now();
     const name = `kraft-datos-${new Date(now).toISOString().slice(0, 10)}.csv`;
-    const ok = await exportText(name, exportCsv(getDiary(), getSettings(), now));
+    let csv = exportCsv(getDiary(), getSettings(), now);
+    if (backend) {
+      const { data, error } = await backend.rpc('export_my_data').then(
+        (r) => r,
+        () => ({ data: null, error: true }),
+      );
+      if (!error && data && typeof data === 'object') csv = serverCsv(data as Record<string, unknown>, now);
+    }
+    const ok = await exportText(name, csv);
     setDone(ok ? 'ok' : 'fallo');
   };
 

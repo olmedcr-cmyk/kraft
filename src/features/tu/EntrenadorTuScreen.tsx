@@ -9,6 +9,7 @@ import { KText } from '@/components/KText';
 import { Vacio } from '@/components/Vacio';
 import { PRICES } from '@/diario/model';
 import { MODE_TINT } from '@/features/agenda/piezas';
+import { hasBackend } from '@/backend/client';
 import { queueUnlink } from '@/backend/sync';
 import { updateSettings, useSettings } from '@/state/settings';
 import { cifra, color, radius, space, texto, touch } from '@/theme';
@@ -37,9 +38,11 @@ export function EntrenadorTuScreen() {
           <KText size={cifra.c34} weight={300} title lineHeight={cifra.c34} accessibilityRole="header">
             {coach.name}
           </KText>
-          <KText size={texto.texto} tint={color.texto2}>
-            {STUDIO}
-          </KText>
+          {!hasBackend && (
+            <KText size={texto.texto} tint={color.texto2}>
+              {STUDIO}
+            </KText>
+          )}
         </View>
       </View>
 
@@ -58,7 +61,6 @@ export function EntrenadorTuScreen() {
       </View>
 
       <Grupo>
-        <Fila label={`Escribir a ${coach.name}`} onPress={() => router.push({ pathname: '/tu/pronto', params: { t: `Escribir a ${coach.name}` } })} />
         <Fila label="Código" value={copied ? 'Copiado' : coach.code} onPress={copy} right={<View />} a11y={`Código ${coach.code.split('').join(' ')}. Toca para copiarlo`} />
       </Grupo>
 

@@ -1,5 +1,5 @@
 /** Con email: escribir la dirección y pedir el código. Sin diseño propio: piezas de K7Coach. */
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,7 +14,8 @@ import { cifra, color, fontFamily, layout, radius, space, texto, touch, arriba }
 
 export function CorreoScreen() {
   const insets = useSafeAreaInsets();
-  const [email, setEmail] = useState('');
+  const params = useLocalSearchParams<{ email?: string }>();
+  const [email, setEmail] = useState(params.email ?? '');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [focused, setFocused] = useState(false);
