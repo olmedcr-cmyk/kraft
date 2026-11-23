@@ -6,7 +6,7 @@ import { KText } from '@/components/KText';
 import { exercise } from '@/data/exercises';
 import type { StepInfo } from '@/session/compile';
 import { compiled } from '@/session/store';
-import { alpha, cifra, color, inner, radius, space, texto, touch, transicionFondo, transicionPunto } from '@/theme';
+import { alpha, cifra, color, inner, radius, space, texto, touch, transicionFondo, transicionPunto, pieza } from '@/theme';
 import type { Snapshot } from '@/timer/engine';
 import { BotonComo, Ilustracion, PildoraMarcha, RUN, palmaLabel } from './piezas';
 import Svg, { Path } from 'react-native-svg';
@@ -62,8 +62,8 @@ export function TabataMarcha({ s, step, onPalm }: Props) {
               key={i}
               style={{
                 ...transicionPunto,
-                width: 14,
-                height: 14,
+                width: pieza.puntoMarcha,
+                height: pieza.puntoMarcha,
                 borderRadius: radius.xs,
                 backgroundColor: i < set - 1 ? fg : i === set - 1 ? (work ? color.tarjeta : color.naranja) : 'transparent',
                 borderWidth: i > set - 1 ? 2 : 0,
@@ -164,7 +164,7 @@ function Gesto({ hold, fg, soft }: { hold: boolean; fg: string; soft: string }) 
     <View accessibilityRole="image" accessibilityLabel={hold ? 'Ahora: mantener' : 'Ahora: moverse'} style={{ flexDirection: 'row', gap: space.s4 }}>
       <View style={[pill, { backgroundColor: hold ? soft : color.tinta }]}>
         {hold ? (
-          <View style={{ width: 14, height: 14, borderRadius: 7, backgroundColor: color.tinta }} />
+          <View style={{ width: pieza.puntoMarcha, height: pieza.puntoMarcha, borderRadius: pieza.puntoMarcha / 2, backgroundColor: color.tinta }} />
         ) : (
           <KText size={RUN} tint={color.tarjeta}>
             Mueve

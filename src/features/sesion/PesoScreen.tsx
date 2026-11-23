@@ -1,4 +1,5 @@
 /** ¿No hay ese peso? (KC8): el más cercano, u otro ejercicio antes y luego se vuelve. Elena lo ve en la nota. */
+import { ChevronIcon } from '@/components/icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
@@ -11,7 +12,7 @@ import { Vacio } from '@/components/Vacio';
 import { Volver } from '@/features/tu/piezas';
 import { addNote, compiled, session, sessionRunner, setWeight, useSessionExtra } from '@/session/store';
 import { useSettings } from '@/state/settings';
-import { cifra, color, layout, radius, space, texto, touch, arriba } from '@/theme';
+import { cifra, color, layout, radius, space, texto, touch, arriba, pieza } from '@/theme';
 import { STEP_KG, kgLabel } from './Escalera';
 
 export function PesoScreen() {
@@ -102,7 +103,7 @@ export function PesoScreen() {
           scaleTo={0.98}
           style={{ backgroundColor: color.tarjeta, borderRadius: radius.lg, padding: space.s16, flexDirection: 'row', alignItems: 'center', gap: space.s16 }}
         >
-          <View style={{ width: 56, height: 56, borderRadius: radius.md, backgroundColor: color.tinteNaranja, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ width: pieza.icono, height: pieza.icono, borderRadius: radius.md, backgroundColor: color.tinteNaranja, alignItems: 'center', justifyContent: 'center' }}>
             <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: color.naranja }} />
           </View>
           <View style={{ flex: 1, gap: space.s4 }}>
@@ -111,9 +112,7 @@ export function PesoScreen() {
             </KText>
             <KText size={texto.lista}>{`${other.label} primero`}</KText>
           </View>
-          <KText size={texto.bloque} tint={color.texto2}>
-            ›
-          </KText>
+          <ChevronIcon />
         </Pulsable>
       )}
 

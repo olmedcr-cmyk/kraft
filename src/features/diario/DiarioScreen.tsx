@@ -28,7 +28,7 @@ import {
 } from '@/diario/model';
 import { useDiary } from '@/diario/store';
 import { Fundido } from '@/components/Fundido';
-import { cifra, color, fundido, layout, radius, space, texto, touch, transicionFondo, transicionPunto, arriba } from '@/theme';
+import { cifra, color, fundido, layout, radius, space, texto, touch, transicionFondo, transicionPunto, arriba, pieza } from '@/theme';
 import { CabeceraDiario, MODE_TINT, PuntoModo, modeLabel } from './piezas';
 
 const LETTERS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
@@ -264,10 +264,10 @@ function Pago({ month, status }: { month: string; status: MonthStatus }) {
         ? () => router.push({ pathname: '/pago/[mes]/recibo', params: { mes: month } })
         : undefined;
 
-  const btnStyle = { height: 56, borderRadius: radius.pill, backgroundColor: st.btnBg, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.s12 } as const;
+  const btnStyle = { height: pieza.botonBajo, borderRadius: radius.pill, backgroundColor: st.btnBg, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.s12 } as const;
   const btnInner = (
     <>
-      <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: st.dot }} />
+      <View style={{ width: pieza.punto, height: pieza.punto, borderRadius: pieza.punto / 2, backgroundColor: st.dot }} />
       <KText size={texto.texto} tint={st.btnFg}>
         {btn}
       </KText>

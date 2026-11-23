@@ -63,7 +63,7 @@ export function Mando({ left, central, onLeft, onCentral, onRight, bleed = true,
         onAccessibilityAction={(e) => (e.nativeEvent.actionName === 'longpress' ? onCentralLong?.() : onCentral())}
         style={styles.central}
       >
-        {central === 'pause' ? <PauseIcon /> : central === 'check' ? <CheckIcon /> : <PlayIcon size={44} />}
+        {central === 'pause' ? <PauseIcon /> : central === 'check' ? <CheckIcon size={44} /> : <PlayIcon size={44} />}
       </Pulsable>
       <Pulsable onPress={onRight} accessibilityRole="button" accessibilityLabel={rightLabel} style={styles.side}>
         <NextIcon />

@@ -7,7 +7,7 @@ import { Pulsable } from '@/components/Pulsable';
 import { monthKey, trainedDays } from '@/diario/model';
 import { useDiary } from '@/diario/store';
 import { useSettings } from '@/state/settings';
-import { cifra, color, radius, space, texto, touch } from '@/theme';
+import { cifra, color, radius, space, texto, touch, pieza } from '@/theme';
 import { Avatar, Chevron, Fila, Grupo, PantallaTu } from './piezas';
 import { countdownLabel } from './textos';
 
@@ -45,7 +45,7 @@ export function TuScreen() {
           scaleTo={0.98}
           style={{ height: touch.fila, backgroundColor: color.tarjeta, borderRadius: radius.xl, padding: space.s16, flexDirection: 'row', alignItems: 'center', gap: space.s16 }}
         >
-          <Avatar initial={s.coach.initial} size={56} />
+          <Avatar initial={s.coach.initial} size={pieza.icono} />
           <View style={{ flex: 1, gap: space.s4 }}>
             <KText size={texto.bloque}>{s.coach.name}</KText>
             <KText size={texto.texto} tint={color.texto2}>
@@ -61,7 +61,7 @@ export function TuScreen() {
           scaleTo={0.98}
           style={{ height: touch.fila, borderRadius: radius.xl, borderWidth: 2, borderStyle: 'dashed', borderColor: color.linea, padding: space.s16, flexDirection: 'row', alignItems: 'center', gap: space.s16 }}
         >
-          <View style={{ width: 56, height: 56, borderRadius: 28, borderWidth: 2, borderColor: color.linea }} />
+          <View style={{ width: pieza.icono, height: pieza.icono, borderRadius: pieza.icono / 2, borderWidth: 2, borderColor: color.linea }} />
           <KText size={texto.bloque} style={{ flex: 1 }}>
             Vincular entrenador
           </KText>
@@ -70,7 +70,7 @@ export function TuScreen() {
       )}
 
       <Grupo>
-        <Fila label="Entreno" value={`${countdownLabel(s.cuentaAtras)} · ${s.descanso}`} onPress={() => router.push('/tu/entreno')} />
+        <Fila label="Entreno" value={`${countdownLabel(s.cuentaAtras)} · ${s.descanso === 'manual' ? 'descanso manual' : 'descanso fijo'}`} onPress={() => router.push('/tu/entreno')} />
         <Fila label="Sonido · voz · vibra" onPress={() => router.push('/tu/sonido')} />
         <Fila label="Avisos" onPress={() => router.push('/tu/avisos')} />
       </Grupo>

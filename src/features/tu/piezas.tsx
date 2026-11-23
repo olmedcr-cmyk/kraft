@@ -1,4 +1,5 @@
 /** Piezas de «Tú» (KT1–KT6): cabecera con vuelta, grupos de filas, selector pequeño, confirmar con doble toque. */
+import { ChevronIcon } from '@/components/icons';
 import { router, type Href } from 'expo-router';
 import { Children, Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
 import { ScrollView, View } from 'react-native';
@@ -73,11 +74,7 @@ export function Grupo({ children }: { children: ReactNode }) {
 }
 
 export function Chevron() {
-  return (
-    <KText size={texto.bloque} tint={color.texto2}>
-      ›
-    </KText>
-  );
+  return <ChevronIcon />;
 }
 
 /** Fila de ajustes: etiqueta, valor y › si lleva a otra pantalla. */
@@ -137,7 +134,7 @@ export function FilaOpciones<T extends string | number>({ label, options, value,
       <KText size={texto.lista} style={{ flexShrink: 1 }}>
         {label}
       </KText>
-      <View accessibilityRole="radiogroup" accessibilityLabel={label} style={{ flexDirection: 'row', gap: 2, padding: 2, borderRadius: radius.pill, backgroundColor: color.hundido }}>
+      <View accessibilityRole="radiogroup" accessibilityLabel={label} style={{ flexDirection: 'row', gap: space.s4, padding: space.s4, borderRadius: radius.pill, backgroundColor: color.hundido }}>
         {options.map((o) => {
           const on = o.value === value;
           return (

@@ -13,7 +13,7 @@ import { MODES, cancelDeadline, getSlot, hhmm, isLate, longDay, relativeDay, tak
 import { useAgenda } from '@/agenda/store';
 import { addToCalendar } from '@/platform/calendar';
 import { session } from '@/session/store';
-import { cifra, color, inner, layout, radius, space, texto, arriba } from '@/theme';
+import { cifra, color, inner, layout, radius, space, texto, arriba, pieza } from '@/theme';
 import { CabeceraAgenda, Cruz, Flecha, IconoModo, MODE_TINT, Ocupacion } from './piezas';
 
 /** «Llego» aparece desde 1 h antes hasta que acaba la clase. */
@@ -89,7 +89,7 @@ export function ReservaScreen() {
           {slot.room ? (
             <Celda title="Sala">
               <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-                <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: color.tinta, alignItems: 'center', justifyContent: 'center' }}>
+                <View style={{ width: pieza.icono, height: pieza.icono, borderRadius: pieza.icono / 2, backgroundColor: color.tinta, alignItems: 'center', justifyContent: 'center' }}>
                   <KText size={cifra.c34} weight={300} tint={color.tarjeta} lineHeight={cifra.c34}>
                     {String(slot.room)}
                   </KText>
@@ -175,7 +175,7 @@ export function ReservaScreen() {
               haptic="light"
               scaleTo={0.98}
               accessibilityRole="button"
-              style={{ flex: 1, height: 56, borderRadius: radius.pill, backgroundColor: added ? color.verde : color.tinta, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.s8 }}
+              style={{ flex: 1, height: pieza.botonBajo, borderRadius: radius.pill, backgroundColor: added ? color.verde : color.tinta, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.s8 }}
             >
               {added && <CheckIcon size={18} tint={color.tarjeta} />}
               <KText size={texto.texto} tint={color.tarjeta}>
@@ -187,7 +187,7 @@ export function ReservaScreen() {
             onPress={() => router.push({ pathname: waiting ? '/reserva/[id]/espera' : '/reserva/[id]/cambiar', params: { id: slot.id } })}
             accessibilityRole="button"
             accessibilityLabel={waiting ? 'Lista de espera' : 'Mover o cancelar'}
-            style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: color.tarjeta, alignItems: 'center', justifyContent: 'center', ...(waiting && { flex: 1 }) }}
+            style={{ width: pieza.icono, height: pieza.icono, borderRadius: pieza.icono / 2, backgroundColor: color.tarjeta, alignItems: 'center', justifyContent: 'center', ...(waiting && { flex: 1 }) }}
           >
             {waiting ? <KText size={texto.texto}>Lista de espera</KText> : <Cruz />}
           </Pulsable>

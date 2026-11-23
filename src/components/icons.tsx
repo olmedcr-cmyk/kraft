@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 import Svg, { G, Path, Rect } from 'react-native-svg';
 
-import { color } from '@/theme';
+import { color, radius, space } from '@/theme';
 
 /** Iconos redondeados, sin emoji. Trazos sacados de K1Components. */
 
@@ -40,15 +40,25 @@ export function PrevIcon({ tint = color.tarjeta }: P) {
 
 export function PauseIcon({ tint = color.tinta }: P) {
   return (
-    <View style={{ flexDirection: 'row', gap: 8 }}>
+    <View style={{ flexDirection: 'row', gap: space.s8 }}>
       <View style={{ width: 12, height: 36, borderRadius: 6, backgroundColor: tint }} />
       <View style={{ width: 12, height: 36, borderRadius: 6, backgroundColor: tint }} />
     </View>
   );
 }
 
+/** Parar (KP1Paused): cuadrado de 28, radio 8. */
 export function StopIcon({ tint = color.tarjeta }: P) {
-  return <View style={{ width: 24, height: 24, borderRadius: 4, backgroundColor: tint }} />;
+  return <View style={{ width: 28, height: 28, borderRadius: radius.sm, backgroundColor: tint }} />;
+}
+
+/** «Lleva a otra pantalla»: trazo redondeado, no el carácter › (cambia de forma según la fuente). */
+export function ChevronIcon({ size = 20, tint = color.texto2 }: P) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 20 20">
+      <Path d="M7 4l6 6-6 6" stroke={tint} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    </Svg>
+  );
 }
 
 export function CheckIcon({ size = 36, tint = color.tinta }: P) {

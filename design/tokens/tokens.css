@@ -44,4 +44,9 @@
   --k-touch-mando: 144px;
   --k-touch-palma: 280px;
   --k-font: 'Roboto Mono', ui-monospace, monospace;
+  /* Piezas: icono de fila 56 · punto 10 · punto en marcha 14 */
+  --k-pieza-icono: 56px;
+  --k-pieza-punto: 10px;
+  --k-pieza-puntoMarcha: 14px;
+  --k-pieza-botonBajo: 56px;
 }

@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KText } from '@/components/KText';
 import { ILLUSTRATION_CREDIT, exercise } from '@/data/exercises';
 import { useSession } from '@/session/store';
-import { cifra, color, radius, space, texto, touch, arriba } from '@/theme';
+import { cifra, color, radius, space, texto, touch, arriba, pieza } from '@/theme';
 import { mmss, useFase } from './piezas';
 import { Pulsable } from '@/components/Pulsable';
 
@@ -29,7 +29,7 @@ export function ComoScreen() {
       <View style={{ paddingHorizontal: space.s24, paddingBottom: space.s16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
         <View style={{ flexDirection: 'row', gap: space.s4 }} accessibilityLabel="El tiempo sigue">
           {[0, 1, 2].map((i) => (
-            <View key={i} style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: i === phase ? color.naranja : color.tarjeta }} />
+            <View key={i} style={{ width: pieza.punto, height: pieza.punto, borderRadius: pieza.punto / 2, backgroundColor: i === phase ? color.naranja : color.tarjeta }} />
           ))}
         </View>
         {timed && (

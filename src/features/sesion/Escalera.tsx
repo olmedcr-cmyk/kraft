@@ -9,7 +9,7 @@ import { router } from 'expo-router';
 
 import { compiled, sessionRunner, setWeight, useSessionExtra } from '@/session/store';
 import { useSettings } from '@/state/settings';
-import { cifra, color, inner, radius, space, texto, touch, transicionPunto } from '@/theme';
+import { cifra, color, inner, radius, space, texto, touch, transicionPunto, pieza } from '@/theme';
 import { BotonComo, RUN } from './piezas';
 import { Pulsable } from '@/components/Pulsable';
 import Animated from 'react-native-reanimated';
@@ -43,7 +43,7 @@ export function Escalera({ step, refId }: { step: StepInfo; refId: number }) {
         <KText size={cifra.c34} title tint={color.tinta} lineHeight={cifra.c34} accessibilityRole="header" style={{ flexShrink: 1 }}>
           {ladder[0]?.label ?? step.label}
         </KText>
-        {ex && <BotonComo exerciseId={ex.id} size={56} label={ex.name} />}
+        {ex && <BotonComo exerciseId={ex.id} size={pieza.icono} label={ex.name} />}
       </View>
 
       <View
@@ -122,9 +122,9 @@ export function Escalera({ step, refId }: { step: StepInfo; refId: number }) {
               <Animated.View
                 style={{
                   ...transicionPunto,
-                  width: 14,
-                  height: 14,
-                  borderRadius: 7,
+                  width: pieza.puntoMarcha,
+                  height: pieza.puntoMarcha,
+                  borderRadius: pieza.puntoMarcha / 2,
                   backgroundColor: done ? color.tinta : now ? color.naranja : 'transparent',
                   borderWidth: done || now ? 0 : 2,
                   borderColor: color.tinta,

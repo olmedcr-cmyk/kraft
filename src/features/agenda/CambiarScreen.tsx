@@ -14,6 +14,9 @@ import { PRICES } from '@/diario/model';
 import { useConfirmar } from '@/features/tu/piezas';
 import { cifra, color, inner, radius, space, texto, touch, transicionPunto } from '@/theme';
 
+/** «miércoles 5» → «Miércoles 5» al empezar la línea. */
+const cap = (s: string) => (s ? s[0].toUpperCase() + s.slice(1) : s);
+
 /** Curva de hoja de iOS; sin rebote (tokens: rebote false). */
 const SHEET = SlideInDown.duration(300).easing(Easing.bezier(0.32, 0.72, 0, 1));
 
@@ -50,7 +53,7 @@ export function CambiarScreen() {
           <KText size={cifra.c34} weight={300} title lineHeight={cifra.c34} accessibilityRole="header">
             {slot.name}
           </KText>
-          <KText size={texto.texto} tint={color.texto2}>{`${shortDay(slot.start)} · ${hhmm(slot.start)}${where}`}</KText>
+          <KText size={texto.texto} tint={color.texto2}>{`${cap(shortDay(slot.start))} · ${hhmm(slot.start)}${where}`}</KText>
         </View>
 
         {options.length > 0 && (

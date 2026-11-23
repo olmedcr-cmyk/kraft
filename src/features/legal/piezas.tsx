@@ -26,7 +26,7 @@ export function Punto({ dot, title, sub }: { dot: string; title: string; sub?: s
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.s12 }} accessible accessibilityLabel={sub ? `${title}: ${sub}` : title}>
       <View style={{ width: space.s12, height: space.s12, borderRadius: space.s12 / 2, backgroundColor: dot }} />
-      <View style={{ flex: 1, gap: 2 }}>
+      <View style={{ flex: 1, gap: space.s4 }}>
         <KText size={texto.lista}>{title}</KText>
         {sub && (
           <KText size={texto.texto} tint={color.texto2}>

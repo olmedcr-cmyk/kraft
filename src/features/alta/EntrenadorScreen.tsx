@@ -17,7 +17,7 @@ import { Volver } from '@/features/tu/piezas';
 import { hasBackend } from '@/backend/client';
 import { updateSettings } from '@/state/settings';
 import { MODE_TINT } from '@/features/agenda/piezas';
-import { cifra, color, layout, motion, radius, space, texto, touch, arriba } from '@/theme';
+import { cifra, color, layout, motion, radius, space, texto, touch, arriba, pieza } from '@/theme';
 
 type Check = { state: 'idle' | 'checking' | 'linking' } | { state: 'found'; coach: Coach } | { state: 'wrong' | 'limit' | 'offline' };
 
@@ -110,7 +110,7 @@ export function EntrenadorScreen() {
             <KText size={texto.bloque}>{coach.name}</KText>
             <View style={{ flexDirection: 'row', gap: space.s4 }} accessibilityLabel={coach.modes.join(', ')}>
               {coach.modes.map((m) => (
-                <View key={m} style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: MODE_TINT[m].bg }} />
+                <View key={m} style={{ width: pieza.punto, height: pieza.punto, borderRadius: pieza.punto / 2, backgroundColor: MODE_TINT[m].bg }} />
               ))}
             </View>
           </View>

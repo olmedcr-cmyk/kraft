@@ -12,7 +12,7 @@ import { useAnunciarFase } from '@/timer/useTimer';
 import { exercise } from '@/data/exercises';
 import { stepSeconds, upcoming, type StepInfo } from '@/session/compile';
 import { compiled, session, sessionRunner, useSession } from '@/session/store';
-import { alpha, cifra, color, radius, space, touch } from '@/theme';
+import { alpha, cifra, color, radius, space, touch, pieza } from '@/theme';
 import type { Snapshot } from '@/timer/engine';
 import { Escalera } from './Escalera';
 import { CabeceraMarcha, Lienzo, PildoraMarcha, PuntosSegundos, PuntosTramo, RUN, mmss, quedan } from './piezas';
@@ -129,7 +129,7 @@ function Siguiente({ info, fg = color.tarjeta, bg = color.texto2 }: { info?: Ste
       accessibilityLabel={`A continuación: ${nextLabel(info)}`}
       style={{ flexDirection: 'row', alignItems: 'center', gap: space.s16, paddingVertical: space.s8, paddingLeft: space.s8, paddingRight: space.s24, borderRadius: radius.pill, backgroundColor: bg, alignSelf: 'center' }}
     >
-      <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: color.tarjeta, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+      <View style={{ width: pieza.icono, height: pieza.icono, borderRadius: pieza.icono / 2, backgroundColor: color.tarjeta, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
         {ex ? <Image source={ex.phases[0]} style={{ width: 52, height: 52 }} resizeMode="contain" /> : <View style={{ width: 16, height: 16, borderRadius: 8, backgroundColor: color.naranja }} />}
       </View>
       <KText size={RUN} tint={fg}>

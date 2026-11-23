@@ -92,6 +92,8 @@ export class Runner {
     this.appSub = null;
   }
 
+  // Reloj de pared a propósito: performance.now() se para cuando el iPhone duerme con la pantalla
+  // bloqueada, y entonces al volver no se pondría al día. Un cambio de hora a mitad es mucho más raro.
   private apply = (fn: (s: TimerState, now: number) => TimerState) => {
     const now = Date.now();
     this.state = fn(this.state, now);

@@ -8,7 +8,7 @@ import Svg, { Path } from 'react-native-svg';
 import { KText } from '@/components/KText';
 import { Pulsable } from '@/components/Pulsable';
 import { isFull, takenWithMe, type AgendaState, type Mode, type Slot } from '@/agenda/model';
-import { color, radius, space, texto, transicionPunto } from '@/theme';
+import { color, radius, space, texto, transicionPunto, pieza } from '@/theme';
 
 export const MODE_TINT: Record<Mode, { bg: string; fg: string; soft: string }> = {
   grupo: { bg: color.amarillo, fg: color.tinta, soft: color.tinteAmarillo },
@@ -39,7 +39,7 @@ export function IconoModo({ mode, tint }: { mode: Mode; tint: string }) {
 export function Ocupacion({ slot, state, size = 7, cols = 6 }: { slot: Slot; state: AgendaState; size?: number; cols?: number }) {
   const mine = state.bookings[slot.id]?.status === 'confirmed';
   if (slot.mode === 'online') {
-    return <View accessibilityLabel={`${takenWithMe(slot, state)} conectados`} style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: color.klein }} />;
+    return <View accessibilityLabel={`${takenWithMe(slot, state)} conectados`} style={{ width: pieza.punto, height: pieza.punto, borderRadius: pieza.punto / 2, backgroundColor: color.klein }} />;
   }
   if (slot.mode === 'solo') {
     const full = isFull(slot) && !mine;

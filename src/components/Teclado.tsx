@@ -5,7 +5,7 @@ import Animated from 'react-native-reanimated';
 
 import { KText } from '@/components/KText';
 import { Pulsable } from '@/components/Pulsable';
-import { color, radius, space, texto, transicionPunto, touch } from '@/theme';
+import { color, radius, space, texto, transicionPunto, touch, pieza } from '@/theme';
 
 /** Una casilla por cifra: vacía, con la cifra en Klein, o en naranja si el código no vale. */
 export function Casillas({ value, length, wrong }: { value: string; length: number; wrong?: boolean }) {
@@ -52,7 +52,7 @@ export function Teclado({ onKey, disabled }: { onKey: (k: Tecla) => void; disabl
             haptic="selection"
             accessibilityRole="button"
             accessibilityLabel={k === 'pegar' ? 'Pegar código' : k === 'borrar' ? 'Borrar' : k}
-            style={{ width: '31.5%', flexGrow: 1, height: 56, borderRadius: radius.md, backgroundColor: digit ? color.tarjeta : 'transparent', alignItems: 'center', justifyContent: 'center' }}
+            style={{ width: '31.5%', flexGrow: 1, height: pieza.botonBajo, borderRadius: radius.md, backgroundColor: digit ? color.tarjeta : 'transparent', alignItems: 'center', justifyContent: 'center' }}
           >
             {k === 'pegar' ? (
               <KText size={texto.texto} tint={color.texto2}>

@@ -6,11 +6,13 @@ accessibility-engineering, design:accessibility-review, emil-design-eng, design:
 ux-ui-audit, design:ux-copy y break-ui; Hallmark como criterio general; y un recorrido en el navegador en modo demo
 a 390×844, 320×568 y 1280×800. No probado en iPhone ni Android reales.
 
-**Estado (23 nov):** arreglados todos los críticos, altos y medios salvo:
+**Estado (23 nov):** arreglados los 48 salvo lo que sigue (los bajos también, con dos excepciones al final):
 - **3 · llamada**: sin un módulo nativo (CallKit en iOS, estado del teléfono en Android) la app no se entera; va con la versión de pago, como la Live Activity. El 15 (pantalla bloqueada) queda con avisos locales con sonido.
 - **39 · enlaces «términos» y «privacidad»**: son texto en línea y en React Native no admiten zona de toque mayor sin cambiar el diseño.
 - **37 · palma y botones en frase**: se aplica la regla de CLAUDE.md aunque varias pantallas del diseño (KR5Time, KR4Arrive, K9Palm) los traían en mayúsculas.
 - **Teclado del código**: se queda en 56 (lo que pide K7Coach; 64 no cabe en móviles pequeños).
+- **47 · reloj de pared**: se queda a propósito. `performance.now()` se para cuando el iPhone duerme con la pantalla bloqueada y el temporizador no se pondría al día al volver; un cambio de hora a mitad de sesión es mucho más raro.
+- **42 · interlineados 18/20/22**: siguen escritos a mano en cuatro sitios (vienen así del diseño). Iconos, puntos y botones bajos ya van por token (`pieza` en tokens.json).
 
 ✔ = comprobado a mano (en el código o en el navegador). El resto sale de leer el código; tiene archivo:línea para revisarlo.
 

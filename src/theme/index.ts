@@ -30,6 +30,8 @@ export const radius = {
 export const inner = (outer: number, padding: number) => outer - padding;
 
 export const touch = tokens.touch;
+/** Piezas repetidas: icono de fila (56), punto (10), punto en marcha (14) y botón bajo (56: píldoras de acción, teclas del código). */
+export const pieza = tokens.pieza;
 
 const [c233, c144, c89, c55, c34] = tokens.font.cifra;
 /** Cifras (Fibonacci, ×1,618), siempre peso 300. */

@@ -21,3 +21,10 @@ describe('aviso de rechazo', () => {
     expect(dismissFailed(o, 'x').failed).toEqual([]);
   });
 });
+
+describe('mensajes técnicos', () => {
+  it('lo que llega en inglés de Postgres no se enseña tal cual', () => {
+    const t = rejectText(job('workout', {}, 'duplicate key value violates unique constraint "workouts_pkey"'), () => undefined);
+    expect(t).toBe('No se guardó un entreno en el servidor. El servidor no lo aceptó.');
+  });
+});

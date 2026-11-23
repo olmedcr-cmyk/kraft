@@ -12,7 +12,7 @@ import { weekDays } from '@/diario/model';
 import { useDiary } from '@/diario/store';
 import { finishSummary, recordFinish, sendFinish, updateFinish } from '@/session/cierre';
 import { markSent, resetExtra, resetSession, session, setRpe, useSession, useSessionExtra } from '@/session/store';
-import { alpha, cifra, color, layout, motion, radius, space, texto, touch, arriba } from '@/theme';
+import { alpha, cifra, color, layout, motion, radius, space, texto, touch, arriba, pieza } from '@/theme';
 import { Pulsable } from '@/components/Pulsable';
 
 const DAYS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
@@ -59,16 +59,16 @@ export function HechoScreen() {
           onPress={close}
           accessibilityRole="button"
           accessibilityLabel="Cerrar y volver a hoy"
-          style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: color.tarjeta, alignItems: 'center', justifyContent: 'center' }}
+          style={{ width: pieza.icono, height: pieza.icono, borderRadius: pieza.icono / 2, backgroundColor: color.tarjeta, alignItems: 'center', justifyContent: 'center' }}
         >
           <CheckIcon size={28} tint={color.verde} />
         </Pulsable>
       </View>
 
       <View style={{ paddingTop: space.s24, paddingHorizontal: space.s16, flexDirection: 'row', gap: space.s8 }}>
-        <Dato i={0} label={`${r.minutes} minutos`} value={`${r.minutes}'`} mark={<View style={{ width: 32, height: 12, borderRadius: 6, backgroundColor: color.tarjeta }} />} />
-        <Dato i={1} label={`${r.tabatas} tabatas`} value={String(r.tabatas)} mark={<View style={{ width: 14, height: 14, borderRadius: radius.xs, backgroundColor: color.tarjeta }} />} />
-        <Dato i={2} label={`${r.series} series`} value={String(r.series)} mark={<View style={{ width: 14, height: 14, borderRadius: 7, backgroundColor: color.tarjeta }} />} />
+        <Dato i={0} label={`${r.minutes} ${r.minutes === 1 ? 'minuto' : 'minutos'}`} value={`${r.minutes}'`} mark={<View style={{ width: 32, height: 12, borderRadius: 6, backgroundColor: color.tarjeta }} />} />
+        <Dato i={1} label={`${r.tabatas} ${r.tabatas === 1 ? 'tabata' : 'tabatas'}`} value={String(r.tabatas)} mark={<View style={{ width: pieza.puntoMarcha, height: pieza.puntoMarcha, borderRadius: radius.xs, backgroundColor: color.tarjeta }} />} />
+        <Dato i={2} label={`${r.series} ${r.series === 1 ? 'serie' : 'series'}`} value={String(r.series)} mark={<View style={{ width: pieza.puntoMarcha, height: pieza.puntoMarcha, borderRadius: pieza.puntoMarcha / 2, backgroundColor: color.tarjeta }} />} />
       </View>
 
       <View
@@ -133,7 +133,7 @@ export function HechoScreen() {
         accessibilityLabel={extra.sent ? `Enviado a ${session.coach.name}` : `Enviar a ${session.coach.name}`}
         style={{ height: touch.mando + insets.bottom, paddingBottom: insets.bottom, backgroundColor: extra.sent ? color.verde : color.tinta, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.s16, borderTopWidth: extra.sent ? 2 : 0, borderTopColor: alpha.sobreColor }}
       >
-        <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: color.tarjeta, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ width: pieza.icono, height: pieza.icono, borderRadius: pieza.icono / 2, backgroundColor: color.tarjeta, alignItems: 'center', justifyContent: 'center' }}>
           <KText size={texto.bloque}>{session.coach.initial}</KText>
         </View>
         {extra.sent ? (

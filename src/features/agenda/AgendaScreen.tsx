@@ -29,7 +29,7 @@ import {
 import { book, useAgenda } from '@/agenda/store';
 import { retryData, useDataStatus } from '@/backend/data';
 import { Fundido } from '@/components/Fundido';
-import { cifra, color, fundido, inner, layout, radius, space, texto, touch, transicionPunto, arriba } from '@/theme';
+import { cifra, color, fundido, inner, layout, radius, space, texto, touch, transicionPunto, arriba, pieza } from '@/theme';
 import { CabeceraAgenda, Flecha, IconoModo, MODE_TINT, Mas, Ocupacion } from './piezas';
 
 const LETTERS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
@@ -118,7 +118,7 @@ export function AgendaScreen() {
                 }}
               >
                 <IconoModo mode={m} tint={on ? (m === 'grupo' ? color.tinta : color.tarjeta) : t.bg} />
-                <View style={{ gap: 2 }}>
+                <View style={{ gap: space.s4 }}>
                   <KText size={texto.lista} weight={500} tint={on ? t.fg : color.tinta}>
                     {MODES[m].label}
                   </KText>
@@ -175,7 +175,7 @@ export function AgendaScreen() {
             onPress={() => router.push({ pathname: '/reserva/[id]', params: { id: mineHere.id } })}
             scaleTo={0.98}
             accessibilityRole="button"
-            style={{ height: 56, borderRadius: radius.pill, backgroundColor: color.verde, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingLeft: space.s24, paddingRight: space.s8 }}
+            style={{ height: pieza.botonBajo, borderRadius: radius.pill, backgroundColor: color.verde, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingLeft: space.s24, paddingRight: space.s8 }}
           >
             <KText size={texto.texto} tint={color.tarjeta}>{`Tu reserva · ${MODES[mode].label} · ${hhmm(mineHere.start)}`}</KText>
             <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: color.tarjeta, alignItems: 'center', justifyContent: 'center' }}>
@@ -241,7 +241,7 @@ function Semana({ monday, day, today, lastDay, state, onPick }: { monday: number
             accessibilityLabel={`${weekday(d)} ${n}${d === today ? ', hoy' : ''}${has ? ', con reserva' : ''}${closed ? ', cerrado' : ''}`}
             style={{
               flex: 1,
-              height: 56,
+              height: pieza.botonBajo,
               borderRadius: inner(radius.lg, pad),
               backgroundColor: on ? color.tinta : closed ? color.fondo : color.tarjeta,
               alignItems: 'center',
@@ -274,7 +274,7 @@ function Fila({ slot, state, now }: { slot: Slot; state: AgendaState; now: numbe
   const waiting = b?.status === 'waitlist';
   const full = isFull(slot) && !mine;
   const past = isPast(slot, now);
-  const name = slot.mode === 'online' ? `${slot.name} · ${slot.minutes} min · ${takenWithMe(slot, state)} en línea` : `${slot.name} · ${slot.room ? `Sala ${slot.room}` : ''}`;
+  const name = slot.mode === 'online' ? `${slot.name} · ${slot.minutes} min · ${takenWithMe(slot, state)} en línea` : (slot.room ? `${slot.name} · Sala ${slot.room}` : slot.name);
 
   const open = () => {
     if (mine) router.push({ pathname: '/reserva/[id]', params: { id: slot.id } });

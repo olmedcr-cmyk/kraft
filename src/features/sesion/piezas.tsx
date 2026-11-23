@@ -7,7 +7,7 @@ import Svg, { Circle, Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { KText } from '@/components/KText';
-import { alpha, cifra, color, layout, radius, space, texto, touch, transicionFondo, transicionPunto, arriba } from '@/theme';
+import { alpha, cifra, color, layout, radius, space, texto, touch, transicionFondo, transicionPunto, arriba, pieza } from '@/theme';
 import { Pulsable } from '@/components/Pulsable';
 import Animated from 'react-native-reanimated';
 
@@ -75,7 +75,7 @@ export function PildoraMarcha({ label, bg, fg }: { label: string; bg: string; fg
       accessibilityLabel={label}
       style={{ ...transicionFondo, height: touch.dedo, paddingHorizontal: space.s16, borderRadius: radius.pill, backgroundColor: bg, flexDirection: 'row', alignItems: 'center', gap: space.s8, alignSelf: 'center' }}
     >
-      <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: fg }} />
+      <View style={{ width: pieza.punto, height: pieza.punto, borderRadius: pieza.punto / 2, backgroundColor: fg }} />
       <KText size={RUN} tint={fg}>
         {label}
       </KText>
@@ -130,8 +130,11 @@ export function CirculosMinuto({ seconds, elapsed }: { seconds: number; elapsed:
 export function useFase(active = true) {
   const [phase, setPhase] = useState(0);
   const [still, setStill] = useState(false);
+  // Al cambiar el ajuste del sistema con la app abierta, también (no solo al montar).
   useEffect(() => {
     AccessibilityInfo.isReduceMotionEnabled().then(setStill).catch(() => {});
+    const sub = AccessibilityInfo.addEventListener('reduceMotionChanged', setStill);
+    return () => sub.remove();
   }, []);
   useEffect(() => {
     if (!active || still) return;
@@ -163,7 +166,8 @@ export function BotonComo({ exerciseId, size = touch.tecla, label, bg = color.kl
       hitSlop={8}
       style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: bg, alignItems: 'center', justifyContent: 'center' }}
     >
-      <KText size={size >= touch.tecla ? cifra.c34 : RUN} weight={500} tint={fg} lineHeight={size >= touch.tecla ? cifra.c34 : RUN}>
+      {/* 64 → 34; 56 (J7Ladder) → 22; más pequeño → 18. */}
+      <KText size={size >= touch.tecla ? cifra.c34 : size >= 56 ? texto.boton : RUN} weight={500} tint={fg} lineHeight={size >= touch.tecla ? cifra.c34 : size >= 56 ? texto.boton : RUN}>
         ?
       </KText>
     </Pulsable>

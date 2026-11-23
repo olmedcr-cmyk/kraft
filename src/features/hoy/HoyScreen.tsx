@@ -16,13 +16,13 @@ import { hasBackend } from '@/backend/client';
 import { useOnline } from '@/backend/red';
 import { retryData, useDataStatus, type DataStatus } from '@/backend/data';
 import { usePending } from '@/backend/sync';
-import { CheckIcon } from '@/components/icons';
+import { CheckIcon, ChevronIcon } from '@/components/icons';
 import { hhmm, longDay, upcomingBookings } from '@/agenda/model';
 import { useAgenda } from '@/agenda/store';
 import { MODE_TINT } from '@/features/agenda/piezas';
 import type { Block } from '@/session/types';
 import { useSettings } from '@/state/settings';
-import { cifra, color, layout, motion, ms, radius, space, texto, touch, arriba } from '@/theme';
+import { cifra, color, layout, motion, ms, radius, space, texto, touch, arriba, pieza } from '@/theme';
 import { Pulsable } from '@/components/Pulsable';
 
 const WEEKDAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
@@ -38,7 +38,7 @@ function Quitadas({ count }: { count: number }) {
   return (
     <View style={{ flexDirection: 'row', gap: space.s4 }}>
       {Array.from({ length: count }, (_, i) => (
-        <View key={i} style={{ width: 10, height: 10, borderRadius: 5, borderWidth: 1.5, borderColor: color.linea }} accessibilityElementsHidden />
+        <View key={i} style={{ width: pieza.punto, height: pieza.punto, borderRadius: pieza.punto / 2, borderWidth: 1.5, borderColor: color.linea }} accessibilityElementsHidden />
       ))}
     </View>
   );
@@ -64,7 +64,7 @@ function marcas(b: Block, removed = 0) {
         st.seconds >= 120 ? (
           <View key={i} style={{ width: 28, height: 10, borderRadius: radius.pill, backgroundColor: t }} />
         ) : (
-          <View key={i} style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: t }} />
+          <View key={i} style={{ width: pieza.punto, height: pieza.punto, borderRadius: pieza.punto / 2, backgroundColor: t }} />
         ),
       )}
     </View>
@@ -190,11 +190,7 @@ function Fila({ b, done, change, height, onPress }: { b: Block; done: boolean; c
       a11y={done ? `${b.name}, hecho` : change ? `${b.name}, cambiado${moved ? `: de ${change.oldMinutes} a ${b.minutes} minutos` : ''}` : b.name}
       marks={done ? <CheckIcon size={16} tint={color.verde} /> : marcas(b, removed)}
       aside={
-        done ? (
-          <KText size={texto.texto} tint={color.texto2}>
-            ✓
-          </KText>
-        ) : (
+        done ? null : (
           <View style={{ flexDirection: 'row', gap: space.s8 }}>
             {moved && (
               <KText size={texto.texto} tint={color.texto2} style={{ textDecorationLine: 'line-through' }}>
@@ -306,7 +302,7 @@ function Libre({ loading, coach, data }: { loading: boolean; coach: string; data
           scaleTo={0.98}
           style={{ height: touch.fila, backgroundColor: color.tarjeta, borderRadius: radius.xl, padding: space.s16, flexDirection: 'row', alignItems: 'center', gap: space.s16 }}
         >
-          <View style={{ width: 56, height: 56, borderRadius: radius.md, backgroundColor: MODE_TINT[next.slot.mode].soft, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ width: pieza.icono, height: pieza.icono, borderRadius: radius.md, backgroundColor: MODE_TINT[next.slot.mode].soft, alignItems: 'center', justifyContent: 'center' }}>
             <View style={{ width: space.s16, height: space.s16, borderRadius: space.s8, backgroundColor: MODE_TINT[next.slot.mode].bg }} />
           </View>
           <View style={{ flex: 1, gap: space.s4 }}>
@@ -315,9 +311,7 @@ function Libre({ loading, coach, data }: { loading: boolean; coach: string; data
               {next.slot.room ? `${next.slot.name} · Sala ${next.slot.room}` : next.slot.name}
             </KText>
           </View>
-          <KText size={texto.bloque} tint={color.texto2}>
-            ›
-          </KText>
+          <ChevronIcon />
         </Pulsable>
       )}
       <View style={{ paddingTop: space.s8 }}>

@@ -1,4 +1,5 @@
 /** Tres cosas (K8Permissions): avisos, sonar en silencio, pantalla encendida. */
+import { useState } from 'react';
 import { router } from 'expo-router';
 import { Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -6,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BarraAccion } from '@/components/BarraAccion';
 import { Interruptor } from '@/components/Interruptor';
 import { KText } from '@/components/KText';
+import { Nota } from '@/components/Nota';
 import { Pulsable } from '@/components/Pulsable';
 import type { Settings } from '@/alta/model';
 import { requestNotifications } from '@/platform/reminders';
@@ -23,11 +25,16 @@ export function PermisosScreen() {
   const s = useSettings();
 
   /** El permiso del sistema se pide aquí, al seguir, y solo si quiere avisos. Si lo niega, queda apagado. */
+  const [denied, setDenied] = useState(false);
   const next = async () => {
-    if (s.avisos) {
+    if (s.avisos && !denied) {
       const ok = await requestNotifications();
       // En web no hay avisos: se respeta la elección para cuando use el móvil.
-      if (!ok && Platform.OS !== 'web') updateSettings({ avisos: false });
+      if (!ok && Platform.OS !== 'web') {
+        updateSettings({ avisos: false });
+        // Se queda aquí y lo dice; el siguiente «Seguir» ya pasa.
+        return setDenied(true);
+      }
     }
     router.push('/alta/palma');
   };
@@ -48,9 +55,12 @@ export function PermisosScreen() {
       ))}
 
       <View style={{ flex: 1 }} />
-      <KText size={texto.texto} tint={color.texto2} style={{ paddingHorizontal: space.s8, paddingBottom: space.s8 }}>
-        Se cambian luego en Tú · Ajustes.
-      </KText>
+      <View style={{ paddingHorizontal: space.s8, paddingBottom: space.s8 }}>
+        <Nota
+          error={denied}
+          text={denied ? 'El móvil no dio permiso: los avisos quedan apagados. Puedes darlo luego en los ajustes del móvil.' : 'Se cambian luego en Tú.'}
+        />
+      </View>
       <BarraAccion label="Seguir" onPress={next} />
     </View>
   );
