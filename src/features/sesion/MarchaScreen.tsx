@@ -14,7 +14,7 @@ import { compiled, session, useSession } from '@/session/store';
 import { alpha, cifra, color, radius, space, touch } from '@/theme';
 import type { Snapshot } from '@/timer/engine';
 import { Escalera } from './Escalera';
-import { CabeceraMarcha, Lienzo, PildoraMarcha, PuntosSegundos, PuntosTramo, RUN, mmss } from './piezas';
+import { CabeceraMarcha, Lienzo, PildoraMarcha, PuntosSegundos, PuntosTramo, RUN, mmss, quedan } from './piezas';
 import { TabataMarcha } from './TabataMarcha';
 import { Mantener, Minutos } from './Tiempo';
 import { Pulsable } from '@/components/Pulsable';
@@ -50,8 +50,10 @@ export function MarchaScreen() {
 
   if (!step || s.phase === 'done' || s.phase === 'select') return <Lienzo bg={color.tinta}>{null}</Lienzo>;
 
-  // Con «pausa con la palma» apagada, tocar el número en marcha no hace nada (el mando sigue).
-  const palmRun = palmaPausa ? t.primary : () => {};
+  // Con «pausa con la palma» apagada, el número en marcha no se toca (el mando sigue).
+  const palmRun = palmaPausa ? t.primary : undefined;
+  // Repeticiones y espera: el central avanza (✓ / play), así que pausar es mantenerlo pulsado.
+  const manual = !s.paused && (s.phase === 'reps' || s.phase === 'wait');
   let body;
   if (s.paused) body = <Pausa s={s} step={step} onPalm={t.primary} />;
   else if (s.phase === 'countdown') body = <Preparado s={s} step={step} onPalm={t.primary} />;
@@ -71,7 +73,8 @@ export function MarchaScreen() {
         onLeft={s.left === 'stop' ? t.stop : t.prev}
         onCentral={t.primary}
         onRight={t.next}
-        centralLabel={s.phase === 'wait' ? 'Siguiente · empieza con 3, 2, 1' : undefined}
+        onCentralLong={manual ? t.pause : undefined}
+        centralLabel={s.phase === 'wait' && !s.paused ? 'Siguiente · empieza con 3, 2, 1' : undefined}
       />
     </Lienzo>
   );
@@ -166,6 +169,9 @@ function Espera({ s, step, onPalm }: { s: Snapshot; step: StepInfo; onPalm: () =
 /** Pausa (KP1Paused): todo en tinta; parar ocupa el sitio de anterior y guarda lo hecho. */
 function Pausa({ s, step, onPalm }: { s: Snapshot; step: StepInfo; onPalm: () => void }) {
   const timed = s.phase === 'work' || s.phase === 'rest';
+  // Repeticiones: las de la serie; espera: lo que llevas descansando; con tiempo: lo que queda.
+  const shown = s.phase === 'reps' ? (step.reps ? String(step.reps) : null) : s.phase === 'wait' ? mmss(s.waited) : s.duration >= LONG ? mmss(s.n) : String(s.n);
+  const label = s.phase === 'reps' ? `En pausa, ${step.label}${step.reps ? `, ${step.reps} repeticiones` : ''}.` : s.phase === 'wait' ? 'En pausa.' : `En pausa, ${quedan(s.n)}.`;
   return (
     <>
       {/* Pausa del sistema (llamada, KC5): cuánto lleva y que al volver hay 3·2·1. */}
@@ -174,11 +180,15 @@ function Pausa({ s, step, onPalm }: { s: Snapshot; step: StepInfo; onPalm: () =>
         fg={color.tarjeta}
         right={<PildoraMarcha label={s.interrupted ? `Llamada · ${mmss(s.pausedFor)}` : 'En pausa'} bg={alpha.sobreColor} fg={color.tarjeta} />}
       />
-      <Pulsable onPress={onPalm} haptic="light" scaleTo={0.99} accessibilityRole="button" accessibilityLabel="Palma · seguir" style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: space.s32 }}>
+      <Pulsable onPress={onPalm} haptic="light" scaleTo={0.99} accessibilityRole="button" accessibilityLabel={`${label} Toca para seguir`} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: space.s32 }}>
         <View style={{ width: touch.palma, height: touch.palma, borderRadius: touch.palma / 2, backgroundColor: color.tarjeta, alignItems: 'center', justifyContent: 'center', gap: space.s8 }}>
-          <KText size={cifra.c144} weight={300} tint={color.tinta} lineHeight={cifra.c144} tabular>
-            {s.duration >= LONG ? mmss(s.n) : String(s.n)}
-          </KText>
+          {shown === null ? (
+            <CheckIcon size={cifra.c89} tint={color.tinta} />
+          ) : (
+            <KText size={cifra.c144} weight={300} tint={color.tinta} lineHeight={cifra.c144} tabular>
+              {shown}
+            </KText>
+          )}
           <KText size={RUN} caps>
             Toca y sigue
           </KText>

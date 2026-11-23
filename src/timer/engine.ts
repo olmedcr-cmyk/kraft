@@ -193,7 +193,7 @@ export function pauseToggle(state: TimerState, now: number): TimerState {
       interrupted: false,
     };
   }
-  if (isManual(s.plan[s.index].kind)) return s;
+  // También en repeticiones y espera: sin pausa no hay «Parar» y no se podría salir guardando.
   return { ...s, pausedAt: now };
 }
 
@@ -211,6 +211,12 @@ export function primary(state: TimerState, now: number): TimerState {
 /** Parar: solo desde pausa. Guarda las series hechas. */
 export function stop(state: TimerState, _now: number): TimerState {
   if (state.status !== 'running' || state.pausedAt === null) return state;
+  return finish(state, true);
+}
+
+/** Terminar aquí sin pasar por la pausa (retomar una sesión a medias, KC3). Guarda lo hecho. */
+export function end(state: TimerState, _now: number): TimerState {
+  if (state.status !== 'running') return state;
   return finish(state, true);
 }
 
@@ -361,7 +367,8 @@ export function snapshot(state: TimerState, now: number): Snapshot {
       duration: 0,
       progress: 0,
       round: seg.round,
-      central: 'check',
+      paused,
+      central: paused ? 'play' : 'check',
       left,
       ref: seg.ref,
       roundsDone: worksBefore(state.plan, state.index),
@@ -377,6 +384,7 @@ export function snapshot(state: TimerState, now: number): Snapshot {
       progress: 1,
       round: seg.round,
       waited: Math.floor(elapsedMs / SEC),
+      paused,
       central: 'play',
       left,
       ref: seg.ref,

@@ -1,6 +1,7 @@
 import {
   bringForward,
   createTimer,
+  end,
   freeze,
   cues,
   interrupt,
@@ -128,6 +129,16 @@ describe('pausa y parar', () => {
     expect(v.n).toBe(7);
   });
 
+  it('también se pausa en la espera manual, y desde ahí se para', () => {
+    let s = start(createTimer(seriesPlan({ work: 2, rest: 0, rounds: 2 })), 0);
+    s = tick(s, 6 * S); // espera tras la serie 1
+    expect(snapshot(s, 6 * S).phase).toBe('wait');
+    s = pauseToggle(s, 6 * S);
+    expect(snapshot(s, 20 * S).paused).toBe(true);
+    s = stop(s, 20 * S);
+    expect(snapshot(s, 20 * S).roundsDone).toBe(1);
+  });
+
   it('se puede pausar en el 3·2·1', () => {
     let s = start(createTimer(seriesPlan({ work: 10, rest: 5, rounds: 1 })), 0);
     s = pauseToggle(s, 1 * S);
@@ -248,6 +259,20 @@ describe('retomar (KC3)', () => {
     expect(snapshot(tick(s, 9_003 * S), 9_003 * S).n).toBe(20);
   });
 
+  it('terminar aquí acaba aunque no esté en pausa (repeticiones o espera)', () => {
+    const plan = [
+      { kind: 'reps' as const, duration: Infinity, round: 1, ref: 1 },
+      { kind: 'reps' as const, duration: Infinity, round: 2, ref: 2 },
+    ];
+    let s = freeze(primary(start(createTimer(plan), 0), 1 * S), 5 * S);
+    expect(stop(s, 6 * S)).toBe(s); // parar exige pausa
+    s = end(s, 6 * S);
+    const v = snapshot(s, 6 * S);
+    expect(v.phase).toBe('done');
+    expect(v.stopped).toBe(true);
+    expect(v.roundsDone).toBe(1);
+  });
+
   it('en repeticiones no congela: ya espera al atleta', () => {
     const plan = [{ kind: 'reps' as const, duration: Infinity, round: 1, ref: 1 }];
     const s = freeze(start(createTimer(plan), 0), 5 * S);
@@ -321,9 +346,30 @@ describe('repeticiones', () => {
     expect(v.roundsDone).toBe(2);
   });
 
-  it('no se pausan (no hay reloj que parar)', () => {
-    const s = start(createTimer(plan), 0);
-    expect(pauseToggle(s, 1 * S).pausedAt).toBeNull();
+  it('se pausan (mantener el central) y desde la pausa se puede parar guardando', () => {
+    let s = start(createTimer(plan), 0);
+    s = primary(s, 1 * S); // primera serie hecha
+    s = pauseToggle(s, 2 * S);
+    let v = snapshot(s, 30 * S);
+    expect(v.paused).toBe(true);
+    expect(v.phase).toBe('reps');
+    expect(v.central).toBe('play');
+    expect(v.left).toBe('stop');
+    s = stop(s, 30 * S);
+    v = snapshot(s, 30 * S);
+    expect(v.phase).toBe('done');
+    expect(v.stopped).toBe(true);
+    expect(v.roundsDone).toBe(1);
+  });
+
+  it('al seguir tras la pausa, el central vuelve a ser ✓ en la misma serie', () => {
+    let s = start(createTimer(plan), 0);
+    s = pauseToggle(s, 1 * S);
+    s = primary(s, 5 * S);
+    const v = snapshot(s, 5 * S);
+    expect(v.paused).toBe(false);
+    expect(v.central).toBe('check');
+    expect(v.ref).toBe(10);
   });
 
   it('dos toques en anterior vuelven a la serie anterior', () => {

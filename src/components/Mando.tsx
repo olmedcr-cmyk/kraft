@@ -17,10 +17,14 @@ type Props = {
   bleed?: boolean;
   rightLabel?: string;
   centralLabel?: string;
+  /** Mantener pulsado el central: pausa donde el central no pausa (✓ en repeticiones, play en espera). */
+  onCentralLong?: () => void;
 };
 
+const LONG_MS = 500;
+
 /** En marcha, un solo mando: anterior · central naranja 104 · siguiente. */
-export function Mando({ left, central, onLeft, onCentral, onRight, bleed = true, rightLabel = 'Siguiente tramo', centralLabel }: Props) {
+export function Mando({ left, central, onLeft, onCentral, onRight, bleed = true, rightLabel = 'Siguiente tramo', centralLabel, onCentralLong }: Props) {
   const insets = useSafeAreaInsets();
   return (
     <View
@@ -43,9 +47,14 @@ export function Mando({ left, central, onLeft, onCentral, onRight, bleed = true,
       </Pulsable>
       <Pulsable
         onPress={onCentral}
+        onLongPress={onCentralLong}
+        delayLongPress={LONG_MS}
         haptic="light"
         accessibilityRole="button"
         accessibilityLabel={centralLabel ?? (central === 'pause' ? 'Pausa' : central === 'check' ? 'Hecho' : 'Seguir')}
+        accessibilityHint={onCentralLong ? 'Mantén pulsado para pausar' : undefined}
+        accessibilityActions={onCentralLong ? [{ name: 'activate' }, { name: 'longpress', label: 'Pausar' }] : undefined}
+        onAccessibilityAction={(e) => (e.nativeEvent.actionName === 'longpress' ? onCentralLong?.() : onCentral())}
         style={styles.central}
       >
         {central === 'pause' ? <PauseIcon /> : central === 'check' ? <CheckIcon /> : <PlayIcon size={44} />}

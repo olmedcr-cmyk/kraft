@@ -124,6 +124,7 @@ export function useSessionExtra() {
   );
 }
 
+export const getSessionExtra = () => extra;
 export const setWeight = (ref: number, kg: number | null) => set({ weights: { ...extra.weights, [ref]: kg } });
 export const setRpe = (rpe: number) => set({ rpe, sent: false });
 export const markSent = () => set({ sent: true });

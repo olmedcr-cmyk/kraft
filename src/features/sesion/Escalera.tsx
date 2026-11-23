@@ -140,6 +140,11 @@ export function Escalera({ step, refId }: { step: StepInfo; refId: number }) {
           );
         })}
       </View>
+
+      {/* El central es ✓: pausar (y desde ahí, parar guardando) es mantenerlo pulsado. */}
+      <KText size={RUN} tint={color.texto2} style={{ textAlign: 'center', paddingTop: space.s8 }}>
+        Mantén pulsado el centro para pausar
+      </KText>
     </ScrollView>
   );
 }

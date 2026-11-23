@@ -32,7 +32,7 @@ type Props = Omit<PressableProps, 'style'> & {
  * Todo lo que se toca. Responde al apretar (no al soltar): encoge un 3 % en 120 ms.
  * En web, al pasar el ratón, baja un poco la opacidad. Con «reducir movimiento», sin escala.
  */
-export function Pulsable({ style, haptic, scaleTo = 0.97, onPress, onPressIn, onPressOut, onHoverIn, onHoverOut, disabled, ...rest }: Props) {
+export function Pulsable({ style, haptic, scaleTo = 0.97, onPress, onLongPress, onPressIn, onPressOut, onHoverIn, onHoverOut, disabled, ...rest }: Props) {
   const [pressed, setPressed] = useState(false);
   const [hover, setHover] = useState(false);
   const reduced = useReducedMotion();
@@ -63,6 +63,13 @@ export function Pulsable({ style, haptic, scaleTo = 0.97, onPress, onPressIn, on
         if (haptic) fire(haptic);
         onPress?.(e);
       }}
+      onLongPress={
+        onLongPress &&
+        ((e) => {
+          fire('medium');
+          onLongPress(e);
+        })
+      }
       style={[
         style,
         {

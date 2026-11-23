@@ -30,9 +30,9 @@ export default function RootLayout() {
     if (loaded && hydrated) SplashScreen.hideAsync().catch(() => {});
     // Con los ajustes ya cargados: la cola de envíos al servidor (si lo hay).
     if (hydrated) {
-      startSync();
       startData();
-      loadUnfinished();
+      // Después de cargar la cola: lo que se recupere (un entreno sin enviar) entra en ella sin pisarse.
+      startSync().finally(loadUnfinished);
     }
   }, [loaded, hydrated]);
 

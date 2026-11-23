@@ -1,6 +1,6 @@
 /** Hecho (J8Finish): resumen, semana, esfuerzo y enviar al entrenador. */
-import { router } from 'expo-router';
-import type { ReactNode } from 'react';
+import { Redirect, router } from 'expo-router';
+import { useEffect, type ReactNode } from 'react';
 import { View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
@@ -9,54 +9,44 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CheckIcon } from '@/components/icons';
 import { KText } from '@/components/KText';
 import { weekDays } from '@/diario/model';
-import { queueWorkout } from '@/backend/sync';
-import { logOwn, useDiary } from '@/diario/store';
-import { compiled, markSent, resetExtra, resetSession, session, sessionRunner, setRpe, useSession, useSessionExtra } from '@/session/store';
+import { useDiary } from '@/diario/store';
+import { finishSummary, recordFinish, sendFinish, updateFinish } from '@/session/cierre';
+import { markSent, resetExtra, resetSession, session, setRpe, useSession, useSessionExtra } from '@/session/store';
 import { alpha, cifra, color, layout, motion, radius, space, texto, touch, arriba } from '@/theme';
 import { Pulsable } from '@/components/Pulsable';
 
 const DAYS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 const WEEK_GOAL = 4;
 
-function resumen() {
-  const st = sessionRunner.getState();
-  const doneUpTo = st.status === 'done' && !st.stopped ? st.plan.length : st.index;
-  let tabatas = 0;
-  let series = 0;
-  const seenSets = new Set<string>();
-  for (let i = 0; i < doneUpTo; i++) {
-    const p = st.plan[i];
-    if (p.ref === undefined || (p.kind !== 'work' && p.kind !== 'reps')) continue;
-    const info = compiled.steps[p.ref];
-    if (info.blockKind === 'tabata') {
-      if (info.round === info.rounds) seenSets.add(`${info.block}-${info.set}`);
-    } else series++;
-  }
-  tabatas = seenSets.size;
-  const ms = (sessionRunner.endedAt ?? Date.now()) - (sessionRunner.startedAt ?? Date.now());
-  return { minutes: Math.max(1, Math.round(ms / 60000)), tabatas, series };
-}
-
 export function HechoScreen() {
   const insets = useSafeAreaInsets();
-  useSession();
+  const t = useSession();
   const extra = useSessionExtra();
-  const r = resumen();
+  // Ya apuntado al acabar la marcha (session/marcha.ts); aquí solo se lee. Si faltara, se apunta al entrar.
+  useEffect(() => {
+    recordFinish();
+  }, []);
+  const r = finishSummary();
   const diary = useDiary();
   const today = (new Date().getDay() + 6) % 7;
-  // Círculos de 10 min por día (como en Progreso); hoy suma lo que acabas de hacer.
-  const week = weekDays(diary, Date.now()).map((m, i) => Math.min(5, Math.ceil((i === today ? m + r.minutes : m) / 10)));
+  // Círculos de 10 min por día (como en Progreso); el diario ya incluye lo que acabas de hacer.
+  const week = weekDays(diary, Date.now()).map((m) => Math.min(5, Math.ceil(m / 10)));
   const days = week.filter((v) => v > 0).length;
   const rpe = extra.rpe ?? 4;
 
+  // Sin una marcha acabada (p. ej. al recargar la web aquí) no hay resumen: a Hoy.
+  if (t.snap.phase !== 'done') return <Redirect href="/" />;
+
   const close = () => {
-    const now = Date.now();
-    logOwn(now, r.minutes, r.tabatas);
     // Al servidor (si lo hay); el esfuerzo solo si lo enviaste al entrenador.
-    queueWorkout({ at: now, minutes: r.minutes, tabatas: r.tabatas, sessionId: session.id, effort: extra.sent ? rpe : null, note: extra.notes.join('. ') || undefined });
+    sendFinish();
     resetSession();
     resetExtra();
     router.replace('/');
+  };
+  const send = () => {
+    markSent();
+    updateFinish();
   };
 
   return (
@@ -120,7 +110,10 @@ export function HechoScreen() {
             return (
               <Pulsable
                 key={n}
-                onPress={() => setRpe(n)}
+                onPress={() => {
+                  setRpe(n);
+                  updateFinish();
+                }}
                 haptic="selection"
                 accessibilityRole="radio"
                 accessibilityLabel={`${n} de 5`}
@@ -134,7 +127,7 @@ export function HechoScreen() {
       </View>
 
       <Pulsable
-        onPress={markSent}
+        onPress={send}
         haptic="success"
         accessibilityRole="button"
         accessibilityLabel={extra.sent ? `Enviado a ${session.coach.name}` : `Enviar a ${session.coach.name}`}

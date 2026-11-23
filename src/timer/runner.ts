@@ -5,6 +5,7 @@ import {
   createTimer,
   cues,
   bringForward,
+  end,
   freeze,
   interrupt,
   next,
@@ -106,6 +107,8 @@ export class Runner {
   prev = () => this.apply(prev);
   next = () => this.apply(next);
   stop = () => this.apply(stop);
+  /** Terminar aquí, esté o no en pausa (KC3 · «Terminar aquí»). */
+  end = () => this.apply(end);
   interrupt = () => this.apply(interrupt);
   /** Otro ejercicio de repeticiones antes que el actual (KC8). */
   bringForward = (ref: number) => this.apply((s, now) => bringForward(s, ref, now));

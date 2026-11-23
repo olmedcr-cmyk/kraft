@@ -10,6 +10,7 @@ import { session, sessionRunner, useSessionForResume } from './store';
 const KEY = 'kraft.marcha.v1';
 const EVERY_MS = 5_000;
 
+import { recordFinish, recoverFinish } from './cierre';
 import { decode, encode, type Unfinished } from './marchaFormato';
 
 export type { Unfinished };
@@ -39,6 +40,8 @@ function watch() {
   watching = true;
   sessionRunner.subscribe(() => {
     const st = sessionRunner.getState();
+    // Acabada (o parada): el entreno se apunta ya, antes de que el atleta toque nada en Hecho.
+    if (st.status === 'done') recordFinish();
     if (st.status !== 'running') {
       if (lastKey) {
         lastKey = '';
@@ -57,6 +60,8 @@ function watch() {
 
 /** Al arrancar: ¿quedó algo a medias de otra vez? Luego empieza a guardar la marcha. */
 export async function loadUnfinished() {
+  // Un entreno acabado que no llegó a enviarse (la app se cerró en Hecho).
+  await recoverFinish();
   if (sessionRunner.getState().status === 'select') {
     unfinished = decode(await AsyncStorage.getItem(KEY).catch(() => null));
     emit();
@@ -84,7 +89,7 @@ export function resumeUnfinished() {
 /** Terminar aquí: guarda lo hecho hasta entonces (va a Hecho). */
 export function finishUnfinished() {
   resumeUnfinished();
-  sessionRunner.stop();
+  sessionRunner.end();
 }
 
 /** Desde cero: se olvida lo de antes. */

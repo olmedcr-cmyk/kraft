@@ -1,4 +1,5 @@
 /** Tabata dentro de la sesión (J6Tabata): naranja trabajando, verde descansando. */
+import type { ReactNode } from 'react';
 import { View } from 'react-native';
 
 import { KText } from '@/components/KText';
@@ -7,14 +8,31 @@ import type { StepInfo } from '@/session/compile';
 import { compiled } from '@/session/store';
 import { alpha, cifra, color, inner, radius, space, texto, touch, transicionFondo, transicionPunto } from '@/theme';
 import type { Snapshot } from '@/timer/engine';
-import { BotonComo, Ilustracion, PildoraMarcha, RUN } from './piezas';
+import { BotonComo, Ilustracion, PildoraMarcha, RUN, palmaLabel } from './piezas';
 import Svg, { Path } from 'react-native-svg';
 import { Pulsable } from '@/components/Pulsable';
 import Animated from 'react-native-reanimated';
 
-type Props = { s: Snapshot; step: StepInfo; onPalm: () => void };
+type Props = { s: Snapshot; step: StepInfo; onPalm?: () => void };
 
 const kg = (w?: number | null) => (w == null ? '' : String(w).replace('.', ','));
+
+/** La palma es solo el número (los bordes no pausan). Sin `onPalm`, no se toca. */
+function Palma({ s, fase, onPalm, children }: { s: Snapshot; fase: string; onPalm?: () => void; children: ReactNode }) {
+  const style = { alignSelf: 'center', alignItems: 'center', gap: space.s16 } as const;
+  if (!onPalm) {
+    return (
+      <View accessible accessibilityLabel={palmaLabel(fase, s.n)} style={style}>
+        {children}
+      </View>
+    );
+  }
+  return (
+    <Pulsable onPress={onPalm} haptic="light" scaleTo={0.99} accessibilityRole="button" accessibilityLabel={palmaLabel(fase, s.n, 'Toca para pausar')} style={style}>
+      {children}
+    </Pulsable>
+  );
+}
 
 export function TabataMarcha({ s, step, onPalm }: Props) {
   const work = s.phase === 'work';
@@ -32,6 +50,7 @@ export function TabataMarcha({ s, step, onPalm }: Props) {
   // En descanso se enseña lo que viene.
   const nextSide = work ? step.side : step.side === 'A' && b ? 'B' : 'A';
   const restBetweenSets = !work && round === rounds;
+  const fase = work ? `Trabajo · ${step.side ?? 'A'}` : restBetweenSets ? 'Descanso · cambia' : 'Descanso';
 
   return (
     <>
@@ -56,16 +75,12 @@ export function TabataMarcha({ s, step, onPalm }: Props) {
       </View>
 
       <View style={{ flex: 1, justifyContent: 'center', gap: space.s24, paddingHorizontal: space.s16 }}>
-        <Pulsable onPress={onPalm} haptic="light" scaleTo={0.99} accessibilityRole="button" accessibilityLabel="Palma · toca para pausar" style={{ alignSelf: 'center', alignItems: 'center', gap: space.s16 }}>
-          <PildoraMarcha
-            label={work ? `Trabajo · ${step.side ?? 'A'}` : restBetweenSets ? 'Descanso · cambia' : 'Descanso'}
-            bg={soft}
-            fg={fg}
-          />
+        <Palma s={s} fase={fase} onPalm={onPalm}>
+          <PildoraMarcha label={fase} bg={soft} fg={fg} />
           <KText size={cifra.c233} weight={300} title tabular tint={fg} lineHeight={Math.round(cifra.c233 * 0.85)}>
             {String(s.n)}
           </KText>
-        </Pulsable>
+        </Palma>
 
         <View accessibilityRole="image" accessibilityLabel={`Ronda ${round} de ${rounds}`} style={{ flexDirection: 'row', gap: space.s4, paddingHorizontal: space.s8 }}>
           {Array.from({ length: rounds }, (_, i) => (
