@@ -73,7 +73,7 @@ export function Escalera({ step, refId }: { step: StepInfo; refId: number }) {
                   {String(l.reps)}
                 </KText>
               </Animated.View>
-              <KText size={texto.etiqueta} tint={now ? color.tinta : color.texto2}>
+              <KText size={RUN} tint={now ? color.tinta : color.texto2}>
                 {kgLabel(weightOf(l.ref, l.weight), peso)}
               </KText>
             </View>
@@ -89,7 +89,7 @@ export function Escalera({ step, refId }: { step: StepInfo; refId: number }) {
               {w == null ? 'barra' : kgLabel(w, peso)}
             </KText>
             {w != null && (
-              <KText size={texto.texto} tint={color.texto2}>
+              <KText size={RUN} tint={color.texto2}>
                 {peso}
               </KText>
             )}

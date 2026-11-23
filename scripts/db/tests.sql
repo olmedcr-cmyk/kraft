@@ -66,11 +66,19 @@ do $$ begin
   assert (select name from public.profiles) = 'Ana G.', 'puede cambiar su nombre';
 end $$;
 
+-- Buscar por código enseña quién es, pero no vincula (solo «Vincular» lo hace).
+do $$ begin
+  assert (select name from public.find_coach('472913')) = 'Elena', 'buscar: Elena';
+  assert (select count(*) from public.find_coach('000000')) = 0, 'buscar código erróneo: nada';
+  assert (select count(*) from public.my_coach) = 0, 'buscar no vincula';
+end $$;
+
 -- Código: el malo no dice nada; el bueno vincula.
 do $$ begin
   assert (select count(*) from public.link_coach('000000')) = 0, 'código erróneo: sin resultado';
   assert (select name from public.link_coach('472913')) = 'Elena', 'código bueno: Elena';
   assert (select name from public.my_coach) = 'Elena', 'my_coach es Elena';
+  assert (select code from public.my_coach) = '472913', 'my_coach trae su código (para volver a entrar)';
   assert (select count(*) from public.coaches) = 0, 'vinculada, sigue sin ver la tabla de entrenadores';
   assert (select count(*) from public.slots) = 4, 've las 4 clases de Elena, no la de Rafa';
   assert (select count(*) from public.sessions) = 2, 've la de grupo y la suya';
@@ -224,7 +232,7 @@ end $$;
 
 -- Límite de intentos de código.
 do $$ begin
-  for i in 1..8 loop perform public.link_coach('999999'); end loop; -- ya llevaba 2
+  for i in 1..6 loop perform public.link_coach('999999'); end loop; -- ya llevaba 4 (2 buscando, 2 vinculando)
   begin perform public.link_coach('472913'); raise exception 'FALLO';
   exception when raise_exception then if sqlerrm = 'FALLO' then raise; end if; end;
 end $$;

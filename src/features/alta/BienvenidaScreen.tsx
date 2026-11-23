@@ -1,13 +1,15 @@
 /** Bienvenida (K6Welcome): la idea en una frase, entrar y aceptar (14 años o más). */
 import { router } from 'expo-router';
-import { View, useWindowDimensions } from 'react-native';
+import { useState } from 'react';
+import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { KText } from '@/components/KText';
 import { Pulsable } from '@/components/Pulsable';
 import { getAuthSession } from '@/backend/auth';
 import { hasBackend } from '@/backend/client';
-import { getSettings, updateSettings } from '@/state/settings';
+import { getSettings, updateSettings, useSettings } from '@/state/settings';
+import { deletionDate, fechaCorta } from '@/legal/model';
 import { alpha, cifra, color, layout, radius, space, texto, touch, arriba } from '@/theme';
 
 const HERO_H = 340;
@@ -25,8 +27,9 @@ const offers = (v: Via) => !hasBackend || PROVIDERS.includes(v);
 
 export function BienvenidaScreen() {
   const insets = useSafeAreaInsets();
-  const { width } = useWindowDimensions();
-  const heroW = Math.min(width, 600) - layout.pantallaLado * 2;
+  // Ancho real del dibujo (en web la app es una columna estrecha aunque la ventana sea ancha).
+  const [heroW, setHeroW] = useState(0);
+  const borrado = useSettings().borradoPedido;
 
   const enter = (via: Via) => {
     // Con servidor y sin sesión: entrar con la cuenta. (Apple y Google, cuando estén activados.)
@@ -43,8 +46,8 @@ export function BienvenidaScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: arriba(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
-      <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ height: HERO_H, borderRadius: radius.lg, backgroundColor: color.klein, overflow: 'hidden' }}>
-        {Array.from({ length: DOTS }, (_, i) => {
+      <View onLayout={(e) => setHeroW(e.nativeEvent.layout.width)} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ height: HERO_H, borderRadius: radius.lg, backgroundColor: color.klein, overflow: 'hidden' }}>
+        {heroW > 0 && Array.from({ length: DOTS }, (_, i) => {
           const a = (2 * Math.PI * i) / DOTS;
           return (
             <View
@@ -61,7 +64,7 @@ export function BienvenidaScreen() {
             />
           );
         })}
-        <View style={{ position: 'absolute', left: heroW / 2 - SUN / 2, top: HERO_H / 2 - SUN / 2, width: SUN, height: SUN, borderRadius: SUN / 2, backgroundColor: color.naranja }} />
+        {heroW > 0 && <View style={{ position: 'absolute', left: heroW / 2 - SUN / 2, top: HERO_H / 2 - SUN / 2, width: SUN, height: SUN, borderRadius: SUN / 2, backgroundColor: color.naranja }} />}
       </View>
 
       <View style={{ paddingVertical: space.s16, paddingHorizontal: space.s8 }}>
@@ -71,6 +74,16 @@ export function BienvenidaScreen() {
       </View>
 
       <View style={{ flex: 1 }} />
+
+      {/* Pidió borrar la cuenta: que sepa cuándo, y que entrar antes la recupera. */}
+      {borrado && (
+        <View accessible style={{ backgroundColor: color.tarjeta, borderRadius: radius.lg, padding: space.s16, gap: space.s4 }}>
+          <KText size={texto.bloque}>{`Tu cuenta se borra el ${fechaCorta(deletionDate(borrado))}`}</KText>
+          <KText size={texto.texto} tint={color.texto2}>
+            Si entras antes, la recuperas con todo lo que tenía.
+          </KText>
+        </View>
+      )}
 
       {offers('apple') && <Boton label="Seguir con Apple" bg={color.tinta} fg={color.tarjeta} onPress={() => enter('apple')} />}
       {offers('google') && <Boton label="Seguir con Google" bg={color.tarjeta} fg={color.tinta} onPress={() => enter('google')} />}

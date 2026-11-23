@@ -8,6 +8,7 @@ import { KText } from '@/components/KText';
 import { Mando } from '@/components/Mando';
 import { Palma } from '@/components/Palma';
 import { useSettings } from '@/state/settings';
+import { useAnunciarFase } from '@/timer/useTimer';
 import { exercise } from '@/data/exercises';
 import { stepSeconds, upcoming, type StepInfo } from '@/session/compile';
 import { compiled, session, useSession } from '@/session/store';
@@ -42,6 +43,7 @@ export function MarchaScreen() {
   const step = s.ref !== undefined ? compiled.steps[s.ref] : undefined;
   const KeepAwake = t.keepAwake;
   const { palmaPausa } = useSettings();
+  useAnunciarFase(s);
 
   useEffect(() => {
     if (s.phase === 'done') router.replace('/sesion/hecho');

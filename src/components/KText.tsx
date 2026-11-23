@@ -15,6 +15,9 @@ type Props = TextProps & {
   lineHeight?: number;
 };
 
+/** Desde aquí es una cifra (escala Fibonacci 34 · 55 · 89 · 144 · 233). */
+const CIFRA_MIN = 34;
+
 /** Alto real de la letra en Roboto Mono (ascendente + descendente), en em. */
 const GLYPH = 1.32;
 
@@ -43,5 +46,7 @@ export function KText({ size, weight = 400, tint = color.tinta, caps, title, tab
     ...(title && { letterSpacing: tracking.titulo(size) }),
     ...(tabular && { fontVariant: ['tabular-nums'] }),
   };
-  return <Text {...rest} style={[s, style]} />;
+  // Texto grande del sistema: las cifras (34 o más) ya son enormes y llenan la palma, no crecen;
+  // el resto crece hasta ×1,5 (más rompería filas y mando). Se puede cambiar pieza a pieza.
+  return <Text maxFontSizeMultiplier={size >= CIFRA_MIN ? 1 : 1.5} {...rest} style={[s, style]} />;
 }

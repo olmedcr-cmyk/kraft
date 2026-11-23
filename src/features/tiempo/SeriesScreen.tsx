@@ -15,7 +15,7 @@ import { setCurrent } from '@/state/saved';
 import { alpha, cifra, color, motion, ms, radius, space, texto, touch, transicionFondo, arriba } from '@/theme';
 import { useSettings } from '@/state/settings';
 import { seriesPlan, type Snapshot } from '@/timer/engine';
-import { useTimer } from '@/timer/useTimer';
+import { useAnunciarFase, useTimer } from '@/timer/useTimer';
 import { Cabecera, pad2 } from './Cabecera';
 import { Dial, DIAL_SIZE } from './Dial';
 import { ModoTiempo } from './ModoTiempo';
@@ -106,6 +106,7 @@ export function SeriesScreen() {
   const { cuentaAtras, palmaPausa } = useSettings();
   const plan = useMemo(() => seriesPlan({ work, rest, rounds, countdown: cuentaAtras }), [work, rest, rounds, cuentaAtras]);
   const t = useTimer(plan);
+  useAnunciarFase(t.snap);
   const s = t.snap;
   const selecting = s.phase === 'select';
   useHideNav(!selecting);
@@ -149,8 +150,10 @@ export function SeriesScreen() {
         ) : (
           <PildoraFase
             label={s.paused ? 'En pausa' : `${PHASE_WORD[s.phase]} · ${pad2(Math.min(s.round, rounds))}/${pad2(rounds)}`}
-            bg={alpha.sobreColor}
+            // Sobre verde, el blanco translúcido no llega a 4,5:1; la tinta translúcida sí.
+            bg={s.phase === 'rest' || s.phase === 'done' ? alpha.sobreClaro : alpha.sobreColor}
             fg={color.tarjeta}
+            size={texto.bloque}
           />
         )}
       </View>

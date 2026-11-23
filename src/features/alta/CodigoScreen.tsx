@@ -6,12 +6,14 @@ import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { KText } from '@/components/KText';
+import { Nota } from '@/components/Nota';
 import { Pulsable } from '@/components/Pulsable';
 import { Casillas, Teclado, type Tecla } from '@/components/Teclado';
 import { backspace, pasteCode, typeDigit } from '@/alta/model';
 import { sendEmailCode, verifyEmailCode } from '@/backend/auth';
 import { OTP_LEN, RESEND_S, maskEmail } from '@/backend/email';
-import { updateSettings } from '@/state/settings';
+import { getSettings, updateSettings } from '@/state/settings';
+import { myCoach } from '@/backend/coach';
 import { Volver } from '@/features/tu/piezas';
 import { cifra, color, layout, space, texto, touch, arriba } from '@/theme';
 
@@ -34,13 +36,22 @@ export function CodigoScreen() {
     if (code.length < OTP_LEN) return;
     let live = true;
     setBusy(true);
-    verifyEmailCode(email, code).then((r) => {
+    verifyEmailCode(email, code).then(async (r) => {
       if (!live) return;
-      setBusy(false);
-      if (!r.ok) return setError(r.error);
+      if (!r.ok) {
+        setBusy(false);
+        return setError(r.error);
+      }
       // Entrar = aceptar términos y privacidad (14 años o más), como dice la bienvenida.
       updateSettings({ acceptedAt: Date.now() });
-      router.replace('/alta/entrenador');
+      // Volver a entrar no repite el alta: el entrenador viene del servidor.
+      const linked = await myCoach();
+      if (linked !== undefined) updateSettings({ coach: linked ?? undefined });
+      const coach = linked === undefined ? getSettings().coach : linked;
+      if (!live) return;
+      setBusy(false);
+      if (getSettings().onboarded) router.replace('/');
+      else router.replace(coach ? '/alta/permisos' : '/alta/entrenador');
     });
     return () => {
       live = false;
@@ -72,9 +83,7 @@ export function CodigoScreen() {
         <KText size={cifra.c34} weight={300} title lineHeight={cifra.c34} accessibilityRole="header">
           Tu código
         </KText>
-        <KText size={texto.texto} tint={error ? color.naranja : color.texto2} accessibilityLiveRegion="polite">
-          {error ?? (busy ? 'Comprobando…' : `Lo hemos mandado a ${maskEmail(email)}`)}
-        </KText>
+        <Nota error={!!error} text={error ?? (busy ? 'Comprobando…' : `Lo hemos mandado a ${maskEmail(email)}`)} />
       </View>
 
       <Casillas value={code} length={OTP_LEN} wrong={!!error && code.length === OTP_LEN} />

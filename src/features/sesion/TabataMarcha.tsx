@@ -37,7 +37,8 @@ function Palma({ s, fase, onPalm, children }: { s: Snapshot; fase: string; onPal
 export function TabataMarcha({ s, step, onPalm }: Props) {
   const work = s.phase === 'work';
   const fg = work ? color.tinta : color.tarjeta;
-  const soft = work ? alpha.sobreClaro : alpha.sobreColor;
+  // Contraste de la píldora ≥ 4,5: tinta sobre naranja aclarado, blanco sobre verde oscurecido.
+  const soft = work ? alpha.sobreColor : alpha.sobreClaro;
   const sets = step.sets ?? 1;
   const set = step.set ?? 1;
   const rounds = step.rounds ?? 1;
@@ -170,7 +171,7 @@ function Gesto({ hold, fg, soft }: { hold: boolean; fg: string; soft: string }) 
         )}
       </View>
       <View style={[pill, { backgroundColor: hold ? color.tinta : soft }]}>
-        <KText size={hold ? RUN : texto.lista} tint={hold ? color.tarjeta : fg}>
+        <KText size={RUN} tint={hold ? color.tarjeta : fg}>
           Mantén
         </KText>
       </View>

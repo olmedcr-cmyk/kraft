@@ -11,6 +11,10 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 
 export const deletionDate = (requestedAt: number) => requestedAt + DELETE_DAYS * DAY_MS;
 
+/** «22 dic»: el día en que se borra la cuenta. */
+export const fechaCorta = (t: number) =>
+  new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'short' }).format(new Date(t)).replace('.', '');
+
 /** Lo que tienes guardado, en cifras. */
 export function dataCounts(s: DiaryState) {
   const days = Object.values(s.days);

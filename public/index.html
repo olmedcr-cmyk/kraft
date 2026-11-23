@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <!-- viewport-fit=cover: el contenido llega bajo la isla y la barra de inicio; la app ya respeta los márgenes seguros. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#F2F1ED" />
+    <title>KRAFT</title>
+    <style id="expo-reset">
+      /* Colores de design/tokens: fondo #F2F1ED, hundido #E8E7E2, klein #002FA7. */
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: #e8e7e2;
+        /* Sin «tirar para recargar» ni rebote en mitad de una sesión. */
+        overscroll-behavior: none;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        overflow: hidden;
+      }
+      /* Es una app de móvil: en tablet y escritorio, columna de 480 centrada (no se estira). */
+      #root {
+        display: flex;
+        height: 100%;
+        flex: 1;
+        max-width: 480px;
+        margin: 0 auto;
+        background: #f2f1ed;
+      }
+      /* Lo que se toca no se selecciona con un toque largo (la cifra de la palma, los botones). */
+      [role='button'],
+      [role='tab'],
+      [role='switch'],
+      [role='radio'],
+      [role='link'] {
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+      }
+      /* Foco visible con teclado, al instante. */
+      [role='button']:focus-visible,
+      [role='tab']:focus-visible,
+      [role='switch']:focus-visible,
+      [role='radio']:focus-visible,
+      [role='link']:focus-visible,
+      input:focus-visible {
+        outline: 3px solid #002fa7;
+        outline-offset: 2px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <noscript>KRAFT necesita JavaScript para funcionar.</noscript>
+    <div id="root"></div>
+  </body>
+</html>

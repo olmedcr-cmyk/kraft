@@ -297,6 +297,26 @@ export function bringForward(state: TimerState, ref: number, now: number): Timer
   return { ...s, plan, segStart: now, leadUntil: null };
 }
 
+/**
+ * Próximos cambios de tramo desde `now` (instante y qué empieza), para avisar con la pantalla bloqueada:
+ * ahí el reloj de la app se duerme y no puede sonar. Se para en un tramo manual (espera, repeticiones),
+ * en pausa o al acabar.
+ */
+export function upcomingChanges(state: TimerState, now: number, max = 24): { at: number; kind: SegmentKind | 'done' }[] {
+  const s = tick(state, now);
+  if (s.status !== 'running' || s.pausedAt !== null) return [];
+  const out: { at: number; kind: SegmentKind | 'done' }[] = [];
+  let at = s.segStart;
+  for (let i = s.index; i < s.plan.length && out.length < max; i++) {
+    const seg = s.plan[i];
+    if (isManual(seg.kind)) break;
+    at += seg.duration * SEC;
+    const following = s.plan[i + 1];
+    out.push({ at, kind: following ? following.kind : 'done' });
+  }
+  return out;
+}
+
 // ─── Lectura ───────────────────────────────────────────────────────────────
 
 function totalRounds(plan: Plan) {

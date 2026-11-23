@@ -5,6 +5,7 @@
  * Mientras haya cambios tuyos sin enviar no se pisa lo que ves: se vuelve a leer al vaciarse la cola.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSyncExternalStore } from 'react';
 import { AppState } from 'react-native';
 
 import { dayStart, isoDay, setSlotSource, type Mode, type Slot } from '@/agenda/model';
@@ -21,6 +22,36 @@ import { onDrained, pendingCount } from './sync';
 import { noteSession } from '@/session/vista';
 
 const KEY = 'kraft.server.v1';
+
+/**
+ * Cómo va la carga, para no enseñar «Cerrado» o un círculo vacío cuando en realidad no ha llegado nada:
+ * loading (primera vez), ok (hay datos, del servidor o guardados), offline (sin red y sin nada guardado),
+ * error (el servidor dijo que no). `coach`: si el servidor te tiene con un entrenador.
+ */
+export type DataStatus = { state: 'loading' | 'ok' | 'offline' | 'error'; coach: boolean };
+// Sin servidor (modo demo) todo está ya en el móvil.
+let status: DataStatus = { state: backend ? 'loading' : 'ok', coach: true };
+/** Volver a intentarlo (botón «Reintentar»). */
+export const retryData = () => {
+  if (status.state !== 'ok') setStatus({ state: 'loading' });
+  return pull();
+};
+const statusSubs = new Set<() => void>();
+function setStatus(s: Partial<DataStatus>) {
+  status = { ...status, ...s };
+  statusSubs.forEach((f) => f());
+}
+export const useDataStatus = () =>
+  useSyncExternalStore(
+    (f) => {
+      statusSubs.add(f);
+      return () => {
+        statusSubs.delete(f);
+      };
+    },
+    () => status,
+    () => status,
+  );
 const DAY = 86_400_000;
 /** Clases que se traen: de ayer a dentro de 2 semanas. Historial para el diario: 13 meses. */
 const AHEAD_DAYS = 15;
@@ -111,6 +142,7 @@ export function pull(): Promise<void> {
       if (!snap) return;
       setOnline(true);
       apply(snap);
+      setStatus({ state: 'ok', coach: !!snap.coach });
       // El nombre del entrenador también en los ajustes (lo usan Tú y legal).
       if (snap.coach && getSettings().coach?.name !== snap.coach.name) {
         const c = getSettings().coach;
@@ -118,8 +150,10 @@ export function pull(): Promise<void> {
       }
       await AsyncStorage.setItem(KEY, JSON.stringify(snap)).catch(() => {});
     } catch (e) {
-      // Sin red o servidor caído: se sigue con lo que hay.
-      if (isNetworkError(e)) setOnline(false);
+      // Sin red o servidor caído: se sigue con lo que hay (y si no hay nada, se dice).
+      const net = isNetworkError(e);
+      if (net) setOnline(false);
+      if (status.state !== 'ok') setStatus({ state: net ? 'offline' : 'error' });
     } finally {
       pulling = null;
     }
@@ -135,7 +169,11 @@ export async function startData() {
   started = true;
   try {
     const raw = await AsyncStorage.getItem(KEY);
-    if (raw) apply(JSON.parse(raw) as Snapshot);
+    if (raw) {
+      const snap = JSON.parse(raw) as Snapshot;
+      apply(snap);
+      setStatus({ state: 'ok', coach: !!snap.coach });
+    }
   } catch {
     // Caché rota: se ignora.
   }

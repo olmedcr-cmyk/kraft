@@ -6,7 +6,7 @@ accessibility-engineering, design:accessibility-review, emil-design-eng, design:
 ux-ui-audit, design:ux-copy y break-ui; Hallmark como criterio general; y un recorrido en el navegador en modo demo
 a 390×844, 320×568 y 1280×800. No probado en iPhone ni Android reales.
 
-**Estado (23 nov):** arreglados 1, 2, 4, 24 y 29. El 3 (llamada) sigue pendiente: sin un módulo nativo (CallKit en iOS, estado del teléfono en Android) la app no se entera de una llamada; va con la versión de pago, como la Live Activity.
+**Estado (23 nov):** arreglados todos los críticos y altos salvo el 3 (llamada), más 24, 29 y parte de 39 y 41. El 3 sigue pendiente: sin un módulo nativo (CallKit en iOS, estado del teléfono en Android) la app no se entera de una llamada; va con la versión de pago, como la Live Activity. El 15 (pantalla bloqueada) queda con avisos locales con sonido; la Live Activity, también con la versión de pago.
 
 ✔ = comprobado a mano (en el código o en el navegador). El resto sale de leer el código; tiene archivo:línea para revisarlo.
 

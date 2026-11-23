@@ -1,5 +1,6 @@
 import { AppState, type NativeEventSubscription } from 'react-native';
 
+import { programarAvisos, quitarAvisos } from '@/platform/avisosTramo';
 import { setupFeedback, signal } from '@/platform/feedback';
 import {
   createTimer,
@@ -16,6 +17,7 @@ import {
   start,
   stop,
   tick,
+  upcomingChanges,
   type Plan,
   type Snapshot,
   type TimerState,
@@ -72,11 +74,18 @@ export class Runner {
     if (this.timer) return;
     this.timer = setInterval(() => this.apply(tick), FRAME_MS);
     this.appSub = AppState.addEventListener('change', (st) => {
-      if (st === 'active') this.apply(tick);
+      if (st === 'active') {
+        quitarAvisos();
+        this.apply(tick);
+      } else if (st === 'background') {
+        // Pantalla bloqueada: el reloj se duerme; los cambios de tramo suenan como avisos.
+        programarAvisos(upcomingChanges(this.state, Date.now()));
+      }
     });
   }
 
   private stopClock() {
+    if (this.timer) quitarAvisos();
     if (this.timer) clearInterval(this.timer);
     this.timer = null;
     this.appSub?.remove();

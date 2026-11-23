@@ -9,15 +9,17 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BarraAccion } from '@/components/BarraAccion';
 import { CheckIcon } from '@/components/icons';
 import { KText } from '@/components/KText';
+import { Nota } from '@/components/Nota';
 import { Casillas, Teclado, type Tecla } from '@/components/Teclado';
 import { CODE_LEN, backspace, findCoach, pasteCode, typeDigit, type Coach } from '@/alta/model';
-import { linkCoach } from '@/backend/coach';
+import { findCoach as buscarEnServidor, linkCoach } from '@/backend/coach';
+import { Volver } from '@/features/tu/piezas';
 import { hasBackend } from '@/backend/client';
 import { updateSettings } from '@/state/settings';
 import { MODE_TINT } from '@/features/agenda/piezas';
 import { cifra, color, layout, motion, radius, space, texto, touch, arriba } from '@/theme';
 
-type Check = { state: 'idle' | 'checking' } | { state: 'found'; coach: Coach } | { state: 'wrong' | 'limit' | 'offline' };
+type Check = { state: 'idle' | 'checking' | 'linking' } | { state: 'found'; coach: Coach } | { state: 'wrong' | 'limit' | 'offline' };
 
 const NOTE: Record<string, string> = {
   wrong: 'Ese código no es de ningún entrenador',
@@ -34,7 +36,7 @@ export function EntrenadorScreen() {
   const [miss, setMiss] = useState(false);
   const [check, setCheck] = useState<Check>({ state: 'idle' });
 
-  // Con 6 cifras se busca: en el servidor (que ya vincula) o en el directorio de ejemplo.
+  // Con 6 cifras se busca (sin vincular): en el servidor o en el directorio de ejemplo. Vincula solo el botón.
   useEffect(() => {
     if (code.length < CODE_LEN) return setCheck({ state: 'idle' });
     if (!hasBackend) {
@@ -43,7 +45,7 @@ export function EntrenadorScreen() {
     }
     let live = true;
     setCheck({ state: 'checking' });
-    linkCoach(code).then((r) => live && setCheck(r.ok ? { state: 'found', coach: r.coach } : { state: r.reason }));
+    buscarEnServidor(code).then((r) => live && setCheck(r.ok ? { state: 'found', coach: r.coach } : { state: r.reason }));
     return () => {
       live = false;
     };
@@ -61,11 +63,23 @@ export function EntrenadorScreen() {
     setCode((c) => typeDigit(c, k));
   };
 
-  const coach = check.state === 'found' ? check.coach : undefined;
+  const fromTu = desde === 'tu';
+  // Mientras vincula sigue enseñando la ficha encontrada.
+  const [shown, setShown] = useState<Coach | undefined>();
+  useEffect(() => {
+    if (check.state === 'found') setShown(check.coach);
+    else if (check.state !== 'linking') setShown(undefined);
+  }, [check]);
+  const coach = check.state === 'found' ? check.coach : check.state === 'linking' ? shown : undefined;
   const bad = check.state === 'wrong' || check.state === 'limit' || check.state === 'offline';
 
-  const link = () => {
-    if (!coach) return;
+  const link = async () => {
+    if (!coach || check.state === 'linking') return;
+    if (hasBackend) {
+      setCheck({ state: 'linking' });
+      const r = await linkCoach(coach.code);
+      if (!r.ok) return setCheck({ state: r.reason });
+    }
     updateSettings({ coach });
     // Desde Tú (cambiar de entrenador) se vuelve atrás; en el alta se sigue a permisos.
     if (desde === 'tu') router.canGoBack() ? router.back() : router.replace('/tu');
@@ -73,14 +87,14 @@ export function EntrenadorScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: arriba(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
+    <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: arriba(insets.top, fromTu ? layout.pantallaArriba - space.s24 : layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
+      {/* Desde Tú se puede volver sin cambiar nada. En el alta, el entrenador es el paso obligado. */}
+      {fromTu && <Volver to="Tu entrenador" href="/tu/entrenador" />}
       <View style={{ paddingHorizontal: space.s8, paddingBottom: space.s16, gap: space.s8 }}>
         <KText size={cifra.c34} weight={300} title lineHeight={cifra.c34} accessibilityRole="header">
           Tu entrenador
         </KText>
-        <KText size={texto.texto} tint={bad || miss ? color.naranja : color.texto2} accessibilityLiveRegion="polite">
-          {miss ? NOTE.miss : bad ? NOTE[check.state] : check.state === 'checking' ? 'Buscando…' : 'Su código o su enlace'}
-        </KText>
+        <Nota error={bad || miss} text={miss ? NOTE.miss : bad ? NOTE[check.state] : check.state === 'checking' ? 'Buscando…' : check.state === 'linking' ? 'Vinculando…' : 'Su código o su enlace'} />
       </View>
 
       <Casillas value={code} length={CODE_LEN} wrong={bad} />
@@ -107,8 +121,8 @@ export function EntrenadorScreen() {
       )}
 
       <View style={{ flex: 1 }} />
-      <Teclado onKey={press} disabled={check.state === 'checking'} />
-      <BarraAccion label="Vincular" onPress={link} disabled={!coach} />
+      <Teclado onKey={press} disabled={check.state === 'checking' || check.state === 'linking'} />
+      <BarraAccion label={check.state === 'linking' ? 'Vinculando…' : 'Vincular'} onPress={link} disabled={!coach || check.state === 'linking'} />
     </View>
   );
 }

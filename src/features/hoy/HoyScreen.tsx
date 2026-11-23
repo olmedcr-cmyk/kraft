@@ -14,6 +14,7 @@ import { acknowledgeChanges, useChanges } from '@/session/vista';
 import { changeText, type SessionChanges } from '@/session/cambios';
 import { hasBackend } from '@/backend/client';
 import { useOnline } from '@/backend/red';
+import { retryData, useDataStatus, type DataStatus } from '@/backend/data';
 import { usePending } from '@/backend/sync';
 import { CheckIcon } from '@/components/icons';
 import { hhmm, longDay, upcomingBookings } from '@/agenda/model';
@@ -74,6 +75,7 @@ export function HoyScreen() {
   const insets = useSafeAreaInsets();
   const t = useSession();
   const today = useToday();
+  const data = useDataStatus();
   const running = t.running;
   const unfinished = useUnfinished();
   const changes = useChanges();
@@ -105,7 +107,7 @@ export function HoyScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: color.fondo, paddingTop: arriba(insets.top, layout.pantallaArriba) }}>
-      {offline && <SinConexion />}
+      {offline && <SinConexion saved={today === 'ready'} />}
       <View style={{ paddingHorizontal: layout.pantallaLado + space.s8, paddingBottom: space.s16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <View style={{ gap: space.s4 }}>
           <KText size={cifra.c34} weight={300} title lineHeight={cifra.c34} accessibilityRole="header">
@@ -134,7 +136,7 @@ export function HoyScreen() {
       </View>
 
       {today !== 'ready' ? (
-        <Libre loading={today === 'loading'} coach={session.coach.name} />
+        <Libre loading={today === 'loading'} coach={session.coach.name} data={data} />
       ) : (
       <>
       {changes && <Cambio changes={changes} />}
@@ -235,13 +237,13 @@ function Cambio({ changes }: { changes: SessionChanges }) {
 }
 
 /** Sin conexión (KC4): la sesión sigue, todo queda guardado. */
-function SinConexion() {
+function SinConexion({ saved }: { saved: boolean }) {
   return (
     <View style={{ paddingHorizontal: layout.pantallaLado, paddingBottom: space.s24, marginTop: -space.s16 }}>
       <View accessibilityLiveRegion="polite" style={{ height: touch.dedo, borderRadius: radius.pill, backgroundColor: color.hundido, paddingHorizontal: space.s16, flexDirection: 'row', alignItems: 'center', gap: space.s12 }}>
         <View style={{ width: space.s12, height: space.s12, borderRadius: space.s12 / 2, borderWidth: 2, borderColor: color.tinta }} />
         <KText size={texto.texto} numberOfLines={1} style={{ flex: 1 }}>
-          Sin conexión · tu sesión está guardada
+          {saved ? 'Sin conexión · tu sesión está guardada' : 'Sin conexión · lo de hoy llega al volver'}
         </KText>
       </View>
     </View>
@@ -265,24 +267,36 @@ function SaleAlVolver({ note, coach }: { note: boolean; coach: string }) {
 }
 
 /** Hoy sin sesión (KC1Empty): el día libre, tu próxima clase y entrenar por tu cuenta. */
-function Libre({ loading, coach }: { loading: boolean; coach: string }) {
+/** Qué decir cuando no hay sesión que enseñar: cargando, sin red, error, sin entrenador o libre. */
+function estadoLibre(loading: boolean, data: DataStatus, coach: string) {
+  if (!data.coach) return { title: 'Sin entrenador', note: 'Vincúlate con su código para recibir sesiones', action: 'vincular' as const };
+  if (loading && data.state === 'offline') return { title: 'Sin conexión', note: 'Lo de hoy llega al volver la red', action: 'reintentar' as const };
+  if (loading && data.state === 'error') return { title: 'No se pudo cargar', note: 'Prueba otra vez en un momento', action: 'reintentar' as const };
+  if (loading) return { title: 'Cargando…', note: 'La sesión de hoy', action: null };
+  return { title: 'Hoy, libre', note: `${coach} aún no ha enviado nada`, action: null };
+}
+
+function Libre({ loading, coach, data }: { loading: boolean; coach: string; data: DataStatus }) {
+  const e = estadoLibre(loading, data, coach);
   const agenda = useAgenda();
   const next = upcomingBookings(agenda, Date.now()).find((x) => x.booking.status === 'confirmed');
   return (
     <View style={{ flex: 1, paddingHorizontal: layout.pantallaLado, gap: layout.entreTarjetas }}>
       <View
         accessible
-        accessibilityLabel={loading ? 'Cargando la sesión de hoy' : `Hoy, libre. ${coach} aún no ha enviado nada`}
+        accessibilityLabel={`${e.title}. ${e.note}`}
         style={{ flex: 1, borderRadius: radius.lg, borderWidth: 2, borderStyle: 'dashed', borderColor: color.linea, alignItems: 'center', justifyContent: 'center', gap: space.s16 }}
       >
         <View style={{ width: touch.accion, height: touch.accion, borderRadius: touch.accion / 2, borderWidth: 2, borderColor: color.linea }} />
-        {!loading && (
-          <>
-            <KText size={texto.bloque}>Hoy, libre</KText>
-            <KText size={texto.texto} tint={color.texto2}>{`${coach} aún no ha enviado nada`}</KText>
-          </>
-        )}
+        <KText size={texto.bloque}>{e.title}</KText>
+        <KText size={texto.texto} tint={color.texto2} style={{ textAlign: 'center', paddingHorizontal: space.s16 }}>
+          {e.note}
+        </KText>
       </View>
+      {e.action === 'reintentar' && <BarraAccion compacta label="Reintentar" onPress={() => void retryData()} />}
+      {e.action === 'vincular' && (
+        <BarraAccion compacta label="Vincular entrenador" onPress={() => router.push({ pathname: '/alta/entrenador', params: { desde: 'tu' } })} />
+      )}
       {next && (
         <Pulsable
           onPress={() => router.push({ pathname: '/reserva/[id]', params: { id: next.slot.id } })}

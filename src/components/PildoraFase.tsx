@@ -1,4 +1,4 @@
-import { radius, space, texto, transicionFondo } from '@/theme';
+import { radius, space, texto, touch, transicionFondo } from '@/theme';
 import { KText } from './KText';
 import Animated from 'react-native-reanimated';
 
@@ -12,7 +12,8 @@ export function PildoraFase({ label, bg, fg, size = texto.etiqueta }: Props) {
       accessibilityLabel={label}
       style={{
         ...transicionFondo,
-        height: space.s32,
+        // En marcha (texto de 18) mide un dedo; la etiqueta pequeña, 32. Mínimo, no fijo: crece con el texto grande del sistema.
+        minHeight: size > texto.etiqueta ? touch.dedo : space.s32,
         paddingHorizontal: space.s12,
         borderRadius: radius.pill,
         backgroundColor: bg,

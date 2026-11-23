@@ -12,7 +12,7 @@ import { setCurrent } from '@/state/saved';
 import { cifra, color, radius, space, texto, transicionFondo, transicionPunto, arriba } from '@/theme';
 import { useSettings } from '@/state/settings';
 import { tabataPlan, type Snapshot } from '@/timer/engine';
-import { useTimer } from '@/timer/useTimer';
+import { useAnunciarFase, useTimer } from '@/timer/useTimer';
 import { pad2 } from './Cabecera';
 import { ModoTiempo } from './ModoTiempo';
 import { Radio } from './Radio';
@@ -72,6 +72,7 @@ export function TabataScreen() {
   const { cuentaAtras } = useSettings();
   const plan = useMemo(() => tabataPlan({ ...cfg, countdown: cuentaAtras }), [cfg, cuentaAtras]);
   const t = useTimer(plan);
+  useAnunciarFase(t.snap);
   const s = t.snap;
 
   const running = s.phase === 'countdown' || s.phase === 'work' || s.phase === 'rest';
@@ -131,7 +132,7 @@ export function TabataScreen() {
       )}
 
       <View style={{ gap: space.s8 }}>
-        <View accessibilityLiveRegion="polite" style={{ flexDirection: 'row', alignItems: 'baseline' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
           <KText size={cifra.c89} weight={300} title tabular tint={fg} lineHeight={cifra.c89} style={{ opacity: 0.45 }}>
             {`${pad2(round)}.`}
           </KText>
@@ -143,7 +144,7 @@ export function TabataScreen() {
           <KText size={idle ? texto.texto : RUN_TEXT} tint={muted}>
             Ronda · segundos
           </KText>
-          <PildoraFase label={p.label} bg={p.bg} fg={p.fg} />
+          <PildoraFase label={p.label} bg={p.bg} fg={p.fg} size={idle ? texto.etiqueta : RUN_TEXT} />
         </View>
       </View>
 

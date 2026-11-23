@@ -76,7 +76,7 @@ export function Navegacion({ state, navigateToTab }: Props) {
             left: pad,
             top: pad,
             width: item,
-            height: ITEM_H,
+            minHeight: ITEM_H,
             borderRadius: radius.pill,
             backgroundColor: color.tinta,
             transform: [{ translateX: idx * (item + pad) }],
@@ -98,7 +98,7 @@ export function Navegacion({ state, navigateToTab }: Props) {
               accessibilityRole="tab"
               accessibilityState={{ selected: on }}
               accessibilityLabel={t.label}
-              style={{ flex: 1, height: ITEM_H, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', gap: space.s4, backgroundColor: item > 0 || !on ? 'transparent' : color.tinta }}
+              style={{ flex: 1, minHeight: ITEM_H, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', gap: space.s4, backgroundColor: item > 0 || !on ? 'transparent' : color.tinta }}
             >
               <Glyph name={t.name} tint={on && t.name === 'tiempo' ? color.naranja : fg} />
               <KText size={texto.etiqueta} weight={on ? 500 : 400} tint={fg}>

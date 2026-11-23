@@ -11,6 +11,7 @@ import { Pulsable } from '@/components/Pulsable';
 import {
   MODES,
   addDays,
+  getSlot,
   dayStart,
   hhmm,
   isClosed,
@@ -26,11 +27,14 @@ import {
   type Slot,
 } from '@/agenda/model';
 import { book, useAgenda } from '@/agenda/store';
+import { retryData, useDataStatus } from '@/backend/data';
 import { Fundido } from '@/components/Fundido';
 import { cifra, color, fundido, inner, layout, radius, space, texto, touch, transicionPunto, arriba } from '@/theme';
 import { CabeceraAgenda, Flecha, IconoModo, MODE_TINT, Mas, Ocupacion } from './piezas';
 
 const LETTERS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+/** Días con clases a la vista: hoy y las dos semanas siguientes (como trae el servidor). */
+const AHEAD_DAYS = 15;
 
 export function AgendaScreen() {
   const insets = useSafeAreaInsets();
@@ -43,6 +47,20 @@ export function AgendaScreen() {
     const next = upcomingBookings(state, now)[0];
     return next ? dayStart(next.slot.start) : isClosed(today) ? addDays(today, 1) : today;
   });
+
+  // Semana a la vista: esta y las siguientes mientras haya clases (el servidor manda dos semanas).
+  const [week, setWeek] = useState(() => weekStart(day));
+  const thisWeek = weekStart(today);
+  const lastDay = addDays(today, AHEAD_DAYS - 1);
+  const goWeek = (w: number) => {
+    setWeek(w);
+    // El primer día abierto de esa semana (desde hoy).
+    for (let i = 0; i < 7; i++) {
+      const d = addDays(w, i);
+      if (d >= today && d <= lastDay && !isClosed(d)) return setDay(d);
+    }
+  };
+  const data = useDataStatus();
 
   // `state` también: con servidor, cuando llegan las clases se vuelve a pintar.
   const slots = useMemo(() => slotsFor(day, mode), [day, mode, state]);
@@ -74,7 +92,7 @@ export function AgendaScreen() {
             Reservar
           </KText>
           <KText size={texto.texto} tint={color.texto2}>
-            ¿Cómo entrenas hoy?
+            {day === today ? '¿Cómo entrenas hoy?' : `¿Cómo entrenas el ${weekday(day)}?`}
           </KText>
         </View>
 
@@ -113,13 +131,35 @@ export function AgendaScreen() {
           })}
         </View>
 
-        <Semana day={day} today={today} state={state} onPick={setDay} />
+        <CambioSemana
+          label={week === thisWeek ? 'Esta semana' : week === addDays(thisWeek, 7) ? 'La semana que viene' : `Semana del ${new Date(week).getDate()}`}
+          onPrev={week > thisWeek ? () => goWeek(addDays(week, -7)) : undefined}
+          onNext={addDays(week, 7) <= lastDay ? () => goWeek(addDays(week, 7)) : undefined}
+        />
+        <Semana monday={week} day={day} today={today} lastDay={lastDay} state={state} onPick={setDay} />
 
         {slots.length === 0 ? (
-          <View style={{ height: touch.fila, borderRadius: radius.xl, borderWidth: 2, borderStyle: 'dashed', borderColor: color.linea, alignItems: 'center', justifyContent: 'center' }}>
-            <KText size={texto.texto} tint={color.texto2}>
-              Cerrado
+          <View style={{ minHeight: touch.fila, borderRadius: radius.xl, borderWidth: 2, borderStyle: 'dashed', borderColor: color.linea, alignItems: 'center', justifyContent: 'center', padding: space.s16, gap: space.s8 }}>
+            <KText size={texto.texto} tint={color.texto2} style={{ textAlign: 'center' }}>
+              {!data.coach
+                ? 'Sin entrenador: vincúlate con su código para ver sus clases'
+                : data.state === 'loading'
+                  ? 'Cargando clases…'
+                  : data.state === 'offline'
+                    ? 'Sin conexión: las clases llegan al volver la red'
+                    : data.state === 'error'
+                      ? 'No se pudieron cargar las clases'
+                      : isClosed(day)
+                        ? 'Cerrado'
+                        : 'No hay clases este día'}
             </KText>
+            {(data.state === 'offline' || data.state === 'error') && (
+              <Pulsable onPress={() => void retryData()} accessibilityRole="button" style={{ height: touch.dedo, justifyContent: 'center' }}>
+                <KText size={texto.texto} style={{ textDecorationLine: 'underline' }}>
+                  Reintentar
+                </KText>
+              </Pulsable>
+            )}
           </View>
         ) : (
           slots.map((s) => <Fila key={s.id} slot={s} state={state} now={now} />)
@@ -148,8 +188,32 @@ export function AgendaScreen() {
   );
 }
 
-function Semana({ day, today, state, onPick }: { day: number; today: number; state: AgendaState; onPick: (d: number) => void }) {
-  const monday = weekStart(today);
+/** Semana anterior / siguiente (las clases llegan para dos semanas). */
+function CambioSemana({ label, onPrev, onNext }: { label: string; onPrev?: () => void; onNext?: () => void }) {
+  const boton = (dir: 'left' | 'right', on?: () => void) => (
+    <Pulsable
+      onPress={on}
+      disabled={!on}
+      haptic="selection"
+      accessibilityRole="button"
+      accessibilityLabel={dir === 'left' ? 'Semana anterior' : 'Semana siguiente'}
+      style={{ width: touch.dedo, height: touch.dedo, borderRadius: radius.pill, backgroundColor: color.tarjeta, alignItems: 'center', justifyContent: 'center' }}
+    >
+      <Flecha dir={dir} />
+    </Pulsable>
+  );
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.s8, paddingLeft: space.s8 }}>
+      <KText size={texto.texto} tint={color.texto2} style={{ flex: 1 }} accessibilityRole="header">
+        {label}
+      </KText>
+      {boton('left', onPrev)}
+      {boton('right', onNext)}
+    </View>
+  );
+}
+
+function Semana({ monday, day, today, lastDay, state, onPick }: { monday: number; day: number; today: number; lastDay: number; state: AgendaState; onPick: (d: number) => void }) {
   const pad = space.s8;
   return (
     <View accessibilityLabel="Día" style={{ backgroundColor: color.tarjeta, borderRadius: radius.lg, padding: pad, flexDirection: 'row', gap: space.s4 }}>
@@ -157,8 +221,13 @@ function Semana({ day, today, state, onPick }: { day: number; today: number; sta
         const d = addDays(monday, i);
         const on = d === day;
         const closed = isClosed(d);
-        const past = d < today;
-        const has = Object.keys(state.bookings).some((k) => k.includes(`-${isoOf(d)}-`));
+        // Pasado, o más allá de las clases que hay: no se elige.
+        const past = d < today || d > lastDay;
+        // Con servidor los ids son UUID: el día sale de la clase, no del id.
+        const has = Object.keys(state.bookings).some((k) => {
+          const s = getSlot(k);
+          return s ? dayStart(s.start) === d : k.includes(`-${isoOf(d)}-`);
+        });
         const mark = d === today ? color.naranja : has ? (on ? color.tarjeta : color.tinta) : 'transparent';
         const n = new Date(d).getDate();
         return (

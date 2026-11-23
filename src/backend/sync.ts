@@ -88,6 +88,9 @@ async function send(job: Job): Promise<SendResult> {
     case 'pay':
       res = await backend.rpc('simulate_payment', { p_month: p.month, p_method: p.method });
       break;
+    case 'unlink':
+      res = await backend.rpc('unlink_coach');
+      break;
     default:
       return { reject: `tipo ${job.kind} aún no se envía` };
   }
@@ -133,6 +136,9 @@ export function queue(kind: JobKind, payload: Record<string, unknown>, id = newI
   save();
   if (due(box, Date.now())) syncNow();
 }
+
+/** Dejar de entrenar con tu entrenador: deja de ver tus entrenos (también si lo haces sin red). */
+export const queueUnlink = () => queue('unlink', {});
 
 export const pendingCount = () => box.jobs.length;
 export const failedJobs = () => box.failed;

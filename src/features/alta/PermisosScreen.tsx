@@ -65,7 +65,7 @@ function Fila({ title, note, on, onToggle }: { title: string; note: string; on: 
       accessibilityRole="switch"
       accessibilityState={{ checked: on }}
       accessibilityLabel={`${title}. ${note}`}
-      style={{ height: touch.accion, backgroundColor: color.tarjeta, borderRadius: radius.lg, paddingVertical: space.s16, paddingRight: space.s16, paddingLeft: space.s24, flexDirection: 'row', alignItems: 'center', gap: space.s16 }}
+      style={{ minHeight: touch.accion, backgroundColor: color.tarjeta, borderRadius: radius.lg, paddingVertical: space.s16, paddingRight: space.s16, paddingLeft: space.s24, flexDirection: 'row', alignItems: 'center', gap: space.s16 }}
     >
       <View style={{ flex: 1, gap: space.s8 }}>
         <KText size={texto.bloque}>{title}</KText>

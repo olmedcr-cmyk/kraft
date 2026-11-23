@@ -42,7 +42,7 @@ export function Minutos({ s, step, onPalm }: Props) {
         <CirculosMinuto seconds={s.duration} elapsed={s.duration - s.n} />
       </View>
       <PalmaTramo s={s} onPalm={onPalm} gap={space.s24}>
-        <PildoraMarcha label={s.phase === 'rest' ? 'Descanso' : 'Trabajo'} bg={alpha.sobreColor} fg={color.tarjeta} />
+        <PildoraMarcha label={s.phase === 'rest' ? 'Descanso' : 'Trabajo'} bg={s.phase === 'rest' ? alpha.sobreClaro : alpha.sobreColor} fg={color.tarjeta} />
         <KText size={cifra.c144} weight={300} title tabular tint={color.tarjeta} lineHeight={cifra.c144}>
           {mmss(s.n)}
         </KText>
@@ -63,7 +63,7 @@ export function Mantener({ s, step, onPalm }: Props) {
         right={ex ? <BotonComo exerciseId={ex.id} label={ex.name} bg={color.tarjeta} fg={color.klein} /> : null}
       />
       <PalmaTramo s={s} onPalm={onPalm} gap={space.s32}>
-        <PildoraMarcha label={s.phase === 'rest' ? 'Descanso' : 'Trabajo'} bg={alpha.sobreColor} fg={color.tarjeta} />
+        <PildoraMarcha label={s.phase === 'rest' ? 'Descanso' : 'Trabajo'} bg={s.phase === 'rest' ? alpha.sobreClaro : alpha.sobreColor} fg={color.tarjeta} />
         <KText size={cifra.c233} weight={300} title tabular tint={color.tarjeta} lineHeight={Math.round(cifra.c233 * 0.85)}>
           {String(s.n)}
         </KText>

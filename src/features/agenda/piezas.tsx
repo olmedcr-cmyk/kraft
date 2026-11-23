@@ -89,10 +89,10 @@ export function CabeceraAgenda({ right, back = false }: { right?: ReactNode; bac
   );
 }
 
-export function Flecha({ tint = color.tinta, dir = 'right', size = 20 }: { tint?: string; dir?: 'right' | 'up-right'; size?: number }) {
+export function Flecha({ tint = color.tinta, dir = 'right', size = 20 }: { tint?: string; dir?: 'right' | 'left' | 'up-right'; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 20 20">
-      <Path d={dir === 'right' ? 'M7 4l6 6-6 6' : 'M6 14L14 6M7 6h7v7'} stroke={tint} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      <Path d={dir === 'right' ? 'M7 4l6 6-6 6' : dir === 'left' ? 'M13 4l-6 6 6 6' : 'M6 14L14 6M7 6h7v7'} stroke={tint} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" fill="none" />
     </Svg>
   );
 }

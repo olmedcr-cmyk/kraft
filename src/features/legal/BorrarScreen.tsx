@@ -6,7 +6,7 @@ import Animated from 'react-native-reanimated';
 import { KText } from '@/components/KText';
 import { Pulsable } from '@/components/Pulsable';
 import { useDiary } from '@/diario/store';
-import { DELETE_DAYS, pendingPayments } from '@/legal/model';
+import { DELETE_DAYS, deletionDate, fechaCorta, pendingPayments } from '@/legal/model';
 import { updateSettings, useSettings } from '@/state/settings';
 import { color, motion, ms, radius, space, texto, touch } from '@/theme';
 import { PantallaTu, useConfirmar } from '@/features/tu/piezas';
@@ -36,7 +36,7 @@ export function BorrarScreen() {
       footer={
         <View style={{ gap: space.s8 }}>
           <KText size={texto.texto} tint={color.texto2} style={{ textAlign: 'center', paddingHorizontal: space.s8 }} accessibilityLiveRegion="polite">
-            {confirm.armed ? 'Toca otra vez para borrar' : 'Recibirás un email para confirmar'}
+            {confirm.armed ? 'Toca otra vez para borrar' : `Se borra el ${fechaCorta(deletionDate(Date.now()))}. Si vuelves a entrar antes, se anula.`}
           </KText>
           <Pulsable
             onPress={borrar}

@@ -16,6 +16,7 @@ import {
   stop,
   tabataPlan,
   tick,
+  upcomingChanges,
   type TimerState,
 } from '../engine';
 
@@ -398,5 +399,24 @@ describe('cuenta atrás configurable', () => {
       prevSnap = snap;
     }
     expect(counts).toBe(3);
+  });
+});
+
+describe('avisos con la pantalla bloqueada', () => {
+  it('lista los próximos cambios con su instante, hasta acabar', () => {
+    const s = start(createTimer(tabataPlan({ work: 20, rest: 10, rounds: 2 })), 0);
+    expect(upcomingChanges(s, 1 * S)).toEqual([
+      { at: 3 * S, kind: 'work' },
+      { at: 23 * S, kind: 'rest' },
+      { at: 33 * S, kind: 'work' },
+      { at: 53 * S, kind: 'done' },
+    ]);
+  });
+
+  it('se para en una espera manual y no avisa en pausa', () => {
+    let s = start(createTimer(seriesPlan({ work: 10, rest: 0, rounds: 2 })), 0);
+    expect(upcomingChanges(s, 0).map((c) => c.kind)).toEqual(['work', 'wait']);
+    s = pauseToggle(s, 5 * S);
+    expect(upcomingChanges(s, 6 * S)).toEqual([]);
   });
 });

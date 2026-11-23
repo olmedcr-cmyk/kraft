@@ -18,7 +18,8 @@ export function Interruptor({ on, small }: { on: boolean; small?: boolean }) {
         width: w,
         height: h,
         borderRadius: radius.pill,
-        backgroundColor: on ? color.klein : color.linea,
+        // Apagado en texto2, no en línea: el carril tiene que verse (≥ 3:1 sobre la tarjeta).
+        backgroundColor: on ? color.klein : color.texto2,
         transitionProperty: 'backgroundColor',
         transitionDuration: ms(motion.pantalla),
         transitionTimingFunction: motion.easing,

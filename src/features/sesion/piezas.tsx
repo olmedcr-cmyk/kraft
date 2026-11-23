@@ -1,4 +1,5 @@
 /** Piezas compartidas por las pantallas en marcha de la sesión. */
+import { quedan } from '@/timer/hablado';
 import { router } from 'expo-router';
 import { useEffect, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Image, View, type ImageSourcePropType } from 'react-native';
@@ -16,15 +17,7 @@ export const RUN = texto.bloque;
 export const pad2 = (v: number) => String(v).padStart(2, '0');
 export const mmss = (sec: number) => `${Math.floor(sec / 60)}:${pad2(sec % 60)}`;
 
-/** «quedan 1 minuto y 5 segundos», «queda 1 segundo»: lo que lee el lector de pantalla. */
-export function quedan(sec: number) {
-  const m = Math.floor(sec / 60);
-  const s = sec % 60;
-  const parts: string[] = [];
-  if (m) parts.push(`${m} ${m === 1 ? 'minuto' : 'minutos'}`);
-  if (s || !m) parts.push(`${s} ${s === 1 ? 'segundo' : 'segundos'}`);
-  return `${sec === 1 || (s === 0 && m === 1) ? 'queda' : 'quedan'} ${parts.join(' y ')}`;
-}
+export { quedan };
 
 /** Etiqueta de la palma: fase, lo que queda y qué hace tocarla (sin acción, solo lo primero). */
 export const palmaLabel = (fase: string, sec: number, accion?: string) => `${fase}, ${quedan(sec)}.${accion ? ` ${accion}` : ''}`;

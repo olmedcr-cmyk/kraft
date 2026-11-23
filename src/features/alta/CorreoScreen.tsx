@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BarraAccion } from '@/components/BarraAccion';
 import { KText } from '@/components/KText';
+import { Nota } from '@/components/Nota';
 import { sendEmailCode } from '@/backend/auth';
 import { isEmail, normalizeEmail } from '@/backend/email';
 import { Volver } from '@/features/tu/piezas';
@@ -16,6 +17,7 @@ export function CorreoScreen() {
   const [email, setEmail] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [focused, setFocused] = useState(false);
   const ok = isEmail(email);
 
   const send = async () => {
@@ -35,12 +37,11 @@ export function CorreoScreen() {
         <KText size={cifra.c34} weight={300} title lineHeight={cifra.c34} accessibilityRole="header">
           Con email
         </KText>
-        <KText size={texto.texto} tint={error ? color.naranja : color.texto2} accessibilityLiveRegion="polite">
-          {error ?? 'Te mandamos un código de 6 cifras'}
-        </KText>
+        <Nota error={!!error} text={error ?? 'Te mandamos un código de 6 cifras'} />
       </View>
 
-      <View style={{ backgroundColor: color.tarjeta, borderRadius: radius.lg, paddingHorizontal: space.s16 }}>
+      {/* Sin el anillo del navegador: el foco se ve en el borde Klein de la tarjeta. */}
+      <View style={{ backgroundColor: color.tarjeta, borderRadius: radius.lg, paddingHorizontal: space.s16, borderWidth: 2, borderColor: focused ? color.klein : 'transparent' }}>
         <TextInput
           value={email}
           onChangeText={(t) => {
@@ -48,8 +49,10 @@ export function CorreoScreen() {
             setError(null);
           }}
           onSubmitEditing={send}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
           placeholder="tu@email.com"
-          placeholderTextColor={color.linea}
+          placeholderTextColor={color.texto2}
           autoFocus
           autoCapitalize="none"
           autoCorrect={false}

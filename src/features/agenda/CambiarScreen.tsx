@@ -10,6 +10,8 @@ import { Pulsable } from '@/components/Pulsable';
 import { Vacio } from '@/components/Vacio';
 import { FREE_CANCEL_H, cancelDeadline, dayStart, getSlot, hhmm, isLate, moveOptions, shortDay, weekdayShort } from '@/agenda/model';
 import { cancel, move, useAgenda } from '@/agenda/store';
+import { PRICES } from '@/diario/model';
+import { useConfirmar } from '@/features/tu/piezas';
 import { cifra, color, inner, radius, space, texto, touch, transicionPunto } from '@/theme';
 
 /** Curva de hoja de iOS; sin rebote (tokens: rebote false). */
@@ -24,9 +26,14 @@ export function CambiarScreen() {
   const state = useAgenda();
   const slot = getSlot(id);
   const b = slot ? state.bookings[slot.id] : undefined;
+  // Cancelar no se deshace (la plaza pasa a otro): dos toques, como borrar.
+  const confirm = useConfirmar(4000);
   const now = Date.now();
   if (!slot || !b) return <Vacio title="Mover o cancelar" note="Esta reserva ya no está" />;
   const late = isLate(slot, now);
+  // Tarde y con plaza confirmada se cobra como clase; salir de la lista de espera nunca cuesta.
+  const charge = late && b.status === 'confirmed' ? PRICES[slot.mode] : 0;
+  const what = b.status === 'waitlist' ? 'Salir de la lista' : 'Cancelar clase';
   const options = moveOptions(slot, now);
   const sameDay = (t: number) => dayStart(t) === dayStart(slot.start);
   const where = slot.room ? ` · Sala ${slot.room}` : '';
@@ -88,7 +95,7 @@ export function CambiarScreen() {
               <KText size={texto.bloque}>!</KText>
             </View>
             <KText size={texto.texto} lineHeight={20} style={{ flex: 1 }}>
-              {`Faltan menos de ${FREE_CANCEL_H} h.\nCancelar cuenta como clase.`}
+              {charge ? `Faltan menos de ${FREE_CANCEL_H} h.\nCancelar cuenta como clase: ${charge} €.` : `Faltan menos de ${FREE_CANCEL_H} h.\nSalir de la lista no cuesta nada.`}
             </KText>
           </View>
         ) : (
@@ -98,18 +105,22 @@ export function CambiarScreen() {
         )}
 
         <Pulsable
-          onPress={() => {
-            const r = cancel(slot);
-            if (r.ok) router.replace('/agenda');
-          }}
-          haptic="medium"
+          onPress={() =>
+            confirm.press(() => {
+              const r = cancel(slot);
+              if (r.ok) router.replace('/agenda');
+            })
+          }
+          haptic={confirm.armed ? 'medium' : 'light'}
           scaleTo={0.98}
           accessibilityRole="button"
-          style={{ height: touch.fila, borderRadius: radius.xl, backgroundColor: color.tinta, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.s16 }}
+          accessibilityLabel={confirm.armed ? `Confirmar: ${what.toLowerCase()}${charge ? `, se cobran ${charge} euros` : ''}` : what}
+          // Armado, naranja (actuar) con texto en tinta, como en Borrar cuenta.
+          style={{ height: touch.fila, borderRadius: radius.xl, backgroundColor: confirm.armed ? color.naranja : color.tinta, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.s16 }}
         >
-          <StopIcon />
-          <KText size={texto.bloque} tint={color.tarjeta}>
-            {b.status === 'waitlist' ? 'Salir de la lista' : 'Cancelar clase'}
+          {!confirm.armed && <StopIcon />}
+          <KText size={texto.bloque} tint={confirm.armed ? color.tinta : color.tarjeta}>
+            {confirm.armed ? (charge ? `Toca otra vez · ${charge} €` : 'Toca otra vez') : what}
           </KText>
         </Pulsable>
       </Animated.View>

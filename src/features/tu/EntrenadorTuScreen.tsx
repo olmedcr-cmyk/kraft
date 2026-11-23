@@ -9,6 +9,7 @@ import { KText } from '@/components/KText';
 import { Vacio } from '@/components/Vacio';
 import { PRICES } from '@/diario/model';
 import { MODE_TINT } from '@/features/agenda/piezas';
+import { queueUnlink } from '@/backend/sync';
 import { updateSettings, useSettings } from '@/state/settings';
 import { cifra, color, radius, space, texto, touch } from '@/theme';
 import { Avatar, Fila, Grupo, PantallaTu, Seccion, useConfirmar } from './piezas';
@@ -69,12 +70,19 @@ export function EntrenadorTuScreen() {
           tint={dejar.armed ? color.naranja : color.tinta}
           onPress={() =>
             dejar.press(() => {
+              // También en el servidor: deja de ver tus entrenos (aunque sea sin red, sale al volver).
+              queueUnlink();
               updateSettings({ coach: undefined });
               router.canGoBack() ? router.back() : router.replace('/tu');
             })
           }
         />
       </Grupo>
+      {dejar.armed && (
+        <KText size={texto.texto} tint={color.texto2} style={{ paddingHorizontal: space.s8 }}>
+          {`${coach.name} dejará de ver tus entrenos y de mandarte sesiones. Tus reservas siguen hasta que las canceles.`}
+        </KText>
+      )}
     </PantallaTu>
   );
 }
