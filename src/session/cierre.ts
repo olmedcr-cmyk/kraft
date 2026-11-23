@@ -22,7 +22,8 @@ export function resumen(): Resumen {
   const doneUpTo = st.status === 'done' && !st.stopped ? st.plan.length : st.index;
   let series = 0;
   const seenSets = new Set<string>();
-  for (let i = 0; i < doneUpTo; i++) {
+  // Desde donde empezó: si se empezó por un bloque, los de antes no se hicieron.
+  for (let i = sessionRunner.firstIndex; i < doneUpTo; i++) {
     const p = st.plan[i];
     if (p.ref === undefined || (p.kind !== 'work' && p.kind !== 'reps')) continue;
     const info = compiled.steps[p.ref];

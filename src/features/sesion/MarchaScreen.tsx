@@ -102,7 +102,9 @@ export function MarchaScreen() {
         onLeft={s.left === 'stop' ? t.stop : t.prev}
         onCentral={t.primary}
         onRight={t.next}
-        onCentralLong={manual ? t.pause : undefined}
+        // Siempre definido (ver Mando): en repeticiones y espera pausa; si no, hace lo mismo que tocar.
+        onCentralLong={manual ? t.pause : t.primary}
+        centralLongLabel={manual ? 'Pausar' : undefined}
         centralLabel={s.phase === 'wait' && !s.paused ? 'Siguiente · empieza con 3, 2, 1' : undefined}
       />
     </Lienzo>

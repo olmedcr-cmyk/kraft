@@ -38,6 +38,8 @@ export class Runner {
   /** Momento real en que empezó y acabó (para el resumen). */
   startedAt: number | null = null;
   endedAt: number | null = null;
+  /** Tramo por el que empezó (si se empezó por un bloque): lo de antes no cuenta como hecho. */
+  firstIndex = 0;
 
   constructor(plan: Plan) {
     this.state = createTimer(plan);
@@ -102,6 +104,7 @@ export class Runner {
 
   start = () => {
     setupFeedback();
+    this.firstIndex = 0;
     this.startedAt = Date.now();
     this.endedAt = null;
     this.apply(start);
@@ -109,6 +112,7 @@ export class Runner {
   primary = () => {
     if (this.state.status !== 'running') {
       setupFeedback();
+      this.firstIndex = 0;
       this.startedAt = Date.now();
       this.endedAt = null;
     }
@@ -133,6 +137,7 @@ export class Runner {
   /** Saltar a un tramo concreto (empezar la sesión por un bloque). */
   startAt = (index: number) => {
     setupFeedback();
+    this.firstIndex = Math.max(0, Math.min(index, this.state.plan.length - 1));
     this.startedAt = Date.now();
     this.endedAt = null;
     this.apply((s, now) => ({ ...start(s, now), index: Math.max(0, Math.min(index, s.plan.length - 1)) }));

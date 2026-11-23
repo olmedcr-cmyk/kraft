@@ -17,14 +17,19 @@ type Props = {
   bleed?: boolean;
   rightLabel?: string;
   centralLabel?: string;
-  /** Mantener pulsado el central: pausa donde el central no pausa (✓ en repeticiones, play en espera). */
+  /**
+   * Mantener pulsado el central. Si se pasa, que sea siempre (no solo cuando toca): si desaparece a mitad
+   * del gesto, React Native trata el soltar como un toque y el central hace lo suyo (pausar y, al soltar, seguir).
+   */
   onCentralLong?: () => void;
+  /** Qué hace mantener pulsado (para el lector de pantalla); sin él, no se anuncia. */
+  centralLongLabel?: string;
 };
 
 const LONG_MS = 500;
 
 /** En marcha, un solo mando: anterior · central naranja 104 · siguiente. */
-export function Mando({ left, central, onLeft, onCentral, onRight, bleed = true, rightLabel = 'Siguiente tramo', centralLabel, onCentralLong }: Props) {
+export function Mando({ left, central, onLeft, onCentral, onRight, bleed = true, rightLabel = 'Siguiente tramo', centralLabel, onCentralLong, centralLongLabel }: Props) {
   const insets = useSafeAreaInsets();
   return (
     <View
@@ -58,8 +63,8 @@ export function Mando({ left, central, onLeft, onCentral, onRight, bleed = true,
         haptic="light"
         accessibilityRole="button"
         accessibilityLabel={centralLabel ?? (central === 'pause' ? 'Pausa' : central === 'check' ? 'Hecho' : 'Seguir')}
-        accessibilityHint={onCentralLong ? 'Mantén pulsado para pausar' : undefined}
-        accessibilityActions={onCentralLong ? [{ name: 'activate' }, { name: 'longpress', label: 'Pausar' }] : undefined}
+        accessibilityHint={centralLongLabel ? `Mantén pulsado para ${centralLongLabel.toLowerCase()}` : undefined}
+        accessibilityActions={centralLongLabel ? [{ name: 'activate' }, { name: 'longpress', label: centralLongLabel }] : undefined}
         onAccessibilityAction={(e) => (e.nativeEvent.actionName === 'longpress' ? onCentralLong?.() : onCentral())}
         style={styles.central}
       >

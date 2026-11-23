@@ -112,8 +112,9 @@ export function TabataMarcha({ s, step, onPalm }: Props) {
 /** Ejercicio A o B. El activo va en tinta y se mueve; el otro, en aro. */
 function Tarjeta({ info, on, fg }: { info: StepInfo; on: boolean; fg: string }) {
   const ex = exercise(info.exercise);
-  // 16 de padding: el cuadro de dentro, radio 24 − 16 = 8 (12 no está en la escala).
-  const pad = space.s16;
+  // 8 de padding: el cuadro de dentro, radio 24 − 8 = 16 (con 12 salía 12, fuera de escala;
+  // con 16 la tarjeta crecía y la fila Mueve/Mantén quedaba bajo el mando en un iPhone de 844).
+  const pad = space.s8;
   return (
     <Animated.View
       style={{

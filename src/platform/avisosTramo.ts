@@ -43,9 +43,12 @@ export async function programarAvisos(changes: { at: number; kind: SegmentKind |
   }
 }
 
+/** De vuelta en la app: fuera los que faltan y también los ya mostrados (no se quedan en la pantalla de bloqueo). */
 export async function quitarAvisos() {
   if (Platform.OS === 'web' || scheduled.length === 0) return;
   const ids = scheduled;
   scheduled = [];
-  await Promise.all(ids.map((id) => Notifications.cancelScheduledNotificationAsync(id).catch(() => {})));
+  await Promise.all(
+    ids.flatMap((id) => [Notifications.cancelScheduledNotificationAsync(id).catch(() => {}), Notifications.dismissNotificationAsync(id).catch(() => {})]),
+  );
 }

@@ -45,6 +45,10 @@ export function Escalera({ step, refId }: { step: StepInfo; refId: number }) {
         </KText>
         {ex && <BotonComo exerciseId={ex.id} size={pieza.icono} label={ex.name} />}
       </View>
+      {/* El central es ✓: pausar (y desde ahí, parar guardando) es mantenerlo pulsado. Arriba, que se vea. */}
+      <KText size={RUN} tint={color.texto2} style={{ paddingHorizontal: space.s8, marginTop: -space.s8 }}>
+        Mantén pulsado el centro para pausar
+      </KText>
 
       <View
         accessible
@@ -87,7 +91,8 @@ export function Escalera({ step, refId }: { step: StepInfo; refId: number }) {
         <View style={{ backgroundColor: color.tarjeta, borderRadius: radius.lg, padding: space.s16, flexDirection: 'row', alignItems: 'center', gap: space.s8 }}>
           <Ajuste unit={peso} dir="down" onPress={() => setWeight(refId, w == null ? null : Math.max(0, w - STEP_KG) || null)} />
           <View style={{ flex: 1, flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', gap: space.s4 }} accessibilityLabel={w == null ? 'Barra sola' : `${kgLabel(w, peso)} ${unitName(peso)}`}>
-            <KText size={cifra.c55} weight={300} tabular lineHeight={cifra.c55}>
+            {/* «barra» es una palabra: a 55 no cabe entre las flechas en un iPhone de 390 (se partía en dos). */}
+            <KText size={w == null ? cifra.c34 : cifra.c55} weight={300} tabular lineHeight={w == null ? cifra.c34 : cifra.c55} numberOfLines={1}>
               {w == null ? 'barra' : kgLabel(w, peso)}
             </KText>
             {w != null && (
@@ -143,10 +148,6 @@ export function Escalera({ step, refId }: { step: StepInfo; refId: number }) {
         })}
       </View>
 
-      {/* El central es ✓: pausar (y desde ahí, parar guardando) es mantenerlo pulsado. */}
-      <KText size={RUN} tint={color.texto2} style={{ textAlign: 'center', paddingTop: space.s8 }}>
-        Mantén pulsado el centro para pausar
-      </KText>
     </ScrollView>
   );
 }
