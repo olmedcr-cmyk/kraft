@@ -1,4 +1,5 @@
 /** Te quedaste a medias (KC3): la app se cerró con la sesión en marcha. Seguir, desde cero o terminar ahí. */
+import { StatusBar } from 'expo-status-bar';
 import { Redirect, router } from 'expo-router';
 import { useMemo } from 'react';
 import { View } from 'react-native';
@@ -71,6 +72,7 @@ export function RetomarScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: color.tinta, paddingTop: arriba(insets.top, layout.pantallaArriba), paddingHorizontal: layout.pantallaLado, paddingBottom: space.s16 + insets.bottom, gap: layout.entreTarjetas }}>
+      <StatusBar style="light" />
       <View style={{ paddingHorizontal: space.s8, gap: space.s8 }}>
         <KText size={texto.texto} tint={color.linea}>
           {when(u.savedAt)}

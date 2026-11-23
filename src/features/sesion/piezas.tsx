@@ -1,6 +1,7 @@
 /** Piezas compartidas por las pantallas en marcha de la sesión. */
 import { quedan } from '@/timer/hablado';
 import { router } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Image, View, type ImageSourcePropType } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
@@ -26,7 +27,11 @@ export const palmaLabel = (fase: string, sec: number, accion?: string) => `${fas
 export function Lienzo({ bg, children }: { bg: string; children: ReactNode }) {
   const insets = useSafeAreaInsets();
   return (
-    <Animated.View style={{ ...transicionFondo, flex: 1, backgroundColor: bg, paddingTop: arriba(insets.top, layout.pantallaArriba) }}>{children}</Animated.View>
+    <Animated.View style={{ ...transicionFondo, flex: 1, backgroundColor: bg, paddingTop: arriba(insets.top, layout.pantallaArriba) }}>
+      {/* Hora y batería legibles: blancas sobre Klein, verde y tinta; oscuras sobre fondo claro y naranja. */}
+      <StatusBar style={bg === color.fondo || bg === color.naranja ? 'dark' : 'light'} />
+      {children}
+    </Animated.View>
   );
 }
 

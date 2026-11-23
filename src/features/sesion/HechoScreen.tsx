@@ -1,4 +1,5 @@
 /** Hecho (J8Finish): resumen, semana, esfuerzo y enviar al entrenador. */
+import { StatusBar } from 'expo-status-bar';
 import { Redirect, router } from 'expo-router';
 import { useEffect, type ReactNode } from 'react';
 import { View } from 'react-native';
@@ -51,6 +52,7 @@ export function HechoScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: color.verde, paddingTop: arriba(insets.top, layout.pantallaArriba) }}>
+      <StatusBar style="light" />
       <View style={{ paddingHorizontal: space.s24, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
         <KText size={cifra.c34} weight={300} title tint={color.tarjeta} accessibilityRole="header">
           Hecho
